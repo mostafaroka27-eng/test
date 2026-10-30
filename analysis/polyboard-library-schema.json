@@ -1,0 +1,1088 @@
+{
+  "schema": "rokadex.proposed-library-concepts.v1",
+  "source": {
+    "file": "Polyboard Library Manual.pdf",
+    "sha256": "6a25988d911ec57895014c186330117f2b858db399440e0177e5a638bddbccd0",
+    "bytes": 2424418,
+    "pages": 61,
+    "title": "Polyboard Quick Design Libraries",
+    "publisher": "Wood Designer",
+    "copyrightYearObserved": 2016,
+    "pdfCreationYearObserved": 2018,
+    "analysisDate": "2026-10-29",
+    "inspection": "Static text extraction of the user-supplied primary-source manual; no installer, proprietary library or machine program executed",
+    "versionLimitation": "Not evidence of all PolyBoard 7.4 behavior or the contents of the inaccessible RAR archive"
+  },
+  "status": "Independent proposed RokaDex concept model, not a PolyBoard file format or manufacturer library",
+  "observedManualFacts": [
+    {
+      "id": "two-stage-workflow",
+      "manual_pages": [
+        7,
+        9,
+        11,
+        12
+      ],
+      "statement": "Visual design materials must be associated with real manufacturable stock and an appropriate manufacturing method before production."
+    },
+    {
+      "id": "material-role-and-grouping",
+      "manual_pages": [
+        10,
+        11,
+        12,
+        43
+      ],
+      "statement": "Role-based Quick Design materials and grouped generic/supplier materials serve different design and cutting-list needs."
+    },
+    {
+      "id": "names-not-complete-parameter-data",
+      "manual_pages": [
+        5,
+        6,
+        12
+      ],
+      "statement": "Abbreviated names do not contain all parameters; adjacent four-digit material codes may represent the same thickness with a different colour."
+    },
+    {
+      "id": "display-only-elements",
+      "manual_pages": [
+        12
+      ],
+      "statement": "The described library includes display-only material entries intended to be omitted from cutting lists."
+    },
+    {
+      "id": "bars-are-linear-stock",
+      "manual_pages": [
+        15,
+        16,
+        17,
+        19
+      ],
+      "statement": "Bar material has a cross-section, is purchased in lengths and is used with frame/structure rules."
+    },
+    {
+      "id": "local-versus-global-structure",
+      "manual_pages": [
+        20,
+        21,
+        60
+      ],
+      "statement": "Applying a stored structure to a panel and applying an assembled-pieces sub-method to a cabinet have different scopes."
+    },
+    {
+      "id": "hardware-versus-placement",
+      "manual_pages": [
+        24,
+        25,
+        26,
+        27,
+        28,
+        32,
+        50,
+        51
+      ],
+      "statement": "A hardware definition and the rule deciding its placement are separate library concepts, connected by fitting links."
+    },
+    {
+      "id": "single-panel-hardware",
+      "manual_pages": [
+        23,
+        33,
+        34
+      ],
+      "statement": "Single-panel fittings differ from fittings connecting two panels and include face/depth information."
+    },
+    {
+      "id": "method-is-composite",
+      "manual_pages": [
+        35,
+        36,
+        37
+      ],
+      "statement": "A manufacturing method groups sub-methods; individual sub-methods can also be applied separately."
+    },
+    {
+      "id": "method-replacement-scope",
+      "manual_pages": [
+        36
+      ],
+      "statement": "Applying a method can replace previous settings; the manual discusses applying to new components where appropriate."
+    },
+    {
+      "id": "priorities-drive-geometry",
+      "manual_pages": [
+        38,
+        39,
+        40,
+        41,
+        42,
+        58,
+        59
+      ],
+      "statement": "Panel priorities, setbacks and groove settings participate in carcass and drawer construction."
+    },
+    {
+      "id": "door-and-drawer-policies",
+      "manual_pages": [
+        56,
+        57,
+        58,
+        59
+      ],
+      "statement": "Door clearances and drawer inside assembly are independently configurable, with product-specific and workshop-built drawer variants."
+    },
+    {
+      "id": "regular-drilling-needs-placement",
+      "manual_pages": [
+        52,
+        54,
+        55
+      ],
+      "statement": "Regular drilling can be global or zoned and requires a positioning rule."
+    }
+  ],
+  "proposedModel": {
+    "status": "proposal-not-current-application-contract",
+    "internalGeometryUnit": "mm",
+    "entities": [
+      {
+        "id": "material",
+        "manual_pages": [
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          15,
+          16,
+          19
+        ],
+        "required_fields": {
+          "id": {
+            "type": "string",
+            "description": "Stable identity; not parsed from display name"
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable reference"
+          },
+          "kind": {
+            "type": "enum",
+            "description": "Stock/pricing family",
+            "values": [
+              "panel",
+              "edge",
+              "bar",
+              "display-only"
+            ]
+          },
+          "unit": {
+            "type": "enum",
+            "description": "Quantity basis",
+            "values": [
+              "m2",
+              "m",
+              "item"
+            ]
+          },
+          "verification": {
+            "type": "verification-record",
+            "description": "Source and review state"
+          }
+        },
+        "optional_fields": {
+          "supplierReference": {
+            "type": "string",
+            "description": "Optional actual supplier stock reference"
+          },
+          "thicknessMm": {
+            "type": "number",
+            "description": "Numeric thickness independent of the name"
+          },
+          "sectionMm": {
+            "type": "object",
+            "description": "Bar cross-section width/thickness"
+          },
+          "appearanceId": {
+            "type": "reference",
+            "description": "Visual appearance"
+          },
+          "price": {
+            "type": "price-record",
+            "description": "Editable currency/rate and effective date"
+          }
+        }
+      },
+      {
+        "id": "appearance",
+        "manual_pages": [
+          9,
+          10,
+          11,
+          12
+        ],
+        "required_fields": {
+          "id": {
+            "type": "string",
+            "description": "Visual identity"
+          },
+          "name": {
+            "type": "string",
+            "description": "Display label"
+          }
+        },
+        "optional_fields": {
+          "colour": {
+            "type": "string",
+            "description": "Display colour"
+          },
+          "textureAssetId": {
+            "type": "reference",
+            "description": "Authorized local image/texture asset; not stock proof"
+          }
+        }
+      },
+      {
+        "id": "role-material-style",
+        "manual_pages": [
+          11,
+          12,
+          43
+        ],
+        "required_fields": {
+          "id": {
+            "type": "string",
+            "description": "Versioned style identity"
+          },
+          "version": {
+            "type": "string",
+            "description": "Explicit revision"
+          },
+          "roleAssignments": {
+            "type": "map",
+            "description": "Part roles mapped to actual material IDs"
+          }
+        },
+        "optional_fields": {
+          "description": {
+            "type": "string",
+            "description": "Scope and intended workshop use"
+          }
+        }
+      },
+      {
+        "id": "panel",
+        "manual_pages": [
+          20,
+          23,
+          24,
+          38,
+          43,
+          47
+        ],
+        "required_fields": {
+          "id": {
+            "type": "string",
+            "description": "Stable semantic part identity"
+          },
+          "role": {
+            "type": "string",
+            "description": "Carcass, back, facade, drawer interior or other role"
+          },
+          "materialId": {
+            "type": "reference",
+            "description": "Manufacturing material"
+          },
+          "dimensionsMm": {
+            "type": "object",
+            "description": "Explicit length, width, thickness"
+          },
+          "localFrameId": {
+            "type": "reference",
+            "description": "Origin/axes and orientation"
+          },
+          "manufacturingIncluded": {
+            "type": "boolean",
+            "description": "False only for explicitly excluded display-only elements"
+          }
+        },
+        "optional_fields": {
+          "structureId": {
+            "type": "reference",
+            "description": "Optional frame or component structure"
+          },
+          "edges": {
+            "type": "array",
+            "description": "Named local edges and applied edge-material references"
+          },
+          "operationIds": {
+            "type": "array",
+            "description": "Operations by local face"
+          }
+        }
+      },
+      {
+        "id": "panel-structure",
+        "manual_pages": [
+          15,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          60
+        ],
+        "required_fields": {
+          "id": {
+            "type": "string",
+            "description": "Reusable independent structure identity"
+          },
+          "version": {
+            "type": "string",
+            "description": "Revision"
+          },
+          "components": {
+            "type": "array",
+            "description": "Bar/panel child definitions and relationships"
+          },
+          "assemblyRuleIds": {
+            "type": "array",
+            "description": "How children meet"
+          }
+        },
+        "optional_fields": {
+          "singlePanelFittingLinks": {
+            "type": "array",
+            "description": "Optional single-panel operations or attached hardware"
+          }
+        }
+      },
+      {
+        "id": "assembly-priority-rule",
+        "manual_pages": [
+          38,
+          39,
+          40,
+          41,
+          42,
+          58,
+          59
+        ],
+        "required_fields": {
+          "id": {
+            "type": "string",
+            "description": "Rule identity"
+          },
+          "participants": {
+            "type": "array",
+            "description": "Part roles involved"
+          },
+          "priorityRelations": {
+            "type": "array",
+            "description": "Explicit over/under relationships"
+          },
+          "referenceFrames": {
+            "type": "array",
+            "description": "Declared reference planes"
+          }
+        },
+        "optional_fields": {
+          "backRecessMm": {
+            "type": "number",
+            "description": "Explicit setback when relevant"
+          },
+          "grooveRuleId": {
+            "type": "reference",
+            "description": "Separate groove definition rather than implicit name decoding"
+          }
+        }
+      },
+      {
+        "id": "edge-style",
+        "manual_pages": [
+          13,
+          14,
+          44,
+          45,
+          46
+        ],
+        "required_fields": {
+          "id": {
+            "type": "string",
+            "description": "Versioned edge style identity"
+          },
+          "version": {
+            "type": "string",
+            "description": "Revision"
+          },
+          "assignments": {
+            "type": "array",
+            "description": "Part-role/local-edge conditions mapped to edge material"
+          }
+        },
+        "optional_fields": {
+          "visibleEdgePolicy": {
+            "type": "string",
+            "description": "Visibility is a condition, not a replacement for the stored edge assignment"
+          }
+        }
+      },
+      {
+        "id": "division-rule",
+        "manual_pages": [
+          47,
+          48,
+          49
+        ],
+        "required_fields": {
+          "id": {
+            "type": "string",
+            "description": "Division policy identity"
+          },
+          "divisionType": {
+            "type": "enum",
+            "description": "Affected internal element",
+            "values": [
+              "fixed-shelf",
+              "adjustable-shelf",
+              "upright",
+              "free-division",
+              "rail"
+            ]
+          },
+          "facadeCondition": {
+            "type": "enum",
+            "description": "Reference condition",
+            "values": [
+              "open",
+              "behind-door",
+              "both"
+            ]
+          },
+          "recessMm": {
+            "type": "number",
+            "description": "Signed recess/overlap with documented direction"
+          },
+          "referencePlaneId": {
+            "type": "reference",
+            "description": "Where the recess is measured"
+          }
+        },
+        "optional_fields": {
+          "lateralClearanceMm": {
+            "type": "number",
+            "description": "Optional clearance for the selected structure"
+          }
+        }
+      },
+      {
+        "id": "hardware-definition",
+        "manual_pages": [
+          24,
+          25,
+          26,
+          33,
+          34
+        ],
+        "required_fields": {
+          "id": {
+            "type": "string",
+            "description": "Hardware identity"
+          },
+          "manufacturer": {
+            "type": "string",
+            "description": "Declared manufacturer or explicit workshop-defined item"
+          },
+          "model": {
+            "type": "string",
+            "description": "Exact part/model reference"
+          },
+          "kind": {
+            "type": "enum",
+            "description": "Attachment context",
+            "values": [
+              "between-panels",
+              "single-panel"
+            ]
+          },
+          "operationTemplates": {
+            "type": "array",
+            "description": "Blind/through drilling and groove templates with declared faces"
+          },
+          "verification": {
+            "type": "verification-record",
+            "description": "Source document/revision and validation status"
+          }
+        },
+        "optional_fields": {
+          "compatibleMaterials": {
+            "type": "array",
+            "description": "Allowed stock references or families"
+          },
+          "thicknessRangeMm": {
+            "type": "object",
+            "description": "Evidence-backed material limits"
+          },
+          "orientationOptions": {
+            "type": "array",
+            "description": "Permitted variants"
+          },
+          "pricing": {
+            "type": "object",
+            "description": "Supply and machining charges stored separately"
+          }
+        }
+      },
+      {
+        "id": "placement-rule",
+        "manual_pages": [
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          52,
+          54,
+          55
+        ],
+        "required_fields": {
+          "id": {
+            "type": "string",
+            "description": "Rule identity"
+          },
+          "version": {
+            "type": "string",
+            "description": "Revision"
+          },
+          "kind": {
+            "type": "enum",
+            "description": "Distribution family",
+            "values": [
+              "hardware-specific",
+              "fixed-step",
+              "maximum-spacing",
+              "single",
+              "parametric"
+            ]
+          },
+          "reference": {
+            "type": "object",
+            "description": "Panel/zone, reference side, face and frame"
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Explicit offsets, step or maximum spacing appropriate to kind"
+          },
+          "verification": {
+            "type": "verification-record",
+            "description": "Provenance and approval state"
+          }
+        },
+        "optional_fields": {
+          "reverseLast": {
+            "type": "boolean",
+            "description": "Only when supported by the referenced fitting"
+          },
+          "direction": {
+            "type": "enum",
+            "description": "Documented local direction",
+            "values": [
+              "forward",
+              "reverse"
+            ]
+          },
+          "scope": {
+            "type": "enum",
+            "description": "Drilling range",
+            "values": [
+              "panel",
+              "zone"
+            ]
+          }
+        }
+      },
+      {
+        "id": "fitting-link",
+        "manual_pages": [
+          23,
+          24,
+          33,
+          34,
+          50,
+          51
+        ],
+        "required_fields": {
+          "id": {
+            "type": "string",
+            "description": "Relationship identity"
+          },
+          "hardwareId": {
+            "type": "reference",
+            "description": "Hardware definition"
+          },
+          "placementRuleId": {
+            "type": "reference",
+            "description": "Distribution rule"
+          },
+          "targets": {
+            "type": "array",
+            "description": "One or two parts/roles with declared reference/operation faces"
+          }
+        },
+        "optional_fields": {
+          "conditions": {
+            "type": "object",
+            "description": "Applicable material, thickness, assembly or component conditions"
+          }
+        }
+      },
+      {
+        "id": "panel-operation",
+        "manual_pages": [
+          24,
+          25,
+          33,
+          50,
+          52,
+          54,
+          55
+        ],
+        "required_fields": {
+          "id": {
+            "type": "string",
+            "description": "Operation identity"
+          },
+          "partId": {
+            "type": "reference",
+            "description": "Target panel"
+          },
+          "kind": {
+            "type": "enum",
+            "description": "Machine-independent operation",
+            "values": [
+              "drill",
+              "groove"
+            ]
+          },
+          "face": {
+            "type": "string",
+            "description": "Declared local face, not an assumed global side"
+          },
+          "localFrameId": {
+            "type": "reference",
+            "description": "Datum and coordinate axes"
+          },
+          "geometryMm": {
+            "type": "object",
+            "description": "Coordinates and dimensions in the declared frame"
+          },
+          "depthMode": {
+            "type": "enum",
+            "description": "Explicit machining intent",
+            "values": [
+              "blind",
+              "through"
+            ]
+          },
+          "verification": {
+            "type": "verification-record",
+            "description": "Origin and tested approval state"
+          }
+        },
+        "optional_fields": {
+          "toolReference": {
+            "type": "string",
+            "description": "Pending verified tool assignment"
+          },
+          "hardwareId": {
+            "type": "reference",
+            "description": "Optional originating hardware"
+          },
+          "placementRuleId": {
+            "type": "reference",
+            "description": "Optional source distribution rule"
+          }
+        }
+      },
+      {
+        "id": "door-rule",
+        "manual_pages": [
+          56
+        ],
+        "required_fields": {
+          "id": {
+            "type": "string",
+            "description": "Door construction policy"
+          },
+          "version": {
+            "type": "string",
+            "description": "Revision"
+          },
+          "mounting": {
+            "type": "enum",
+            "description": "Independent mounting convention",
+            "values": [
+              "inset",
+              "overlay",
+              "sliding",
+              "custom"
+            ]
+          },
+          "clearancesMm": {
+            "type": "object",
+            "description": "Explicit gaps/recesses with axes"
+          },
+          "hardwarePolicy": {
+            "type": "enum",
+            "description": "Hardware assignment mode",
+            "values": [
+              "linked",
+              "manual-unassigned"
+            ]
+          }
+        },
+        "optional_fields": {
+          "fittingLinkIds": {
+            "type": "array",
+            "description": "Only validated matching hardware links"
+          }
+        }
+      },
+      {
+        "id": "drawer-rule",
+        "manual_pages": [
+          57,
+          58,
+          59
+        ],
+        "required_fields": {
+          "id": {
+            "type": "string",
+            "description": "Drawer setup identity"
+          },
+          "version": {
+            "type": "string",
+            "description": "Revision"
+          },
+          "constructionSource": {
+            "type": "enum",
+            "description": "Workshop-built or product-specific",
+            "values": [
+              "workshop",
+              "manufacturer-specific"
+            ]
+          },
+          "priorityRuleId": {
+            "type": "reference",
+            "description": "Drawer panel relationships"
+          },
+          "frontRule": {
+            "type": "object",
+            "description": "Facade gaps/overlays"
+          },
+          "innerClearancesMm": {
+            "type": "object",
+            "description": "Explicit side/front/back/bottom dimensions"
+          }
+        },
+        "optional_fields": {
+          "manufacturerReference": {
+            "type": "reference",
+            "description": "Required for manufacturer-specific assembly"
+          },
+          "fittingLinkIds": {
+            "type": "array",
+            "description": "Compatible installation rules"
+          }
+        }
+      },
+      {
+        "id": "manufacturing-method",
+        "manual_pages": [
+          35,
+          36,
+          37
+        ],
+        "required_fields": {
+          "id": {
+            "type": "string",
+            "description": "Method identity"
+          },
+          "version": {
+            "type": "string",
+            "description": "Revision"
+          },
+          "subMethodRefs": {
+            "type": "map",
+            "description": "Material, edge, box, division, hardware, drilling, door, drawer and structure style references"
+          },
+          "verification": {
+            "type": "verification-record",
+            "description": "Workshop review state"
+          }
+        },
+        "optional_fields": {
+          "description": {
+            "type": "string",
+            "description": "Intended use and constraints"
+          }
+        }
+      },
+      {
+        "id": "method-application",
+        "manual_pages": [
+          20,
+          36,
+          37,
+          60
+        ],
+        "required_fields": {
+          "methodId": {
+            "type": "reference",
+            "description": "Selected method or sub-method"
+          },
+          "scope": {
+            "type": "enum",
+            "description": "Explicit affected components",
+            "values": [
+              "project",
+              "cabinet",
+              "selected-panel",
+              "new-components"
+            ]
+          },
+          "changePreview": {
+            "type": "array",
+            "description": "Affected parameters/parts before committing"
+          },
+          "overridePolicy": {
+            "type": "enum",
+            "description": "Independent proposed RokaDex behavior",
+            "values": [
+              "preserve-explicit-overrides",
+              "replace-after-confirmation"
+            ]
+          }
+        },
+        "optional_fields": {
+          "historyEntryId": {
+            "type": "reference",
+            "description": "Undoable application record"
+          }
+        }
+      },
+      {
+        "id": "verification-record",
+        "manual_pages": [
+          7,
+          25,
+          28,
+          36
+        ],
+        "required_fields": {
+          "state": {
+            "type": "enum",
+            "description": "Independent RokaDex lifecycle",
+            "values": [
+              "unverified",
+              "source-documented",
+              "workshop-reviewed",
+              "machine-validated"
+            ]
+          },
+          "source": {
+            "type": "string",
+            "description": "User supplied manual/specification or independently documented workshop rule"
+          }
+        },
+        "optional_fields": {
+          "documentRevision": {
+            "type": "string",
+            "description": "Exact source revision"
+          },
+          "reviewedBy": {
+            "type": "string",
+            "description": "Responsible reviewer"
+          },
+          "reviewedAt": {
+            "type": "string",
+            "description": "ISO timestamp"
+          },
+          "evidenceIds": {
+            "type": "array",
+            "description": "Simulation/measurement/test-piece records; no fabricated approval"
+          }
+        }
+      }
+    ],
+    "relations": [
+      {
+        "from": "material",
+        "to": "appearance",
+        "role": "optional visual representation"
+      },
+      {
+        "from": "role-material-style",
+        "to": "material",
+        "role": "maps component roles to real manufacturing stock"
+      },
+      {
+        "from": "panel",
+        "to": "material",
+        "role": "manufactured stock reference"
+      },
+      {
+        "from": "panel",
+        "to": "panel-structure",
+        "role": "optional constituent frame/bar/panel assembly"
+      },
+      {
+        "from": "edge-style",
+        "to": "material",
+        "role": "edge stock assigned by role/local edge"
+      },
+      {
+        "from": "hardware-definition",
+        "to": "panel-operation",
+        "role": "operation templates"
+      },
+      {
+        "from": "fitting-link",
+        "to": "hardware-definition",
+        "role": "selected hardware"
+      },
+      {
+        "from": "fitting-link",
+        "to": "placement-rule",
+        "role": "distribution policy"
+      },
+      {
+        "from": "fitting-link",
+        "to": "panel",
+        "role": "one or two target panels"
+      },
+      {
+        "from": "manufacturing-method",
+        "to": "role-material-style",
+        "role": "material sub-method reference"
+      },
+      {
+        "from": "manufacturing-method",
+        "to": "edge-style",
+        "role": "edge sub-method reference"
+      },
+      {
+        "from": "manufacturing-method",
+        "to": "assembly-priority-rule",
+        "role": "carcass/drawer construction relationship"
+      },
+      {
+        "from": "manufacturing-method",
+        "to": "division-rule",
+        "role": "internal clearances"
+      },
+      {
+        "from": "manufacturing-method",
+        "to": "fitting-link",
+        "role": "hardware sub-method references"
+      },
+      {
+        "from": "manufacturing-method",
+        "to": "door-rule",
+        "role": "door construction sub-method"
+      },
+      {
+        "from": "manufacturing-method",
+        "to": "drawer-rule",
+        "role": "drawer construction sub-method"
+      },
+      {
+        "from": "method-application",
+        "to": "manufacturing-method",
+        "role": "scoped atomic application"
+      }
+    ]
+  },
+  "validationConstraints": [
+    {
+      "id": "stable-reference-resolution",
+      "kind": "proposed-rokadex",
+      "rule": "Every referenced entity must resolve to a known identity and explicit version; display names are not identities."
+    },
+    {
+      "id": "numeric-stock-thickness",
+      "kind": "proposed-rokadex",
+      "rule": "Use numeric stock thickness in millimetres; never infer it from generic material names or suffixes."
+    },
+    {
+      "id": "display-and-production-separation",
+      "kind": "proposed-rokadex",
+      "rule": "Visual appearance does not establish real stock availability, machining compatibility or approval."
+    },
+    {
+      "id": "unit-normalization",
+      "kind": "proposed-rokadex",
+      "rule": "Convert source units explicitly at the boundary and store geometry in mm; preserve original units in provenance."
+    },
+    {
+      "id": "face-and-datum-required",
+      "kind": "proposed-rokadex",
+      "rule": "Before machining approval each operation needs an identified part, face, origin, axes, orientation and transform chain."
+    },
+    {
+      "id": "coordinate-validation",
+      "kind": "proposed-rokadex",
+      "rule": "Validate bounds in the declared coordinate frame, including radius/tool extent; do not treat negative source coordinates as automatically invalid before interpreting the source datum."
+    },
+    {
+      "id": "blind-versus-through",
+      "kind": "proposed-rokadex",
+      "rule": "Blind depth must remain inside stock; through operations require explicit intent and independently validated setup."
+    },
+    {
+      "id": "hardware-evidence",
+      "kind": "proposed-rokadex",
+      "rule": "Named example fittings or numeric name fragments do not replace the exact manufacturer document and revision."
+    },
+    {
+      "id": "distribution-validation",
+      "kind": "proposed-rokadex",
+      "rule": "Validate nonnegative offsets, positive fixed/max spacing, all generated positions and reversal/orientation constraints."
+    },
+    {
+      "id": "atomic-method-application",
+      "kind": "proposed-rokadex",
+      "rule": "Resolve a full candidate, expose affected parts/overrides, validate it and commit one undoable change; never silently erase explicit customizations."
+    },
+    {
+      "id": "costing-categories",
+      "kind": "proposed-rokadex",
+      "rule": "Keep panel, edge, bar, hardware-supply and machining prices separate with units, currency and editable rates; missing prices stay unpriced."
+    },
+    {
+      "id": "approval-gate",
+      "kind": "proposed-rokadex",
+      "rule": "A source-documented rule is not machine-ready; verify machine/controller, tooling, coordinate convention, simulation and physical test pieces separately."
+    }
+  ],
+  "notProvidedByManual": [
+    "Complete proprietary library files",
+    "All current PolyBoard 7.4 features or file formats",
+    "All settings visible only in dialog screenshots",
+    "Exhaustive supplier catalogs and price lists",
+    "Manufacturer-approved drilling geometry for arbitrary hardware variants",
+    "Universal interpretation of printed operation coordinates or CNC controller coordinates",
+    "Machine/tool/postprocessor setup, simulation results or manufactured test-piece acceptance"
+  ],
+  "excluded": [
+    "Long source passages and reproduced diagrams",
+    "Installer actions and links treated as execution instructions",
+    "Copied proprietary library definitions",
+    "Invented manufacturer drilling dimensions or approval"
+  ]
+}

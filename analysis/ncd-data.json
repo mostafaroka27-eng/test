@@ -1,0 +1,1259 @@
+{
+  "source": {
+    "file": "NCD_2.html",
+    "bytes": 2041788,
+    "title": "Naqsh Cabinet Designer (NCD)",
+    "inspection": "static AST/HTML analysis only; scripts not executed",
+    "data_status": "reference defaults only, unverified for fabrication or procurement",
+    "units": {
+      "length": "mm",
+      "area": "m2",
+      "edge_and_led": "m",
+      "sales_currency_label": "ر.ع",
+      "currency_interpretation": "source label is Omani rial; no live supplier quote"
+    },
+    "privacy": "Customer/contact/project-specific identifying values intentionally omitted",
+    "sha256": "8f8382a17010daf56f7c2a484afd616953d262ade9c56ab2499e4573fc8a3948",
+    "extraction": "HTML script blocks parsed into ESTree syntax trees using the installed Rolldown parser; only whitelisted literal data declarations were retained, no JavaScript evaluation"
+  },
+  "declarations": [
+    {
+      "name": "PRESETS",
+      "source_line": 2034,
+      "data": {
+        "white": {
+          "n": "أبيض ميلامين",
+          "c": "#F1F0EB"
+        },
+        "grey": {
+          "n": "رمادي فاتح",
+          "c": "#CFCCC6"
+        },
+        "greige": {
+          "n": "رمادي بيج",
+          "c": "#BDB3A6"
+        },
+        "beige": {
+          "n": "بيج",
+          "c": "#DCCFB9"
+        },
+        "oak": {
+          "n": "خشب بلوط",
+          "c": "#B88A58",
+          "wood": 1
+        },
+        "walnut": {
+          "n": "خشب جوز",
+          "c": "#6A4731",
+          "wood": 1
+        },
+        "black": {
+          "n": "أسود مطفي",
+          "c": "#2C2C2C"
+        },
+        "custom": {
+          "n": "صورة مرفوعة",
+          "c": "#BBBBBB"
+        }
+      }
+    },
+    {
+      "name": "HTYPE",
+      "source_line": 2102,
+      "data": {
+        "barV": "مقبض طولي عمودي",
+        "barH": "مقبض طولي أفقي",
+        "knob": "مقبض زر",
+        "edge": "مقبض حافة",
+        "gola": "بروفايل كامل الطول",
+        "push": "ضغط للفتح"
+      }
+    },
+    {
+      "name": "LEDC",
+      "source_line": 2110,
+      "data": {
+        "3000": 16761982,
+        "4000": 16770237,
+        "6000": 15134463
+      }
+    },
+    {
+      "name": "LEDHEX",
+      "source_line": 2115,
+      "data": {
+        "3000": "#F2A93B",
+        "4000": "#E8B400",
+        "6000": "#5FA8E8"
+      }
+    },
+    {
+      "name": "defaults",
+      "source_line": 2121,
+      "data": {
+        "lang": "ar",
+        "W": 2400,
+        "H": 2400,
+        "D": 600,
+        "n": 3,
+        "t": 18,
+        "plinth": 100,
+        "upperH": 0,
+        "mode": "boxes",
+        "back": "nail",
+        "backT": 3,
+        "shelfType": "adj",
+        "setback": 20,
+        "gap": 3,
+        "dBand": 2,
+        "cBand": 1,
+        "sheet": "2440x1220",
+        "deduct": true,
+        "units": [],
+        "bodyPreset": "white",
+        "bodyName": "",
+        "doorPreset": "greige",
+        "doorName": "",
+        "tile": 1000,
+        "texRot": false,
+        "matInDraw": true,
+        "hType": "barV",
+        "hLen": 320,
+        "hColor": "black",
+        "doorStyle": "flat",
+        "ledOn": false,
+        "ledPos": "shelf",
+        "ledTemp": "4000",
+        "drType": "ext",
+        "drH": 200,
+        "drT": 16,
+        "kerf": 4,
+        "cornerOn": false,
+        "cornerType": "blind",
+        "cornerW": 900,
+        "cornerD": 560,
+        "cornerBlindW": 300,
+        "cornerDoors": 1,
+        "shape": "straight",
+        "W2": 1200,
+        "n2": 2,
+        "units2": [],
+        "W3": 1200,
+        "n3": 2,
+        "units3": [],
+        "corner2On": false,
+        "corner2Type": "blind",
+        "corner2W": 900,
+        "corner2D": 560,
+        "corner2BlindW": 300,
+        "corner2Doors": 1,
+        "manualRows": [],
+        "removedKeys": [],
+        "overrides": {}
+      }
+    },
+    {
+      "name": "SHEET",
+      "source_line": 6159,
+      "data": {
+        "L": 2440,
+        "W": 1220,
+        "k": 4
+      }
+    },
+    {
+      "name": "T",
+      "source_line": 6160,
+      "data": 18
+    },
+    {
+      "name": "PL",
+      "source_line": 6160,
+      "data": 100
+    },
+    {
+      "name": "DH",
+      "source_line": 6160,
+      "data": 200
+    },
+    {
+      "name": "GAP",
+      "source_line": 6160,
+      "data": 3
+    },
+    {
+      "name": "BK",
+      "source_line": 6160,
+      "data": 6
+    },
+    {
+      "name": "COLORS",
+      "source_line": 6165,
+      "data": [
+        {
+          "n": "أبيض",
+          "c": "#F3F1EC"
+        },
+        {
+          "n": "أوف وايت",
+          "c": "#E9E2D3"
+        },
+        {
+          "n": "بيج",
+          "c": "#D6C4A6"
+        },
+        {
+          "n": "جريج",
+          "c": "#B5AA9A"
+        },
+        {
+          "n": "رمادي فاتح",
+          "c": "#BEC1C2"
+        },
+        {
+          "n": "رمادي داكن",
+          "c": "#595E63"
+        },
+        {
+          "n": "أسود",
+          "c": "#232323"
+        },
+        {
+          "n": "بلوط فاتح",
+          "c": "#C9A274",
+          "wood": 1
+        },
+        {
+          "n": "بلوط طبيعي",
+          "c": "#A87B4F",
+          "wood": 1
+        },
+        {
+          "n": "جوز",
+          "c": "#6E4A2F",
+          "wood": 1
+        },
+        {
+          "n": "أخضر زيتي",
+          "c": "#86957A"
+        },
+        {
+          "n": "أزرق كحلي",
+          "c": "#2E3D55"
+        },
+        {
+          "n": "وردي فاتح",
+          "c": "#DFC1B9"
+        }
+      ]
+    },
+    {
+      "name": "DEF_STD",
+      "source_line": 6181,
+      "data": {
+        "W": [
+          400,
+          600,
+          800,
+          1200
+        ],
+        "D": [
+          600,
+          500,
+          400
+        ],
+        "TOP": [
+          0,
+          400,
+          600
+        ]
+      }
+    },
+    {
+      "name": "FLOORS",
+      "source_line": 6210,
+      "data": [
+        {
+          "n": "باركيه فاتح",
+          "c": "#D9C3A0",
+          "t": "wood"
+        },
+        {
+          "n": "باركيه بلوط",
+          "c": "#B88B5A",
+          "t": "wood"
+        },
+        {
+          "n": "باركيه داكن",
+          "c": "#6F4E37",
+          "t": "wood"
+        },
+        {
+          "n": "رخام أبيض",
+          "c": "#ECEAE6",
+          "t": "tile"
+        },
+        {
+          "n": "بلاط بيج",
+          "c": "#D8CDB8",
+          "t": "tile"
+        },
+        {
+          "n": "بلاط رمادي",
+          "c": "#A9A9A6",
+          "t": "tile"
+        },
+        {
+          "n": "موكيت رمادي",
+          "c": "#8D8F91",
+          "t": "plain"
+        }
+      ]
+    },
+    {
+      "name": "WALLC",
+      "source_line": 6214,
+      "data": [
+        "#F2EFE9",
+        "#FFFFFF",
+        "#E8E1D4",
+        "#D9D4CC",
+        "#C9D3CF",
+        "#B9C4CC",
+        "#E6D5CF",
+        "#8E9AA0",
+        "#5F6B66",
+        "#2F3A40"
+      ]
+    },
+    {
+      "name": "WALLS",
+      "source_line": 6215,
+      "data": {
+        "back": {
+          "n": "الجدار الخلفي",
+          "rot": 0
+        },
+        "left": {
+          "n": "الجدار الأيسر",
+          "rot": 90
+        },
+        "right": {
+          "n": "الجدار الأيمن",
+          "rot": 270
+        },
+        "front": {
+          "n": "الجدار الأمامي",
+          "rot": 180
+        }
+      }
+    },
+    {
+      "name": "CAT",
+      "source_line": 6231,
+      "data": [
+        {
+          "k": "hang",
+          "n": "تعليق طويل",
+          "cols": [
+            "hang"
+          ],
+          "doors": 1
+        },
+        {
+          "k": "hang2",
+          "n": "تعليق مزدوج",
+          "cols": [
+            "hang2"
+          ],
+          "doors": 1
+        },
+        {
+          "k": "shelves",
+          "n": "رفوف",
+          "cols": [
+            "shelves"
+          ],
+          "doors": 1
+        },
+        {
+          "k": "drawHang",
+          "n": "أدراج + تعليق",
+          "cols": [
+            "drawHang"
+          ],
+          "doors": 1
+        },
+        {
+          "k": "drawShelf",
+          "n": "أدراج + رفوف",
+          "cols": [
+            "drawShelf"
+          ],
+          "doors": 1
+        },
+        {
+          "k": "combo",
+          "n": "تعليق + رفوف (قسمين)",
+          "cols": [
+            "hang",
+            "shelves"
+          ],
+          "doors": 1,
+          "minW": 800
+        },
+        {
+          "k": "open",
+          "n": "رفوف مفتوحة",
+          "cols": [
+            "shelves"
+          ],
+          "doors": 0
+        },
+        {
+          "k": "glass",
+          "n": "عرض بأبواب زجاج",
+          "cols": [
+            "shelves"
+          ],
+          "doors": 1,
+          "glass": true
+        }
+      ]
+    },
+    {
+      "name": "defaultSales",
+      "source_line": 6264,
+      "data": {
+        "sheets": [
+          {
+            "id": "star",
+            "n": "ستار وود (Star Wood)",
+            "p": 75
+          },
+          {
+            "id": "mdfm",
+            "n": "MDF ملامين",
+            "p": 65
+          },
+          {
+            "id": "hg",
+            "n": "هاي جلوس (High Gloss)",
+            "p": 90
+          },
+          {
+            "id": "acr",
+            "n": "أكريليك",
+            "p": 110
+          }
+        ],
+        "defSheet": "star",
+        "glassP": 95,
+        "cur": "ر.ع",
+        "drawerP": 15,
+        "shelfP": 5,
+        "classicP": 20,
+        "openPct": 100,
+        "dresserP": 120,
+        "mirrorP": 35,
+        "chairP": 25,
+        "poufP": 20,
+        "wshelfP": 30,
+        "flutedP": 45,
+        "cladP": 40,
+        "islandP": 250,
+        "designRate": 10,
+        "designMin": 20,
+        "disc": 0,
+        "discT": "pct",
+        "vat": false,
+        "vatP": 5,
+        "incPlan": true,
+        "lines": [],
+        "acc": [],
+        "descEdited": false
+      }
+    },
+    {
+      "name": "defaultCost",
+      "source_line": 6276,
+      "data": {
+        "shCarcass": 22,
+        "shDoor": 28,
+        "shBack": 9,
+        "shDrawer": 22,
+        "bandD": 0.25,
+        "bandC": 0.15,
+        "hinge": 0.9,
+        "slide": 4.5,
+        "handle": 1.5,
+        "pin": 0.02,
+        "rod": 2.5,
+        "led": 3,
+        "extra": []
+      }
+    },
+    {
+      "name": "GLASS",
+      "source_line": 6486,
+      "data": {
+        "clear": {
+          "n": "شفاف",
+          "c": "#bfe3ea",
+          "o": 0.22,
+          "svg": "rgba(170,215,225,.35)"
+        },
+        "grey": {
+          "n": "رمادي (فيميه)",
+          "c": "#4f5559",
+          "o": 0.5,
+          "svg": "rgba(80,86,90,.62)"
+        },
+        "black": {
+          "n": "أسود",
+          "c": "#0d0f10",
+          "o": 0.74,
+          "svg": "rgba(15,16,18,.82)"
+        },
+        "bronze": {
+          "n": "برونزي",
+          "c": "#6b4f33",
+          "o": 0.5,
+          "svg": "rgba(110,80,50,.6)"
+        },
+        "frosted": {
+          "n": "مصنفر (ساند بلاست)",
+          "c": "#eef3f4",
+          "o": 0.82,
+          "svg": "rgba(236,242,244,.88)"
+        }
+      }
+    },
+    {
+      "name": "LEDC",
+      "source_line": 6489,
+      "data": {
+        "3000": {
+          "n": "دافئ 3000K",
+          "c": "#ffc27a"
+        },
+        "4000": {
+          "n": "محايد 4000K",
+          "c": "#fff0d2"
+        },
+        "6000": {
+          "n": "بارد 6000K",
+          "c": "#dfeaff"
+        }
+      }
+    },
+    {
+      "name": "LEDPOS",
+      "source_line": 6490,
+      "data": {
+        "shelf": "تحت كل رف",
+        "top": "أعلى كل قسم",
+        "vertical": "بروفايل عمودي جانبي"
+      }
+    },
+    {
+      "name": "OPEN_T",
+      "source_line": 8899,
+      "data": {
+        "window": {
+          "n": "شباك",
+          "w": 1200,
+          "h": 1200,
+          "y": 900,
+          "d": 120
+        },
+        "door": {
+          "n": "باب الغرفة",
+          "w": 900,
+          "h": 2100,
+          "y": 0,
+          "d": 120
+        },
+        "ac": {
+          "n": "مكيف سبليت",
+          "w": 900,
+          "h": 300,
+          "y": 2250,
+          "d": 230
+        },
+        "switch": {
+          "n": "سويتش",
+          "w": 86,
+          "h": 86,
+          "y": 1200,
+          "d": 12
+        },
+        "socket": {
+          "n": "فيش كهرباء",
+          "w": 86,
+          "h": 86,
+          "y": 350,
+          "d": 12
+        }
+      }
+    },
+    {
+      "name": "FURN_T",
+      "source_line": 8906,
+      "data": {
+        "dresser": {
+          "n": "تسريحة",
+          "w": 1200,
+          "d": 450,
+          "h": 760,
+          "wall": true
+        },
+        "mirror": {
+          "n": "مراية",
+          "w": 800,
+          "d": 30,
+          "h": 1000,
+          "y": 950,
+          "wall": true
+        },
+        "chair": {
+          "n": "كرسي / بوف",
+          "w": 450,
+          "d": 450,
+          "h": 460
+        },
+        "island": {
+          "n": "جزيرة وسطية",
+          "w": 1500,
+          "d": 900,
+          "h": 900
+        }
+      }
+    },
+    {
+      "name": "FSTY",
+      "source_line": 10175,
+      "data": {
+        "dresser": [
+          [
+            "classic",
+            "تسريحة كلاسيك (أدراج + رف مفتوح)",
+            {}
+          ],
+          [
+            "vanity",
+            "تسريحة مكتب بفتحة للجلوس",
+            {
+              "w": 1400,
+              "d": 500,
+              "h": 760,
+              "drawers": 3
+            }
+          ],
+          [
+            "floating",
+            "تسريحة معلقة",
+            {
+              "w": 1200,
+              "d": 450,
+              "h": 800,
+              "drawers": 2,
+              "y": 355
+            }
+          ],
+          [
+            "legs",
+            "تسريحة على أرجل",
+            {
+              "w": 1100,
+              "d": 450,
+              "h": 780,
+              "drawers": 2
+            }
+          ],
+          [
+            "chest",
+            "تسريحة أدراج كاملة",
+            {
+              "w": 1000,
+              "d": 480,
+              "h": 900,
+              "drawers": 4
+            }
+          ]
+        ],
+        "mirror": [
+          [
+            "rect",
+            "مراية مستطيلة",
+            {}
+          ],
+          [
+            "round",
+            "مراية دائرية",
+            {
+              "w": 800,
+              "h": 800
+            }
+          ],
+          [
+            "oval",
+            "مراية بيضاوية",
+            {
+              "w": 700,
+              "h": 1000
+            }
+          ],
+          [
+            "arch",
+            "مراية مقوسة (آرش)",
+            {
+              "w": 700,
+              "h": 1100
+            }
+          ],
+          [
+            "hollywood",
+            "مراية هوليود بلمبات",
+            {
+              "w": 900,
+              "h": 900,
+              "frame": "#F3F1EC"
+            }
+          ]
+        ],
+        "chair": [
+          [
+            "classic",
+            "كرسي بظهر",
+            {
+              "back": true
+            }
+          ],
+          [
+            "arm",
+            "كرسي بذراعين (فوتيه)",
+            {
+              "w": 600,
+              "d": 600,
+              "h": 440,
+              "back": true
+            }
+          ],
+          [
+            "tulip",
+            "كرسي دائري بقاعدة",
+            {
+              "w": 500,
+              "d": 500,
+              "h": 470,
+              "back": true
+            }
+          ],
+          [
+            "stool",
+            "كرسي بدون ظهر",
+            {
+              "back": false
+            }
+          ]
+        ],
+        "pouf": [
+          [
+            "round",
+            "بف دائري",
+            {
+              "w": 450,
+              "d": 450,
+              "h": 430
+            }
+          ],
+          [
+            "square",
+            "بف مربع كابتونيه",
+            {
+              "w": 450,
+              "d": 450,
+              "h": 430
+            }
+          ],
+          [
+            "legs",
+            "بف على أرجل ذهبية",
+            {
+              "w": 480,
+              "d": 480,
+              "h": 450
+            }
+          ],
+          [
+            "bench",
+            "بف طويل (بنش)",
+            {
+              "w": 1000,
+              "d": 400,
+              "h": 450
+            }
+          ]
+        ],
+        "island": [
+          [
+            "standard",
+            "جزيرة أدراج",
+            {}
+          ],
+          [
+            "showcase",
+            "جزيرة عرض زجاجية",
+            {
+              "w": 1400,
+              "d": 800,
+              "h": 950,
+              "drawers": 1,
+              "glassTop": true,
+              "led": true
+            }
+          ],
+          [
+            "table",
+            "جزيرة طاولة على أرجل",
+            {
+              "w": 1600,
+              "d": 800,
+              "h": 900,
+              "drawers": 2,
+              "glassTop": true
+            }
+          ],
+          [
+            "shelves",
+            "جزيرة أدراج + رفوف مفتوحة",
+            {
+              "w": 1600,
+              "d": 900,
+              "h": 900,
+              "drawers": 3,
+              "sides": 1
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "name": "VCLS",
+      "source_line": 11394,
+      "data": [
+        "side",
+        "top",
+        "bottom",
+        "shelf",
+        "back",
+        "door",
+        "drawer",
+        "rod",
+        "plinth",
+        "divider",
+        "all"
+      ]
+    },
+    {
+      "name": "VFT",
+      "source_line": 11395,
+      "data": [
+        "dresser",
+        "mirror",
+        "chair",
+        "pouf",
+        "island",
+        "wshelf",
+        "fluted",
+        "clad",
+        "corner",
+        "endcap"
+      ]
+    },
+    {
+      "name": "VNAMES",
+      "source_line": 11407,
+      "data": [
+        "جانب",
+        "سقف",
+        "أرضية",
+        "رف",
+        "رف فاصل فوق الأدراج",
+        "ظهر",
+        "باب",
+        "وجه درج",
+        "جانب درج",
+        "أمام وخلف صندوق الدرج",
+        "قاع درج",
+        "واجهة القاعدة",
+        "خلفية القاعدة",
+        "عارضة قاعدة",
+        "السطح العلوي (حواف ظاهرة من 3 جهات)",
+        "جوانب الحامل (يمين/يسار)",
+        "قاع الحامل",
+        "ظهر الحامل",
+        "قاعدة غائرة",
+        "وجه درج الحامل",
+        "وجه الدرج الأوسط",
+        "ظهر فتحة الجلوس",
+        "جوانب صندوق الدرج",
+        "قاع الدرج",
+        "إطار السطح الأمامي والخلفي",
+        "قاع صينية العرض (مبطن مخمل) (تنجيد مخمل)",
+        "جوانب صينية العرض",
+        "الجانب (الطرف)",
+        "القاع",
+        "العلوي الداخلي",
+        "الظهر (واجهة خلفية مكسوة)",
+        "قاعدة غائرة (أمام/خلف)",
+        "قاعدة غائرة (جوانب)",
+        "لوح تثبيت خلفي",
+        "قاعدة المقعد (خشب) (تنجيد إسفنج 100 ملم)",
+        "ظهر الكرسي (خشب) (تنجيد)",
+        "قرص علوي/سفلي (قطر)",
+        "رف معلق (رف سميك (طبقتين أو إطار مجوف))",
+        "لوح خلفي للبانل (يثبت على الجدار)",
+        "شريحة (مسافة 10 ملم)",
+        "لوح تلبيس",
+        "مرابيع تثبيت خلفية (تُثبت على الجدار)",
+        "قاطع",
+        "فاصل",
+        "قاعدة",
+        "اسكرتنج",
+        "عمود تعليق",
+        "رف ثابت",
+        "رف متحرك",
+        "باب زجاج",
+        "سقف علوي",
+        "جانب علوي",
+        "باب علوي"
+      ]
+    },
+    {
+      "name": "VWALL",
+      "source_line": 11408,
+      "data": [
+        "back",
+        "left",
+        "right",
+        "front"
+      ]
+    },
+    {
+      "name": "HASH_MAX",
+      "source_line": 11408,
+      "data": 124
+    },
+    {
+      "name": "VOPEN",
+      "source_line": 11454,
+      "data": [
+        "window",
+        "door",
+        "ac",
+        "switch",
+        "socket"
+      ]
+    }
+  ],
+  "project_file_schema": {
+    "source_lines": [
+      11287,
+      11296
+    ],
+    "kind": "ncd-project",
+    "v": 1,
+    "at": "ISO datetime",
+    "planner": "object P",
+    "engine": "JSON string: wardrobe-cutlist-v2",
+    "imgs": "JSON string: wardrobe-imgs-v2",
+    "lib": "JSON string: wardrobe-sheet-lib-v1"
+  },
+  "planner_schema": {
+    "source_lines": [
+      6243,
+      6257,
+      6280,
+      6295,
+      8906
+    ],
+    "room": {
+      "W": "mm",
+      "D": "mm",
+      "H": "mm",
+      "floor": "color",
+      "floorType": "enum",
+      "wall": "color",
+      "floorImg": "optional image",
+      "items": "optional openings array"
+    },
+    "units": [
+      {
+        "id": "number",
+        "name": "label",
+        "tpl": "template key",
+        "cx": "center X in mm from room corner",
+        "cz": "center Z in mm from room corner",
+        "rot": "degrees, 0 back/90 left/270 right/180 front",
+        "w": "mm",
+        "d": "mm",
+        "h": "mm",
+        "top": "upper-box height mm",
+        "cols": [
+          {
+            "items": [
+              {
+                "t": "shelf or rod",
+                "y": "absolute floor height mm"
+              },
+              {
+                "t": "drawer"
+              }
+            ],
+            "doors": [
+              {
+                "glass": "boolean",
+                "color": "optional color"
+              }
+            ]
+          }
+        ],
+        "topDoors": "array",
+        "body": "color or library key",
+        "door": "color or library key",
+        "sheet": "material sales-rate ID",
+        "drExt": "boolean"
+      }
+    ],
+    "furn": "array of free/wall furniture objects",
+    "sales": "sales configuration",
+    "cost": "manufacturing-estimate rate object"
+  },
+  "cut_part_schema": {
+    "source_lines": [
+      2486,
+      2626,
+      2650,
+      11034
+    ],
+    "fields": {
+      "group": "category",
+      "name": "label",
+      "L": "finished length mm",
+      "Wd": "finished width mm",
+      "qty": "integer",
+      "bands": {
+        "L1": "0/1",
+        "L2": "0/1",
+        "W1": "0/1",
+        "W2": "0/1",
+        "type": "c carcass / d door"
+      },
+      "thick": "thickness mm",
+      "mat": "carcass|door|back|drawer",
+      "unit": "reference",
+      "bt": "band thickness mm",
+      "cL": "cut length after optional band deduction",
+      "cW": "cut width after optional band deduction",
+      "bandLen": "edge length per piece mm"
+    }
+  },
+  "qr_schema": {
+    "source_lines": [
+      11394,
+      11410,
+      11455,
+      11478,
+      11504
+    ],
+    "encoding": "URL fragment with base64url encoded binary, optional raw DEFLATE room data; no code execution required by payload",
+    "part_version": 2,
+    "room_version": 1,
+    "part_fields": [
+      "version u8",
+      "wall-code ASCII u8",
+      "wall-group index u8",
+      "part index u8",
+      "quantity u8",
+      "part-name dictionary index u8 (255=unknown)",
+      "cut L u16 little-endian mm",
+      "cut W u16 little-endian mm",
+      "thickness u8 mm",
+      "sheet index u8",
+      "sheet count u8",
+      "furniture or cabinet-detail union"
+    ],
+    "numeric_limits": {
+      "u8": [
+        0,
+        255
+      ],
+      "u16_mm": [
+        0,
+        65535
+      ],
+      "compact_dimensions_resolution_mm": 10,
+      "room_units_max": 60,
+      "columns_per_unit_max": 7,
+      "shelves_per_column_max": 15,
+      "rods_per_column_max": 7,
+      "drawers_per_column_max": 7,
+      "door_leaves_per_column_max": 3,
+      "furniture_max": 40,
+      "openings_max": 30
+    },
+    "extension_markers": {
+      "0xFE": "4-byte room ID",
+      "0xFD": "embedded compressed/uncompressed room payload"
+    },
+    "limitations": [
+      "Compact display payload is lossy, not an authoritative manufacturing project",
+      "No hardware drilling or machine postprocessor fields observed",
+      "Some long room contexts are chunked across multiple QR codes"
+    ]
+  },
+  "manufacturing_rules": {
+    "provenance": {
+      "file": "NCD_2.html",
+      "line_ranges": [
+        [
+          2388,
+          2402
+        ],
+        [
+          2425,
+          2458
+        ],
+        [
+          2486,
+          2600
+        ],
+        [
+          2626,
+          2632
+        ],
+        [
+          2670,
+          2707
+        ],
+        [
+          5285,
+          5388
+        ],
+        [
+          8731,
+          8770
+        ]
+      ]
+    },
+    "verification": "observed implementation constants/formulas only; not manufacturer-validated",
+    "carcass_height": "H - plinth",
+    "inner_bay_width_boxes": "W / n - 2*t",
+    "inner_bay_width_shared": "(W - 2*t - (n-1)*t) / n",
+    "groove_offset_mm": 10,
+    "groove_depth_mm": 8,
+    "adjustable_shelf_width_clearance_mm": 2,
+    "drawer_slide_side_clearance_total_mm": 26,
+    "drawer_slide_lengths_mm": [
+      600,
+      550,
+      500,
+      450,
+      400,
+      350,
+      300,
+      250
+    ],
+    "drawer_slide_fallback_mm": 250,
+    "cut_length": "L - selected_band_thickness * (W1 + W2) when deduction enabled",
+    "cut_width": "Wd - selected_band_thickness * (L1 + L2) when deduction enabled",
+    "band_length_per_piece_mm": "(L1 + L2)*L + (W1 + W2)*Wd",
+    "area_sheet_allowance_percent": 15,
+    "edge_band_allowance_percent": 10,
+    "hinge_count_by_height_mm": [
+      {
+        "max_height": 1000,
+        "hinges": 2
+      },
+      {
+        "max_height": 1500,
+        "hinges": 3
+      },
+      {
+        "max_height": 2000,
+        "hinges": 4
+      },
+      {
+        "max_height": null,
+        "hinges": 5
+      }
+    ],
+    "packing": "first-fit shelf rows; both orientations attempted, independent part grain restriction not enforced by packSheets",
+    "scope_warning": "Shop manufacturing cost is calculated for the wall sent to the shop engine, not necessarily the entire project. Manual cut-list overrides do not automatically update all summaries."
+  },
+  "display_pipeline": {
+    "provenance": {
+      "file": "NCD_2.html",
+      "line_ranges": [
+        [
+          1629,
+          1631
+        ],
+        [
+          3826,
+          4155
+        ],
+        [
+          6955,
+          7361
+        ],
+        [
+          10782,
+          10898
+        ],
+        [
+          11559,
+          19556
+        ]
+      ]
+    },
+    "live_renderer": "Three.js r128 WebGL rasterization",
+    "svg_views": [
+      "internal front",
+      "front with doors",
+      "B/C elevations",
+      "side section",
+      "top plan",
+      "part details"
+    ],
+    "path_tracing": {
+      "implementation_present": true,
+      "runtime_verified": false,
+      "loader": "embedded text/plain library loaded through local Blob script",
+      "scene_unit_scale_mm_to_m": 0.001,
+      "default_bounces": 6,
+      "default_target_samples": 400,
+      "default_tile_grid": [
+        2,
+        2
+      ],
+      "default_width_px": 1600,
+      "button_width_px": 1800,
+      "limits": [
+        "first material selected for material arrays",
+        "some additive/transparent fake glows skipped",
+        "instanced meshes excluded by scene-copy branch"
+      ]
+    },
+    "exports": [
+      "PNG",
+      "CSV",
+      "PDF via jsPDF",
+      "COLLADA DAE 1.4.1",
+      "ZIP"
+    ],
+    "machine_exports_observed": []
+  }
+}

@@ -1,0 +1,4417 @@
+{
+  "schema": "rokadex.reference.polyboard-sample.v1",
+  "source": {
+    "file": "POLYBOARD CABIENT 210 CM .pdf",
+    "sha256": "5d7cdc9a44857de3b27f69636eefe6edf4530cd6349ad96e7f364259789ccc1f",
+    "bytes": 279799,
+    "pages": 21,
+    "programVersion": "PolyBoard 7.08c",
+    "printedDate": "2025-01-19",
+    "documentTitle": "خزانة 210 سم",
+    "provenance": "User-supplied output PDF; text extraction plus visual checks of pages2,9,11.",
+    "notTheSourceProject": true
+  },
+  "cabinet": {
+    "sourcePage": 1,
+    "printedCm": {
+      "height": 200.0,
+      "width": 200.0,
+      "depth": 50.0
+    },
+    "dimensionsMm": {
+      "height": 2000,
+      "width": 2000,
+      "depth": 500
+    },
+    "nameDimensionMismatch": "210cm is a title/filename; printed cabinet height and width are both200cm."
+  },
+  "units": {
+    "sourceLinear": "cm",
+    "normalizedLinear": "mm",
+    "factor": 10,
+    "quantity": "physical panels",
+    "surface": "m²",
+    "edgeLength": "m",
+    "printedDimensionPrecisionCm": 0.1,
+    "dimensionMeaning": "Overall Dimensions as explicitly printed, not asserted raw-cut or net-core dimensions."
+  },
+  "cutListGroups": [
+    {
+      "number": 1,
+      "reference": "Top",
+      "sourcePage": 2,
+      "detailPages": [
+        4
+      ],
+      "material": "generic 0180",
+      "sourceDimensionsCm": {
+        "height": 196.4,
+        "width": 48.0,
+        "thickness": 1.8
+      },
+      "dimensionsMm": {
+        "length": 1964,
+        "width": 480,
+        "thickness": 18
+      },
+      "quantity": 1,
+      "grain": "No",
+      "grainInterpretation": "No grain restriction printed; not inferred from material name.",
+      "edges": {
+        "left": null,
+        "right": {
+          "id": "edge-020",
+          "thicknessMm": 2.0
+        },
+        "bottom": null,
+        "top": null
+      }
+    },
+    {
+      "number": 2,
+      "reference": "Bottom",
+      "sourcePage": 2,
+      "detailPages": [
+        5
+      ],
+      "material": "generic 0180",
+      "sourceDimensionsCm": {
+        "height": 196.4,
+        "width": 48.0,
+        "thickness": 1.8
+      },
+      "dimensionsMm": {
+        "length": 1964,
+        "width": 480,
+        "thickness": 18
+      },
+      "quantity": 1,
+      "grain": "No",
+      "grainInterpretation": "No grain restriction printed; not inferred from material name.",
+      "edges": {
+        "left": null,
+        "right": {
+          "id": "edge-020",
+          "thicknessMm": 2.0
+        },
+        "bottom": null,
+        "top": null
+      }
+    },
+    {
+      "number": 3,
+      "reference": "Left Side / Right Side",
+      "sourcePage": 2,
+      "detailPages": [
+        6,
+        7
+      ],
+      "material": "generic 0180",
+      "sourceDimensionsCm": {
+        "height": 200.0,
+        "width": 48.0,
+        "thickness": 1.8
+      },
+      "dimensionsMm": {
+        "length": 2000,
+        "width": 480,
+        "thickness": 18
+      },
+      "quantity": 2,
+      "grain": "No",
+      "grainInterpretation": "No grain restriction printed; not inferred from material name.",
+      "edges": {
+        "left": null,
+        "right": {
+          "id": "edge-020",
+          "thicknessMm": 2.0
+        },
+        "bottom": {
+          "id": "edge-010",
+          "thicknessMm": 1.0
+        },
+        "top": {
+          "id": "edge-010",
+          "thicknessMm": 1.0
+        }
+      }
+    },
+    {
+      "number": 4,
+      "reference": "Back",
+      "sourcePage": 2,
+      "detailPages": [
+        8
+      ],
+      "material": "generic 0080",
+      "sourceDimensionsCm": {
+        "height": 198.4,
+        "width": 198.4,
+        "thickness": 0.8
+      },
+      "dimensionsMm": {
+        "length": 1984,
+        "width": 1984,
+        "thickness": 8
+      },
+      "quantity": 1,
+      "grain": "No",
+      "grainInterpretation": "No grain restriction printed; not inferred from material name.",
+      "edges": {
+        "left": null,
+        "right": null,
+        "bottom": null,
+        "top": null
+      }
+    },
+    {
+      "number": 5,
+      "reference": "Fixed Shelf",
+      "sourcePage": 2,
+      "detailPages": [
+        9
+      ],
+      "material": "generic 0180",
+      "sourceDimensionsCm": {
+        "height": 47.8,
+        "width": 45.2,
+        "thickness": 1.8
+      },
+      "dimensionsMm": {
+        "length": 478,
+        "width": 452,
+        "thickness": 18
+      },
+      "quantity": 4,
+      "grain": "No",
+      "grainInterpretation": "No grain restriction printed; not inferred from material name.",
+      "edges": {
+        "left": null,
+        "right": {
+          "id": "edge-010",
+          "thicknessMm": 1.0
+        },
+        "bottom": null,
+        "top": null
+      }
+    },
+    {
+      "number": 6,
+      "reference": "Free Division",
+      "sourcePage": 2,
+      "detailPages": [
+        10
+      ],
+      "material": "generic 0180",
+      "sourceDimensionsCm": {
+        "height": 47.8,
+        "width": 45.2,
+        "thickness": 1.8
+      },
+      "dimensionsMm": {
+        "length": 478,
+        "width": 452,
+        "thickness": 18
+      },
+      "quantity": 2,
+      "grain": "No",
+      "grainInterpretation": "No grain restriction printed; not inferred from material name.",
+      "edges": {
+        "left": null,
+        "right": {
+          "id": "edge-010",
+          "thicknessMm": 1.0
+        },
+        "bottom": null,
+        "top": null
+      }
+    },
+    {
+      "number": 7,
+      "reference": "Vertical Division",
+      "sourcePage": 2,
+      "detailPages": [
+        11,
+        12,
+        13
+      ],
+      "material": "generic 0180",
+      "sourceDimensionsCm": {
+        "height": 196.4,
+        "width": 45.2,
+        "thickness": 1.8
+      },
+      "dimensionsMm": {
+        "length": 1964,
+        "width": 452,
+        "thickness": 18
+      },
+      "quantity": 3,
+      "grain": "No",
+      "grainInterpretation": "No grain restriction printed; not inferred from material name.",
+      "edges": {
+        "left": null,
+        "right": {
+          "id": "edge-020",
+          "thicknessMm": 2.0
+        },
+        "bottom": null,
+        "top": null
+      }
+    },
+    {
+      "number": 8,
+      "reference": "Door std (Single), outside pair",
+      "sourcePage": 2,
+      "detailPages": [
+        14,
+        17
+      ],
+      "material": "generic 0181",
+      "sourceDimensionsCm": {
+        "height": 199.4,
+        "width": 49.9,
+        "thickness": 1.8
+      },
+      "dimensionsMm": {
+        "length": 1994,
+        "width": 499,
+        "thickness": 18
+      },
+      "quantity": 2,
+      "grain": "No",
+      "grainInterpretation": "No grain restriction printed; not inferred from material name.",
+      "edges": {
+        "left": {
+          "id": "edge-020",
+          "thicknessMm": 2.0
+        },
+        "right": {
+          "id": "edge-020",
+          "thicknessMm": 2.0
+        },
+        "bottom": {
+          "id": "edge-020",
+          "thicknessMm": 2.0
+        },
+        "top": {
+          "id": "edge-020",
+          "thicknessMm": 2.0
+        }
+      }
+    },
+    {
+      "number": 9,
+      "reference": "Door std (Single), inside pair",
+      "sourcePage": 2,
+      "detailPages": [
+        15,
+        16
+      ],
+      "material": "generic 0181",
+      "sourceDimensionsCm": {
+        "height": 199.4,
+        "width": 49.0,
+        "thickness": 1.8
+      },
+      "dimensionsMm": {
+        "length": 1994,
+        "width": 490,
+        "thickness": 18
+      },
+      "quantity": 2,
+      "grain": "No",
+      "grainInterpretation": "No grain restriction printed; not inferred from material name.",
+      "edges": {
+        "left": {
+          "id": "edge-020",
+          "thicknessMm": 2.0
+        },
+        "right": {
+          "id": "edge-020",
+          "thicknessMm": 2.0
+        },
+        "bottom": {
+          "id": "edge-020",
+          "thicknessMm": 2.0
+        },
+        "top": {
+          "id": "edge-020",
+          "thicknessMm": 2.0
+        }
+      }
+    },
+    {
+      "number": 10,
+      "reference": "Drawer 270 front",
+      "sourcePage": 2,
+      "detailPages": [
+        18,
+        19
+      ],
+      "material": "generic 0181",
+      "sourceDimensionsCm": {
+        "height": 19.7,
+        "width": 47.5,
+        "thickness": 1.8
+      },
+      "dimensionsMm": {
+        "length": 197,
+        "width": 475,
+        "thickness": 18
+      },
+      "quantity": 4,
+      "grain": "No",
+      "grainInterpretation": "No grain restriction printed; not inferred from material name.",
+      "edges": {
+        "left": {
+          "id": "edge-020",
+          "thicknessMm": 2.0
+        },
+        "right": {
+          "id": "edge-020",
+          "thicknessMm": 2.0
+        },
+        "bottom": {
+          "id": "edge-020",
+          "thicknessMm": 2.0
+        },
+        "top": {
+          "id": "edge-020",
+          "thicknessMm": 2.0
+        }
+      }
+    },
+    {
+      "number": 11,
+      "reference": "Bottom Drawer 270",
+      "sourcePage": 2,
+      "detailPages": [
+        20
+      ],
+      "material": "generic 0160",
+      "sourceDimensionsCm": {
+        "height": 44.2,
+        "width": 26.0,
+        "thickness": 1.6
+      },
+      "dimensionsMm": {
+        "length": 442,
+        "width": 260,
+        "thickness": 16
+      },
+      "quantity": 4,
+      "grain": "No",
+      "grainInterpretation": "No grain restriction printed; not inferred from material name.",
+      "edges": {
+        "left": null,
+        "right": null,
+        "bottom": null,
+        "top": null
+      }
+    },
+    {
+      "number": 12,
+      "reference": "Back Drawer 270",
+      "sourcePage": 2,
+      "detailPages": [
+        21
+      ],
+      "material": "generic 0160",
+      "sourceDimensionsCm": {
+        "height": 43.9,
+        "width": 6.3,
+        "thickness": 1.6
+      },
+      "dimensionsMm": {
+        "length": 439,
+        "width": 63,
+        "thickness": 16
+      },
+      "quantity": 4,
+      "grain": "No",
+      "grainInterpretation": "No grain restriction printed; not inferred from material name.",
+      "edges": {
+        "left": null,
+        "right": {
+          "id": "edge-010",
+          "thicknessMm": 1.0
+        },
+        "bottom": null,
+        "top": null
+      }
+    }
+  ],
+  "cutListSummary": {
+    "groups": 12,
+    "physicalPanelQuantity": 30,
+    "materials": 4,
+    "materialThicknessesMm": [
+      8,
+      16,
+      18
+    ],
+    "allGrainPrinted": "No"
+  },
+  "costingReport": {
+    "sourcePage": 3,
+    "currencySymbol": "$",
+    "currencyCode": null,
+    "materials": [
+      {
+        "material": "generic 0080",
+        "thicknessMm": 8,
+        "surfacePrintedM2": 3.94,
+        "unitPricePerM2": 20,
+        "amount": 78.73
+      },
+      {
+        "material": "generic 0160",
+        "thicknessMm": 16,
+        "surfacePrintedM2": 0.57,
+        "unitPricePerM2": 60,
+        "amount": 34.18
+      },
+      {
+        "material": "generic 0180",
+        "thicknessMm": 18,
+        "surfacePrintedM2": 7.76,
+        "unitPricePerM2": 40,
+        "amount": 310.21
+      },
+      {
+        "material": "generic 0181",
+        "thicknessMm": 18,
+        "surfacePrintedM2": 4.31,
+        "unitPricePerM2": 40,
+        "amount": 172.56
+      }
+    ],
+    "materialsTotal": 595.68,
+    "edges": [
+      {
+        "id": "edge-010",
+        "thicknessMm": 1,
+        "lengthPrintedM": 6.5,
+        "unitPricePerM": 1,
+        "amount": 6.54
+      },
+      {
+        "id": "edge-020",
+        "thicknessMm": 2,
+        "lengthPrintedM": 39.1,
+        "unitPricePerM": 2,
+        "amount": 78.19
+      }
+    ],
+    "edgeTotal": 84.73,
+    "supplyFittings": [
+      {
+        "id": "0-hing/010/app",
+        "quantity": 12,
+        "unitPrice": 7,
+        "amount": 84
+      },
+      {
+        "id": "Blum/drw-LegraBox-M//bin",
+        "quantity": 8,
+        "unitPrice": 30,
+        "amount": 240
+      },
+      {
+        "id": "Blum/drw-LegraBox//bottom",
+        "quantity": 8,
+        "unitPrice": 8,
+        "amount": 64
+      },
+      {
+        "id": "Cabineo/int",
+        "quantity": 54,
+        "unitPrice": 0,
+        "amount": 0
+      }
+    ],
+    "supplyFittingsTotal": 388,
+    "singlePanelSupply": [
+      {
+        "id": "0-handle-ver/050/h-100",
+        "quantity": 4,
+        "unitPrice": 5,
+        "amount": 20
+      },
+      {
+        "id": "3D-cylinder/50x100",
+        "quantity": 2,
+        "unitPrice": 0,
+        "amount": 0
+      }
+    ],
+    "singlePanelSupplyTotal": 20,
+    "fittingTooling": [
+      {
+        "id": "0-hing/010/app",
+        "quantity": 12,
+        "unitPrice": 2.5,
+        "amount": 30
+      },
+      {
+        "id": "Blum/drw-LegraBox-M//bin",
+        "quantity": 8,
+        "unitPrice": 40,
+        "amount": 320
+      },
+      {
+        "id": "Blum/drw-LegraBox//bottom",
+        "quantity": 8,
+        "unitPrice": 2,
+        "amount": 16
+      },
+      {
+        "id": "Cabineo/int",
+        "quantity": 54,
+        "unitPrice": 0,
+        "amount": 0
+      }
+    ],
+    "fittingToolingTotal": 366,
+    "singlePanelTooling": [
+      {
+        "id": "0-handle-ver/050/h-100",
+        "quantity": 4,
+        "unitPrice": 0.2,
+        "amount": 0.8
+      },
+      {
+        "id": "3D-cylinder/50x100",
+        "quantity": 2,
+        "unitPrice": 0,
+        "amount": 0
+      }
+    ],
+    "singlePanelToolingTotal": 0.8,
+    "grooveTooling": [
+      {
+        "widthMm": 9,
+        "depthMm": 11,
+        "lengthPrintedM": 7.9,
+        "unitPricePerM": 0,
+        "amount": 0
+      }
+    ],
+    "grooveToolingTotal": 0,
+    "grandTotal": 1455.21,
+    "sumOfDisplayedCategoryTotals": 1455.21,
+    "priceVerification": "Illustrative source-report prices; not live supplier quotes or manufacturer approval.",
+    "currencyNote": "The report prints $ only; an ISO currency code was not provided."
+  },
+  "recomputedChecks": {
+    "materialAreasAndCosts": [
+      {
+        "material": "generic 0080",
+        "areaFromPrintedDimensionsM2": 3.936256,
+        "costFromPrintedDimensions": 78.73,
+        "reportedCost": 78.73,
+        "areaImpliedByReportedCost": 3.9365,
+        "possibleAreaIntervalIfDimensionsRoundedToNearest1mm": [
+          3.93427225,
+          3.93824025
+        ],
+        "reportedCostConsistentWithThisRoundingInterval": true
+      },
+      {
+        "material": "generic 0160",
+        "areaFromPrintedDimensionsM2": 0.570308,
+        "costFromPrintedDimensions": 34.22,
+        "reportedCost": 34.18,
+        "areaImpliedByReportedCost": 0.5696666666666667,
+        "possibleAreaIntervalIfDimensionsRoundedToNearest1mm": [
+          0.567902,
+          0.572718
+        ],
+        "reportedCostConsistentWithThisRoundingInterval": true
+      },
+      {
+        "material": "generic 0180",
+        "areaFromPrintedDimensionsM2": 7.76496,
+        "costFromPrintedDimensions": 310.6,
+        "reportedCost": 310.21,
+        "areaImpliedByReportedCost": 7.755249999999999,
+        "possibleAreaIntervalIfDimensionsRoundedToNearest1mm": [
+          7.75362525,
+          7.77630125
+        ],
+        "reportedCostConsistentWithThisRoundingInterval": true
+      },
+      {
+        "material": "generic 0181",
+        "areaFromPrintedDimensionsM2": 4.318432,
+        "costFromPrintedDimensions": 172.74,
+        "reportedCost": 172.56,
+        "areaImpliedByReportedCost": 4.314,
+        "possibleAreaIntervalIfDimensionsRoundedToNearest1mm": [
+          4.312113,
+          4.324755
+        ],
+        "reportedCostConsistentWithThisRoundingInterval": true
+      }
+    ],
+    "edgeLengthFromPrintedDimensionsM": {
+      "edge-020": 39.104,
+      "edge-010": 6.544
+    },
+    "notes": [
+      "Reported totals are retained independently from calculations on rounded displayed dimensions.",
+      "Dimension rounding is mathematically compatible with these differences, but original unrounded PolyBoard project data was not provided.",
+      "Edge directions retain PDF labels; no unverified mapping to machine-face axes or RokaDex edge order is performed."
+    ]
+  },
+  "panelDetailPages": [
+    {
+      "page": 4,
+      "reference": "Top",
+      "cutListGroupNumber": 1,
+      "quantity": 1,
+      "facesPrinted": [
+        2
+      ],
+      "drilling": [
+        {
+          "label": "A",
+          "countPerPhysicalPanel": 18,
+          "diameterMm": 15.0,
+          "depthMm": 11.0,
+          "through": false,
+          "printedDepth": "1.1",
+          "readableCoordinateAnnotationCount": 18
+        },
+        {
+          "label": "B",
+          "countPerPhysicalPanel": 9,
+          "diameterMm": 5.0,
+          "depthMm": 12.0,
+          "through": false,
+          "printedDepth": "1.2",
+          "readableCoordinateAnnotationCount": 9
+        }
+      ],
+      "grooves": [
+        {
+          "orientation": "Vertical",
+          "face": 2,
+          "xMm": 456.0,
+          "yMm": 0,
+          "widthMm": 9.0,
+          "lengthMm": 1964.0,
+          "depthMm": 11.0,
+          "needsReview": false
+        }
+      ],
+      "readableCoordinateAnnotations": [
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 24.0,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 240,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 24.0,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 240,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 24.0,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 240,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 42.0,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 420,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 42.0,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 420,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 42.0,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 420,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -4
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 148.2,
+            "y": -6.0
+          },
+          "signedLocalMm": {
+            "x": 1482,
+            "y": -60
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 48.3,
+            "y": -8.8
+          },
+          "signedLocalMm": {
+            "x": 483,
+            "y": -88
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 148.2,
+            "y": -22.6
+          },
+          "signedLocalMm": {
+            "x": 1482,
+            "y": -226
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 98.6,
+            "y": -6.0
+          },
+          "signedLocalMm": {
+            "x": 986,
+            "y": -60
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 97.8,
+            "y": -8.8
+          },
+          "signedLocalMm": {
+            "x": 978,
+            "y": -88
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 98.6,
+            "y": -22.6
+          },
+          "signedLocalMm": {
+            "x": 986,
+            "y": -226
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 49.1,
+            "y": -6.0
+          },
+          "signedLocalMm": {
+            "x": 491,
+            "y": -60
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 147.4,
+            "y": -8.8
+          },
+          "signedLocalMm": {
+            "x": 1474,
+            "y": -88
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 49.1,
+            "y": -22.6
+          },
+          "signedLocalMm": {
+            "x": 491,
+            "y": -226
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 42.0,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 420,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 42.0,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 420,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 24.0,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 240,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 42.0,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 420,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 24.0,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 240,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 24.0,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 240,
+            "y": -4
+          }
+        }
+      ],
+      "truncatedCoordinateAnnotations": [],
+      "coordinateStatus": "Reference-only signed local coordinates; datum/face/edge origin not reconstructed.",
+      "annotationCompleteForHeaderCounts": true
+    },
+    {
+      "page": 5,
+      "reference": "Bottom",
+      "cutListGroupNumber": 2,
+      "quantity": 1,
+      "facesPrinted": [
+        1
+      ],
+      "drilling": [
+        {
+          "label": "A",
+          "countPerPhysicalPanel": 18,
+          "diameterMm": 15.0,
+          "depthMm": 11.0,
+          "through": false,
+          "printedDepth": "1.1",
+          "readableCoordinateAnnotationCount": 18
+        },
+        {
+          "label": "B",
+          "countPerPhysicalPanel": 9,
+          "diameterMm": 5.0,
+          "depthMm": 12.0,
+          "through": false,
+          "printedDepth": "1.2",
+          "readableCoordinateAnnotationCount": 9
+        }
+      ],
+      "grooves": [
+        {
+          "orientation": "Vertical",
+          "face": 1,
+          "xMm": 24.0,
+          "yMm": 0,
+          "widthMm": 9.0,
+          "lengthMm": 1964.0,
+          "depthMm": 11.0,
+          "needsReview": false
+        }
+      ],
+      "readableCoordinateAnnotations": [
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 24.0,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 240,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 24.0,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 240,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 24.0,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 240,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 42.0,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 420,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 42.0,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 420,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 42.0,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 420,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -4
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 148.2,
+            "y": -8.8
+          },
+          "signedLocalMm": {
+            "x": 1482,
+            "y": -88
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 48.3,
+            "y": -6.0
+          },
+          "signedLocalMm": {
+            "x": 483,
+            "y": -60
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 48.3,
+            "y": -22.6
+          },
+          "signedLocalMm": {
+            "x": 483,
+            "y": -226
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 98.6,
+            "y": -8.8
+          },
+          "signedLocalMm": {
+            "x": 986,
+            "y": -88
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 97.8,
+            "y": -6.0
+          },
+          "signedLocalMm": {
+            "x": 978,
+            "y": -60
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 97.8,
+            "y": -22.6
+          },
+          "signedLocalMm": {
+            "x": 978,
+            "y": -226
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 49.1,
+            "y": -8.8
+          },
+          "signedLocalMm": {
+            "x": 491,
+            "y": -88
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 147.4,
+            "y": -6.0
+          },
+          "signedLocalMm": {
+            "x": 1474,
+            "y": -60
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 147.4,
+            "y": -22.6
+          },
+          "signedLocalMm": {
+            "x": 1474,
+            "y": -226
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 42.0,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 420,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 42.0,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 420,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 24.0,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 240,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 42.0,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 420,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 24.0,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 240,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 24.0,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 240,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -26
+          }
+        }
+      ],
+      "truncatedCoordinateAnnotations": [],
+      "coordinateStatus": "Reference-only signed local coordinates; datum/face/edge origin not reconstructed.",
+      "annotationCompleteForHeaderCounts": true
+    },
+    {
+      "page": 6,
+      "reference": "Left Side",
+      "cutListGroupNumber": 3,
+      "quantity": 1,
+      "facesPrinted": [
+        2
+      ],
+      "drilling": [
+        {
+          "label": "B",
+          "countPerPhysicalPanel": 6,
+          "diameterMm": 5.0,
+          "depthMm": 12.0,
+          "through": false,
+          "printedDepth": "1.2",
+          "readableCoordinateAnnotationCount": 6
+        },
+        {
+          "label": "C",
+          "countPerPhysicalPanel": 6,
+          "diameterMm": 5.0,
+          "depthMm": 15.0,
+          "through": false,
+          "printedDepth": "1.5",
+          "readableCoordinateAnnotationCount": 6
+        }
+      ],
+      "grooves": [
+        {
+          "orientation": "Vertical",
+          "face": 2,
+          "xMm": 456.0,
+          "yMm": 8.0,
+          "widthMm": 9.0,
+          "lengthMm": 1984.0,
+          "depthMm": 11.0,
+          "needsReview": false
+        }
+      ],
+      "readableCoordinateAnnotations": [
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 24.0,
+            "y": -1.3
+          },
+          "signedLocalMm": {
+            "x": 240,
+            "y": -13
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 42.0,
+            "y": -1.3
+          },
+          "signedLocalMm": {
+            "x": 420,
+            "y": -13
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 6.0,
+            "y": -1.3
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -13
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 191.3,
+            "y": -3.7
+          },
+          "signedLocalMm": {
+            "x": 1913,
+            "y": -37
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 188.1,
+            "y": -3.7
+          },
+          "signedLocalMm": {
+            "x": 1881,
+            "y": -37
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 101.6,
+            "y": -3.7
+          },
+          "signedLocalMm": {
+            "x": 1016,
+            "y": -37
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 98.4,
+            "y": -3.7
+          },
+          "signedLocalMm": {
+            "x": 984,
+            "y": -37
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 11.9,
+            "y": -3.7
+          },
+          "signedLocalMm": {
+            "x": 119,
+            "y": -37
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 8.7,
+            "y": -3.7
+          },
+          "signedLocalMm": {
+            "x": 87,
+            "y": -37
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 6.0,
+            "y": -1.3
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -13
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 42.0,
+            "y": -1.3
+          },
+          "signedLocalMm": {
+            "x": 420,
+            "y": -13
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 24.0,
+            "y": -1.3
+          },
+          "signedLocalMm": {
+            "x": 240,
+            "y": -13
+          }
+        }
+      ],
+      "truncatedCoordinateAnnotations": [],
+      "coordinateStatus": "Reference-only signed local coordinates; datum/face/edge origin not reconstructed.",
+      "annotationCompleteForHeaderCounts": true
+    },
+    {
+      "page": 7,
+      "reference": "Right Side",
+      "cutListGroupNumber": 3,
+      "quantity": 1,
+      "facesPrinted": [
+        1
+      ],
+      "drilling": [
+        {
+          "label": "B",
+          "countPerPhysicalPanel": 6,
+          "diameterMm": 5.0,
+          "depthMm": 12.0,
+          "through": false,
+          "printedDepth": "1.2",
+          "readableCoordinateAnnotationCount": 6
+        },
+        {
+          "label": "C",
+          "countPerPhysicalPanel": 6,
+          "diameterMm": 5.0,
+          "depthMm": 15.0,
+          "through": false,
+          "printedDepth": "1.5",
+          "readableCoordinateAnnotationCount": 6
+        }
+      ],
+      "grooves": [
+        {
+          "orientation": "Vertical",
+          "face": 1,
+          "xMm": 24.0,
+          "yMm": 8.0,
+          "widthMm": 9.0,
+          "lengthMm": 1984.0,
+          "depthMm": 11.0,
+          "needsReview": false
+        }
+      ],
+      "readableCoordinateAnnotations": [
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 24.0,
+            "y": -1.3
+          },
+          "signedLocalMm": {
+            "x": 240,
+            "y": -13
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 42.0,
+            "y": -1.3
+          },
+          "signedLocalMm": {
+            "x": 420,
+            "y": -13
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 6.0,
+            "y": -1.3
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -13
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 8.7,
+            "y": -3.7
+          },
+          "signedLocalMm": {
+            "x": 87,
+            "y": -37
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 11.9,
+            "y": -3.7
+          },
+          "signedLocalMm": {
+            "x": 119,
+            "y": -37
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 98.4,
+            "y": -3.7
+          },
+          "signedLocalMm": {
+            "x": 984,
+            "y": -37
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 101.6,
+            "y": -3.7
+          },
+          "signedLocalMm": {
+            "x": 1016,
+            "y": -37
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 188.1,
+            "y": -3.7
+          },
+          "signedLocalMm": {
+            "x": 1881,
+            "y": -37
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 191.3,
+            "y": -3.7
+          },
+          "signedLocalMm": {
+            "x": 1913,
+            "y": -37
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 6.0,
+            "y": -1.3
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -13
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 42.0,
+            "y": -1.3
+          },
+          "signedLocalMm": {
+            "x": 420,
+            "y": -13
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 24.0,
+            "y": -1.3
+          },
+          "signedLocalMm": {
+            "x": 240,
+            "y": -13
+          }
+        }
+      ],
+      "truncatedCoordinateAnnotations": [],
+      "coordinateStatus": "Reference-only signed local coordinates; datum/face/edge origin not reconstructed.",
+      "annotationCompleteForHeaderCounts": true
+    },
+    {
+      "page": 8,
+      "reference": "Back",
+      "cutListGroupNumber": 4,
+      "quantity": 1,
+      "facesPrinted": [
+        1
+      ],
+      "drilling": [],
+      "grooves": [],
+      "readableCoordinateAnnotations": [],
+      "truncatedCoordinateAnnotations": [],
+      "coordinateStatus": "Reference-only signed local coordinates; datum/face/edge origin not reconstructed.",
+      "annotationCompleteForHeaderCounts": true
+    },
+    {
+      "page": 9,
+      "reference": "Fixed Shelves",
+      "cutListGroupNumber": 5,
+      "quantity": 4,
+      "facesPrinted": [
+        2
+      ],
+      "drilling": [
+        {
+          "label": "A",
+          "countPerPhysicalPanel": 18,
+          "diameterMm": 15.0,
+          "depthMm": 11.0,
+          "through": false,
+          "printedDepth": "1.1",
+          "readableCoordinateAnnotationCount": 18
+        }
+      ],
+      "grooves": [],
+      "readableCoordinateAnnotations": [
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 39.2,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 392,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 39.2,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 392,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 39.2,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 392,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 22.6,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 226,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 22.6,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 226,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 22.6,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 226,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 22.6,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 226,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 22.6,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 226,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 22.6,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 226,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 39.2,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 392,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 39.2,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 392,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 39.2,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 392,
+            "y": -15
+          }
+        }
+      ],
+      "truncatedCoordinateAnnotations": [],
+      "coordinateStatus": "Reference-only signed local coordinates; datum/face/edge origin not reconstructed.",
+      "annotationCompleteForHeaderCounts": true
+    },
+    {
+      "page": 10,
+      "reference": "Free Divisions",
+      "cutListGroupNumber": 6,
+      "quantity": 2,
+      "facesPrinted": [
+        1
+      ],
+      "drilling": [],
+      "grooves": [],
+      "readableCoordinateAnnotations": [],
+      "truncatedCoordinateAnnotations": [],
+      "coordinateStatus": "Reference-only signed local coordinates; datum/face/edge origin not reconstructed.",
+      "annotationCompleteForHeaderCounts": true
+    },
+    {
+      "page": 11,
+      "reference": "Vertical Division [1]",
+      "cutListGroupNumber": 7,
+      "quantity": 1,
+      "facesPrinted": [
+        2
+      ],
+      "drilling": [
+        {
+          "label": "A",
+          "countPerPhysicalPanel": 18,
+          "diameterMm": 15.0,
+          "depthMm": 11.0,
+          "through": false,
+          "printedDepth": "1.1",
+          "readableCoordinateAnnotationCount": 18
+        },
+        {
+          "label": "B",
+          "countPerPhysicalPanel": 9,
+          "diameterMm": 5.0,
+          "depthMm": 12.0,
+          "through": false,
+          "printedDepth": "1.2",
+          "readableCoordinateAnnotationCount": 9
+        },
+        {
+          "label": "C",
+          "countPerPhysicalPanel": 10,
+          "diameterMm": 5.0,
+          "depthMm": 15.0,
+          "through": false,
+          "printedDepth": "1.5",
+          "readableCoordinateAnnotationCount": 5
+        }
+      ],
+      "grooves": [],
+      "readableCoordinateAnnotations": [
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 22.6,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 226,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 22.6,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 226,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 22.6,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 226,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 39.2,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 392,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 39.2,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 392,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 39.2,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 392,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -4
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 144.8,
+            "y": -6.0
+          },
+          "signedLocalMm": {
+            "x": 1448,
+            "y": -60
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 51.6,
+            "y": -6.0
+          },
+          "signedLocalMm": {
+            "x": 516,
+            "y": -60
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 144.8,
+            "y": -22.6
+          },
+          "signedLocalMm": {
+            "x": 1448,
+            "y": -226
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 92.6,
+            "y": -6.0
+          },
+          "signedLocalMm": {
+            "x": 926,
+            "y": -60
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 103.8,
+            "y": -6.0
+          },
+          "signedLocalMm": {
+            "x": 1038,
+            "y": -60
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 92.6,
+            "y": -22.6
+          },
+          "signedLocalMm": {
+            "x": 926,
+            "y": -226
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 40.5,
+            "y": -6.0
+          },
+          "signedLocalMm": {
+            "x": 405,
+            "y": -60
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 155.9,
+            "y": -6.0
+          },
+          "signedLocalMm": {
+            "x": 1559,
+            "y": -60
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 40.5,
+            "y": -22.6
+          },
+          "signedLocalMm": {
+            "x": 405,
+            "y": -226
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 172.5,
+            "y": -13.8
+          },
+          "signedLocalMm": {
+            "x": 1725,
+            "y": -138
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 24.0,
+            "y": -5.8
+          },
+          "signedLocalMm": {
+            "x": 240,
+            "y": -58
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 172.5,
+            "y": -17.0
+          },
+          "signedLocalMm": {
+            "x": 1725,
+            "y": -170
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 24.0,
+            "y": -9.0
+          },
+          "signedLocalMm": {
+            "x": 240,
+            "y": -90
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 172.5,
+            "y": -20.2
+          },
+          "signedLocalMm": {
+            "x": 1725,
+            "y": -202
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 39.2,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 392,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 39.2,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 392,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 39.2,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 392,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 22.6,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 226,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 22.6,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 226,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 22.6,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 226,
+            "y": -15
+          }
+        }
+      ],
+      "truncatedCoordinateAnnotations": [
+        "C (39.4, -3....",
+        "C (36.2, -3....",
+        "C (20.2, -3....",
+        "C (17.0, -3....",
+        "C (13.8, -3...."
+      ],
+      "coordinateStatus": "Reference-only signed local coordinates; datum/face/edge origin not reconstructed.",
+      "annotationCompleteForHeaderCounts": false
+    },
+    {
+      "page": 12,
+      "reference": "Vertical Division [2]",
+      "cutListGroupNumber": 7,
+      "quantity": 1,
+      "facesPrinted": [
+        1,
+        2
+      ],
+      "drilling": [
+        {
+          "label": "A",
+          "countPerPhysicalPanel": 18,
+          "diameterMm": 15.0,
+          "depthMm": 11.0,
+          "through": false,
+          "printedDepth": "1.1",
+          "readableCoordinateAnnotationCount": 18
+        },
+        {
+          "label": "B",
+          "countPerPhysicalPanel": 12,
+          "diameterMm": 5.0,
+          "depthMm": 12.0,
+          "through": false,
+          "printedDepth": "1.2",
+          "readableCoordinateAnnotationCount": 12
+        },
+        {
+          "label": "C",
+          "countPerPhysicalPanel": 26,
+          "diameterMm": 5.0,
+          "depthMm": 15.0,
+          "through": false,
+          "printedDepth": "1.5",
+          "readableCoordinateAnnotationCount": 26
+        }
+      ],
+      "grooves": [],
+      "readableCoordinateAnnotations": [
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 22.6,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 226,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 39.2,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 392,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 22.6,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 226,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 22.6,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 226,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 39.2,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 392,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 39.2,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 392,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -26
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 6.9,
+            "y": -3.7
+          },
+          "signedLocalMm": {
+            "x": 69,
+            "y": -37
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 10.1,
+            "y": -3.7
+          },
+          "signedLocalMm": {
+            "x": 101,
+            "y": -37
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 144.8,
+            "y": -22.6
+          },
+          "signedLocalMm": {
+            "x": 1448,
+            "y": -226
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 51.6,
+            "y": -6.0
+          },
+          "signedLocalMm": {
+            "x": 516,
+            "y": -60
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 144.8,
+            "y": -6.0
+          },
+          "signedLocalMm": {
+            "x": 1448,
+            "y": -60
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 96.6,
+            "y": -3.7
+          },
+          "signedLocalMm": {
+            "x": 966,
+            "y": -37
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 92.6,
+            "y": -22.6
+          },
+          "signedLocalMm": {
+            "x": 926,
+            "y": -226
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 99.8,
+            "y": -3.7
+          },
+          "signedLocalMm": {
+            "x": 998,
+            "y": -37
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 92.6,
+            "y": -6.0
+          },
+          "signedLocalMm": {
+            "x": 926,
+            "y": -60
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 103.8,
+            "y": -6.0
+          },
+          "signedLocalMm": {
+            "x": 1038,
+            "y": -60
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 40.5,
+            "y": -22.6
+          },
+          "signedLocalMm": {
+            "x": 405,
+            "y": -226
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 155.9,
+            "y": -6.0
+          },
+          "signedLocalMm": {
+            "x": 1559,
+            "y": -60
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 24.0,
+            "y": -17.0
+          },
+          "signedLocalMm": {
+            "x": 240,
+            "y": -170
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 172.5,
+            "y": -9.0
+          },
+          "signedLocalMm": {
+            "x": 1725,
+            "y": -90
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 40.5,
+            "y": -6.0
+          },
+          "signedLocalMm": {
+            "x": 405,
+            "y": -60
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 155.9,
+            "y": -6.0
+          },
+          "signedLocalMm": {
+            "x": 1559,
+            "y": -60
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 40.5,
+            "y": -6.0
+          },
+          "signedLocalMm": {
+            "x": 405,
+            "y": -60
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 172.5,
+            "y": -5.8
+          },
+          "signedLocalMm": {
+            "x": 1725,
+            "y": -58
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 24.0,
+            "y": -5.8
+          },
+          "signedLocalMm": {
+            "x": 240,
+            "y": -58
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 172.5,
+            "y": -13.8
+          },
+          "signedLocalMm": {
+            "x": 1725,
+            "y": -138
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 24.0,
+            "y": -13.8
+          },
+          "signedLocalMm": {
+            "x": 240,
+            "y": -138
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 186.3,
+            "y": -3.7
+          },
+          "signedLocalMm": {
+            "x": 1863,
+            "y": -37
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 24.0,
+            "y": -9.0
+          },
+          "signedLocalMm": {
+            "x": 240,
+            "y": -90
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 172.5,
+            "y": -17.0
+          },
+          "signedLocalMm": {
+            "x": 1725,
+            "y": -170
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 24.0,
+            "y": -20.2
+          },
+          "signedLocalMm": {
+            "x": 240,
+            "y": -202
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 189.5,
+            "y": -3.7
+          },
+          "signedLocalMm": {
+            "x": 1895,
+            "y": -37
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 40.5,
+            "y": -22.6
+          },
+          "signedLocalMm": {
+            "x": 405,
+            "y": -226
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 172.5,
+            "y": -20.2
+          },
+          "signedLocalMm": {
+            "x": 1725,
+            "y": -202
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 39.4,
+            "y": -3.8
+          },
+          "signedLocalMm": {
+            "x": 394,
+            "y": -38
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 36.2,
+            "y": -3.8
+          },
+          "signedLocalMm": {
+            "x": 362,
+            "y": -38
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 20.2,
+            "y": -3.8
+          },
+          "signedLocalMm": {
+            "x": 202,
+            "y": -38
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 17.0,
+            "y": -3.8
+          },
+          "signedLocalMm": {
+            "x": 170,
+            "y": -38
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 39.2,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 392,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 39.2,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 392,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 22.6,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 226,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 39.2,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 392,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 22.6,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 226,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 22.6,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 226,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -26
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 13.8,
+            "y": -3.8
+          },
+          "signedLocalMm": {
+            "x": 138,
+            "y": -38
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 31.4,
+            "y": -3.8
+          },
+          "signedLocalMm": {
+            "x": 314,
+            "y": -38
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 28.2,
+            "y": -3.8
+          },
+          "signedLocalMm": {
+            "x": 282,
+            "y": -38
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 25.0,
+            "y": -3.8
+          },
+          "signedLocalMm": {
+            "x": 250,
+            "y": -38
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 9.0,
+            "y": -3.8
+          },
+          "signedLocalMm": {
+            "x": 90,
+            "y": -38
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 5.8,
+            "y": -3.8
+          },
+          "signedLocalMm": {
+            "x": 58,
+            "y": -38
+          }
+        }
+      ],
+      "truncatedCoordinateAnnotations": [],
+      "coordinateStatus": "Reference-only signed local coordinates; datum/face/edge origin not reconstructed.",
+      "annotationCompleteForHeaderCounts": true
+    },
+    {
+      "page": 13,
+      "reference": "Vertical Division [3]",
+      "cutListGroupNumber": 7,
+      "quantity": 1,
+      "facesPrinted": [
+        1,
+        2
+      ],
+      "drilling": [
+        {
+          "label": "A",
+          "countPerPhysicalPanel": 18,
+          "diameterMm": 15.0,
+          "depthMm": 11.0,
+          "through": false,
+          "printedDepth": "1.1",
+          "readableCoordinateAnnotationCount": 18
+        },
+        {
+          "label": "B",
+          "countPerPhysicalPanel": 3,
+          "diameterMm": 5.0,
+          "depthMm": 12.0,
+          "through": false,
+          "printedDepth": "1.2",
+          "readableCoordinateAnnotationCount": 3
+        },
+        {
+          "label": "C",
+          "countPerPhysicalPanel": 16,
+          "diameterMm": 5.0,
+          "depthMm": 15.0,
+          "through": false,
+          "printedDepth": "1.5",
+          "readableCoordinateAnnotationCount": 16
+        }
+      ],
+      "grooves": [],
+      "readableCoordinateAnnotations": [
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 22.6,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 226,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 22.6,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 226,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 22.6,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 226,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 39.2,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 392,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 39.2,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 392,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 39.2,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 392,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -4
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 6.9,
+            "y": -3.7
+          },
+          "signedLocalMm": {
+            "x": 69,
+            "y": -37
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 10.1,
+            "y": -3.7
+          },
+          "signedLocalMm": {
+            "x": 101,
+            "y": -37
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 96.6,
+            "y": -3.7
+          },
+          "signedLocalMm": {
+            "x": 966,
+            "y": -37
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 99.8,
+            "y": -3.7
+          },
+          "signedLocalMm": {
+            "x": 998,
+            "y": -37
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 40.5,
+            "y": -6.0
+          },
+          "signedLocalMm": {
+            "x": 405,
+            "y": -60
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 40.5,
+            "y": -22.6
+          },
+          "signedLocalMm": {
+            "x": 405,
+            "y": -226
+          }
+        },
+        {
+          "label": "B",
+          "printedCm": {
+            "x": 155.9,
+            "y": -6.0
+          },
+          "signedLocalMm": {
+            "x": 1559,
+            "y": -60
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 24.0,
+            "y": -13.8
+          },
+          "signedLocalMm": {
+            "x": 240,
+            "y": -138
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 172.5,
+            "y": -5.8
+          },
+          "signedLocalMm": {
+            "x": 1725,
+            "y": -58
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 24.0,
+            "y": -17.0
+          },
+          "signedLocalMm": {
+            "x": 240,
+            "y": -170
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 172.5,
+            "y": -9.0
+          },
+          "signedLocalMm": {
+            "x": 1725,
+            "y": -90
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 24.0,
+            "y": -20.2
+          },
+          "signedLocalMm": {
+            "x": 240,
+            "y": -202
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 186.3,
+            "y": -3.7
+          },
+          "signedLocalMm": {
+            "x": 1863,
+            "y": -37
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 189.5,
+            "y": -3.7
+          },
+          "signedLocalMm": {
+            "x": 1895,
+            "y": -37
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 31.4,
+            "y": -3.8
+          },
+          "signedLocalMm": {
+            "x": 314,
+            "y": -38
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 28.2,
+            "y": -3.8
+          },
+          "signedLocalMm": {
+            "x": 282,
+            "y": -38
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 25.0,
+            "y": -3.8
+          },
+          "signedLocalMm": {
+            "x": 250,
+            "y": -38
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 6.0,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 60,
+            "y": -26
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 9.0,
+            "y": -3.8
+          },
+          "signedLocalMm": {
+            "x": 90,
+            "y": -38
+          }
+        },
+        {
+          "label": "C",
+          "printedCm": {
+            "x": 5.8,
+            "y": -3.8
+          },
+          "signedLocalMm": {
+            "x": 58,
+            "y": -38
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 39.2,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 392,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 39.2,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 392,
+            "y": -15
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 39.2,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 392,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 22.6,
+            "y": -2.6
+          },
+          "signedLocalMm": {
+            "x": 226,
+            "y": -26
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 22.6,
+            "y": -0.4
+          },
+          "signedLocalMm": {
+            "x": 226,
+            "y": -4
+          }
+        },
+        {
+          "label": "A",
+          "printedCm": {
+            "x": 22.6,
+            "y": -1.5
+          },
+          "signedLocalMm": {
+            "x": 226,
+            "y": -15
+          }
+        }
+      ],
+      "truncatedCoordinateAnnotations": [],
+      "coordinateStatus": "Reference-only signed local coordinates; datum/face/edge origin not reconstructed.",
+      "annotationCompleteForHeaderCounts": true
+    },
+    {
+      "page": 14,
+      "reference": "Door [1]",
+      "cutListGroupNumber": 8,
+      "quantity": 1,
+      "facesPrinted": [
+        2
+      ],
+      "drilling": [
+        {
+          "label": "D",
+          "countPerPhysicalPanel": 6,
+          "diameterMm": 8.0,
+          "depthMm": 13.0,
+          "through": false,
+          "printedDepth": "1.3",
+          "readableCoordinateAnnotationCount": 6
+        },
+        {
+          "label": "E",
+          "countPerPhysicalPanel": 2,
+          "diameterMm": 5.0,
+          "depthMm": null,
+          "through": true,
+          "printedDepth": "Through (0.0)",
+          "readableCoordinateAnnotationCount": 2
+        },
+        {
+          "label": "F",
+          "countPerPhysicalPanel": 3,
+          "diameterMm": 35.0,
+          "depthMm": 14.0,
+          "through": false,
+          "printedDepth": "1.4",
+          "readableCoordinateAnnotationCount": 3
+        }
+      ],
+      "grooves": [],
+      "readableCoordinateAnnotations": [
+        {
+          "label": "D",
+          "printedCm": {
+            "x": 191.7,
+            "y": -3.1
+          },
+          "signedLocalMm": {
+            "x": 1917,
+            "y": -31
+          }
+        },
+        {
+          "label": "F",
+          "printedCm": {
+            "x": 189.4,
+            "y": -2.1
+          },
+          "signedLocalMm": {
+            "x": 1894,
+            "y": -21
+          }
+        },
+        {
+          "label": "D",
+          "printedCm": {
+            "x": 187.2,
+            "y": -3.1
+          },
+          "signedLocalMm": {
+            "x": 1872,
+            "y": -31
+          }
+        },
+        {
+          "label": "D",
+          "printedCm": {
+            "x": 102.0,
+            "y": -3.1
+          },
+          "signedLocalMm": {
+            "x": 1020,
+            "y": -31
+          }
+        },
+        {
+          "label": "E",
+          "printedCm": {
+            "x": 92.7,
+            "y": -4.9
+          },
+          "signedLocalMm": {
+            "x": 927,
+            "y": -49
+          }
+        },
+        {
+          "label": "F",
+          "printedCm": {
+            "x": 99.7,
+            "y": -2.1
+          },
+          "signedLocalMm": {
+            "x": 997,
+            "y": -21
+          }
+        },
+        {
+          "label": "E",
+          "printedCm": {
+            "x": 102.7,
+            "y": -4.9
+          },
+          "signedLocalMm": {
+            "x": 1027,
+            "y": -49
+          }
+        },
+        {
+          "label": "D",
+          "printedCm": {
+            "x": 97.5,
+            "y": -3.1
+          },
+          "signedLocalMm": {
+            "x": 975,
+            "y": -31
+          }
+        },
+        {
+          "label": "D",
+          "printedCm": {
+            "x": 12.3,
+            "y": -3.1
+          },
+          "signedLocalMm": {
+            "x": 123,
+            "y": -31
+          }
+        },
+        {
+          "label": "F",
+          "printedCm": {
+            "x": 10.0,
+            "y": -2.2
+          },
+          "signedLocalMm": {
+            "x": 100,
+            "y": -22
+          }
+        },
+        {
+          "label": "D",
+          "printedCm": {
+            "x": 7.8,
+            "y": -3.1
+          },
+          "signedLocalMm": {
+            "x": 78,
+            "y": -31
+          }
+        }
+      ],
+      "truncatedCoordinateAnnotations": [],
+      "coordinateStatus": "Reference-only signed local coordinates; datum/face/edge origin not reconstructed.",
+      "annotationCompleteForHeaderCounts": true
+    },
+    {
+      "page": 15,
+      "reference": "Door [2]",
+      "cutListGroupNumber": 9,
+      "quantity": 1,
+      "facesPrinted": [
+        2
+      ],
+      "drilling": [
+        {
+          "label": "D",
+          "countPerPhysicalPanel": 6,
+          "diameterMm": 8.0,
+          "depthMm": 13.0,
+          "through": false,
+          "printedDepth": "1.3",
+          "readableCoordinateAnnotationCount": 6
+        },
+        {
+          "label": "E",
+          "countPerPhysicalPanel": 2,
+          "diameterMm": 5.0,
+          "depthMm": null,
+          "through": true,
+          "printedDepth": "Through (0.0)",
+          "readableCoordinateAnnotationCount": 2
+        },
+        {
+          "label": "F",
+          "countPerPhysicalPanel": 3,
+          "diameterMm": 35.0,
+          "depthMm": 14.0,
+          "through": false,
+          "printedDepth": "1.4",
+          "readableCoordinateAnnotationCount": 3
+        }
+      ],
+      "grooves": [],
+      "readableCoordinateAnnotations": [
+        {
+          "label": "D",
+          "printedCm": {
+            "x": 191.7,
+            "y": -3.1
+          },
+          "signedLocalMm": {
+            "x": 1917,
+            "y": -31
+          }
+        },
+        {
+          "label": "F",
+          "printedCm": {
+            "x": 189.4,
+            "y": -2.1
+          },
+          "signedLocalMm": {
+            "x": 1894,
+            "y": -21
+          }
+        },
+        {
+          "label": "D",
+          "printedCm": {
+            "x": 187.2,
+            "y": -3.1
+          },
+          "signedLocalMm": {
+            "x": 1872,
+            "y": -31
+          }
+        },
+        {
+          "label": "E",
+          "printedCm": {
+            "x": 106.7,
+            "y": -4.5
+          },
+          "signedLocalMm": {
+            "x": 1067,
+            "y": -45
+          }
+        },
+        {
+          "label": "D",
+          "printedCm": {
+            "x": 102.0,
+            "y": -3.1
+          },
+          "signedLocalMm": {
+            "x": 1020,
+            "y": -31
+          }
+        },
+        {
+          "label": "F",
+          "printedCm": {
+            "x": 99.7,
+            "y": -2.1
+          },
+          "signedLocalMm": {
+            "x": 997,
+            "y": -21
+          }
+        },
+        {
+          "label": "D",
+          "printedCm": {
+            "x": 97.5,
+            "y": -3.1
+          },
+          "signedLocalMm": {
+            "x": 975,
+            "y": -31
+          }
+        },
+        {
+          "label": "E",
+          "printedCm": {
+            "x": 96.7,
+            "y": -4.5
+          },
+          "signedLocalMm": {
+            "x": 967,
+            "y": -45
+          }
+        },
+        {
+          "label": "D",
+          "printedCm": {
+            "x": 12.3,
+            "y": -3.1
+          },
+          "signedLocalMm": {
+            "x": 123,
+            "y": -31
+          }
+        },
+        {
+          "label": "F",
+          "printedCm": {
+            "x": 10.0,
+            "y": -2.2
+          },
+          "signedLocalMm": {
+            "x": 100,
+            "y": -22
+          }
+        },
+        {
+          "label": "D",
+          "printedCm": {
+            "x": 7.8,
+            "y": -3.1
+          },
+          "signedLocalMm": {
+            "x": 78,
+            "y": -31
+          }
+        }
+      ],
+      "truncatedCoordinateAnnotations": [],
+      "coordinateStatus": "Reference-only signed local coordinates; datum/face/edge origin not reconstructed.",
+      "annotationCompleteForHeaderCounts": true
+    },
+    {
+      "page": 16,
+      "reference": "Door [3]",
+      "cutListGroupNumber": 9,
+      "quantity": 1,
+      "facesPrinted": [
+        2
+      ],
+      "drilling": [
+        {
+          "label": "D",
+          "countPerPhysicalPanel": 6,
+          "diameterMm": 8.0,
+          "depthMm": 13.0,
+          "through": false,
+          "printedDepth": "1.3",
+          "readableCoordinateAnnotationCount": 6
+        },
+        {
+          "label": "E",
+          "countPerPhysicalPanel": 2,
+          "diameterMm": 5.0,
+          "depthMm": null,
+          "through": true,
+          "printedDepth": "Through (0.0)",
+          "readableCoordinateAnnotationCount": 2
+        },
+        {
+          "label": "F",
+          "countPerPhysicalPanel": 3,
+          "diameterMm": 35.0,
+          "depthMm": 14.0,
+          "through": false,
+          "printedDepth": "1.4",
+          "readableCoordinateAnnotationCount": 3
+        }
+      ],
+      "grooves": [],
+      "readableCoordinateAnnotations": [
+        {
+          "label": "D",
+          "printedCm": {
+            "x": 191.7,
+            "y": -3.1
+          },
+          "signedLocalMm": {
+            "x": 1917,
+            "y": -31
+          }
+        },
+        {
+          "label": "F",
+          "printedCm": {
+            "x": 189.4,
+            "y": -2.1
+          },
+          "signedLocalMm": {
+            "x": 1894,
+            "y": -21
+          }
+        },
+        {
+          "label": "D",
+          "printedCm": {
+            "x": 187.2,
+            "y": -3.1
+          },
+          "signedLocalMm": {
+            "x": 1872,
+            "y": -31
+          }
+        },
+        {
+          "label": "D",
+          "printedCm": {
+            "x": 102.0,
+            "y": -3.1
+          },
+          "signedLocalMm": {
+            "x": 1020,
+            "y": -31
+          }
+        },
+        {
+          "label": "E",
+          "printedCm": {
+            "x": 92.7,
+            "y": -4.5
+          },
+          "signedLocalMm": {
+            "x": 927,
+            "y": -45
+          }
+        },
+        {
+          "label": "F",
+          "printedCm": {
+            "x": 99.7,
+            "y": -2.1
+          },
+          "signedLocalMm": {
+            "x": 997,
+            "y": -21
+          }
+        },
+        {
+          "label": "E",
+          "printedCm": {
+            "x": 102.7,
+            "y": -4.5
+          },
+          "signedLocalMm": {
+            "x": 1027,
+            "y": -45
+          }
+        },
+        {
+          "label": "D",
+          "printedCm": {
+            "x": 97.5,
+            "y": -3.1
+          },
+          "signedLocalMm": {
+            "x": 975,
+            "y": -31
+          }
+        },
+        {
+          "label": "D",
+          "printedCm": {
+            "x": 12.3,
+            "y": -3.1
+          },
+          "signedLocalMm": {
+            "x": 123,
+            "y": -31
+          }
+        },
+        {
+          "label": "F",
+          "printedCm": {
+            "x": 10.0,
+            "y": -2.2
+          },
+          "signedLocalMm": {
+            "x": 100,
+            "y": -22
+          }
+        },
+        {
+          "label": "D",
+          "printedCm": {
+            "x": 7.8,
+            "y": -3.1
+          },
+          "signedLocalMm": {
+            "x": 78,
+            "y": -31
+          }
+        }
+      ],
+      "truncatedCoordinateAnnotations": [],
+      "coordinateStatus": "Reference-only signed local coordinates; datum/face/edge origin not reconstructed.",
+      "annotationCompleteForHeaderCounts": true
+    },
+    {
+      "page": 17,
+      "reference": "Door [4]",
+      "cutListGroupNumber": 8,
+      "quantity": 1,
+      "facesPrinted": [
+        2
+      ],
+      "drilling": [
+        {
+          "label": "D",
+          "countPerPhysicalPanel": 6,
+          "diameterMm": 8.0,
+          "depthMm": 13.0,
+          "through": false,
+          "printedDepth": "1.3",
+          "readableCoordinateAnnotationCount": 6
+        },
+        {
+          "label": "E",
+          "countPerPhysicalPanel": 2,
+          "diameterMm": 5.0,
+          "depthMm": null,
+          "through": true,
+          "printedDepth": "Through (0.0)",
+          "readableCoordinateAnnotationCount": 2
+        },
+        {
+          "label": "F",
+          "countPerPhysicalPanel": 3,
+          "diameterMm": 35.0,
+          "depthMm": 14.0,
+          "through": false,
+          "printedDepth": "1.4",
+          "readableCoordinateAnnotationCount": 3
+        }
+      ],
+      "grooves": [],
+      "readableCoordinateAnnotations": [
+        {
+          "label": "D",
+          "printedCm": {
+            "x": 7.8,
+            "y": -3.1
+          },
+          "signedLocalMm": {
+            "x": 78,
+            "y": -31
+          }
+        },
+        {
+          "label": "F",
+          "printedCm": {
+            "x": 10.0,
+            "y": -2.2
+          },
+          "signedLocalMm": {
+            "x": 100,
+            "y": -22
+          }
+        },
+        {
+          "label": "D",
+          "printedCm": {
+            "x": 12.3,
+            "y": -3.1
+          },
+          "signedLocalMm": {
+            "x": 123,
+            "y": -31
+          }
+        },
+        {
+          "label": "E",
+          "printedCm": {
+            "x": 106.7,
+            "y": -4.9
+          },
+          "signedLocalMm": {
+            "x": 1067,
+            "y": -49
+          }
+        },
+        {
+          "label": "D",
+          "printedCm": {
+            "x": 97.5,
+            "y": -3.1
+          },
+          "signedLocalMm": {
+            "x": 975,
+            "y": -31
+          }
+        },
+        {
+          "label": "F",
+          "printedCm": {
+            "x": 99.7,
+            "y": -2.2
+          },
+          "signedLocalMm": {
+            "x": 997,
+            "y": -22
+          }
+        },
+        {
+          "label": "E",
+          "printedCm": {
+            "x": 96.7,
+            "y": -4.9
+          },
+          "signedLocalMm": {
+            "x": 967,
+            "y": -49
+          }
+        },
+        {
+          "label": "D",
+          "printedCm": {
+            "x": 102.0,
+            "y": -3.1
+          },
+          "signedLocalMm": {
+            "x": 1020,
+            "y": -31
+          }
+        },
+        {
+          "label": "D",
+          "printedCm": {
+            "x": 187.2,
+            "y": -3.1
+          },
+          "signedLocalMm": {
+            "x": 1872,
+            "y": -31
+          }
+        },
+        {
+          "label": "F",
+          "printedCm": {
+            "x": 189.4,
+            "y": -2.2
+          },
+          "signedLocalMm": {
+            "x": 1894,
+            "y": -22
+          }
+        },
+        {
+          "label": "D",
+          "printedCm": {
+            "x": 191.7,
+            "y": -3.1
+          },
+          "signedLocalMm": {
+            "x": 1917,
+            "y": -31
+          }
+        }
+      ],
+      "truncatedCoordinateAnnotations": [],
+      "coordinateStatus": "Reference-only signed local coordinates; datum/face/edge origin not reconstructed.",
+      "annotationCompleteForHeaderCounts": true
+    },
+    {
+      "page": 18,
+      "reference": "Drawer fronts [1]",
+      "cutListGroupNumber": 10,
+      "quantity": 2,
+      "facesPrinted": [
+        2
+      ],
+      "drilling": [
+        {
+          "label": "G",
+          "countPerPhysicalPanel": 4,
+          "diameterMm": 5.0,
+          "depthMm": 3.0,
+          "through": false,
+          "printedDepth": "0.3",
+          "readableCoordinateAnnotationCount": 4
+        }
+      ],
+      "grooves": [],
+      "readableCoordinateAnnotations": [
+        {
+          "label": "G",
+          "printedCm": {
+            "x": 8.3,
+            "y": -1.3
+          },
+          "signedLocalMm": {
+            "x": 83,
+            "y": -13
+          }
+        },
+        {
+          "label": "G",
+          "printedCm": {
+            "x": 11.4,
+            "y": -1.3
+          },
+          "signedLocalMm": {
+            "x": 114,
+            "y": -13
+          }
+        },
+        {
+          "label": "G",
+          "printedCm": {
+            "x": 5.1,
+            "y": -1.3
+          },
+          "signedLocalMm": {
+            "x": 51,
+            "y": -13
+          }
+        },
+        {
+          "label": "G",
+          "printedCm": {
+            "x": 14.6,
+            "y": -1.3
+          },
+          "signedLocalMm": {
+            "x": 146,
+            "y": -13
+          }
+        }
+      ],
+      "truncatedCoordinateAnnotations": [],
+      "coordinateStatus": "Reference-only signed local coordinates; datum/face/edge origin not reconstructed.",
+      "annotationCompleteForHeaderCounts": true
+    },
+    {
+      "page": 19,
+      "reference": "Drawer fronts [2]",
+      "cutListGroupNumber": 10,
+      "quantity": 2,
+      "facesPrinted": [
+        2
+      ],
+      "drilling": [
+        {
+          "label": "G",
+          "countPerPhysicalPanel": 4,
+          "diameterMm": 5.0,
+          "depthMm": 3.0,
+          "through": false,
+          "printedDepth": "0.3",
+          "readableCoordinateAnnotationCount": 4
+        }
+      ],
+      "grooves": [],
+      "readableCoordinateAnnotations": [
+        {
+          "label": "G",
+          "printedCm": {
+            "x": 8.2,
+            "y": -1.3
+          },
+          "signedLocalMm": {
+            "x": 82,
+            "y": -13
+          }
+        },
+        {
+          "label": "G",
+          "printedCm": {
+            "x": 11.6,
+            "y": -1.3
+          },
+          "signedLocalMm": {
+            "x": 116,
+            "y": -13
+          }
+        },
+        {
+          "label": "G",
+          "printedCm": {
+            "x": 5.0,
+            "y": -1.3
+          },
+          "signedLocalMm": {
+            "x": 50,
+            "y": -13
+          }
+        },
+        {
+          "label": "G",
+          "printedCm": {
+            "x": 14.8,
+            "y": -1.3
+          },
+          "signedLocalMm": {
+            "x": 148,
+            "y": -13
+          }
+        }
+      ],
+      "truncatedCoordinateAnnotations": [],
+      "coordinateStatus": "Reference-only signed local coordinates; datum/face/edge origin not reconstructed.",
+      "annotationCompleteForHeaderCounts": true
+    },
+    {
+      "page": 20,
+      "reference": "Drawer bottoms",
+      "cutListGroupNumber": 11,
+      "quantity": 4,
+      "facesPrinted": [
+        2
+      ],
+      "drilling": [
+        {
+          "label": "H",
+          "countPerPhysicalPanel": 4,
+          "diameterMm": 5.0,
+          "depthMm": 8.0,
+          "through": false,
+          "printedDepth": "0.8",
+          "readableCoordinateAnnotationCount": 4
+        }
+      ],
+      "grooves": [
+        {
+          "orientation": "Horizontal",
+          "face": 2,
+          "xMm": 260,
+          "yMm": 442.0,
+          "widthMm": 39.0,
+          "lengthMm": 0,
+          "depthMm": 8.0,
+          "needsReview": true
+        },
+        {
+          "orientation": "Horizontal",
+          "face": 2,
+          "xMm": 260,
+          "yMm": 442.0,
+          "widthMm": 39.0,
+          "lengthMm": 0,
+          "depthMm": 8.0,
+          "needsReview": true
+        }
+      ],
+      "readableCoordinateAnnotations": [
+        {
+          "label": "H",
+          "printedCm": {
+            "x": 15.2,
+            "y": -4.9
+          },
+          "signedLocalMm": {
+            "x": 152,
+            "y": -49
+          }
+        },
+        {
+          "label": "H",
+          "printedCm": {
+            "x": 39.3,
+            "y": -2.4
+          },
+          "signedLocalMm": {
+            "x": 393,
+            "y": -24
+          }
+        },
+        {
+          "label": "H",
+          "printedCm": {
+            "x": 4.9,
+            "y": -2.4
+          },
+          "signedLocalMm": {
+            "x": 49,
+            "y": -24
+          }
+        },
+        {
+          "label": "H",
+          "printedCm": {
+            "x": 10.8,
+            "y": -4.9
+          },
+          "signedLocalMm": {
+            "x": 108,
+            "y": -49
+          }
+        }
+      ],
+      "truncatedCoordinateAnnotations": [],
+      "coordinateStatus": "Reference-only signed local coordinates; datum/face/edge origin not reconstructed.",
+      "annotationCompleteForHeaderCounts": true
+    },
+    {
+      "page": 21,
+      "reference": "Drawer backs",
+      "cutListGroupNumber": 12,
+      "quantity": 4,
+      "facesPrinted": [
+        1
+      ],
+      "drilling": [],
+      "grooves": [],
+      "readableCoordinateAnnotations": [],
+      "truncatedCoordinateAnnotations": [],
+      "coordinateStatus": "Reference-only signed local coordinates; datum/face/edge origin not reconstructed.",
+      "annotationCompleteForHeaderCounts": true
+    }
+  ],
+  "operationSummary": {
+    "detailPages": 18,
+    "declaredDrillingOperationsPerPhysicalQuantity": 356,
+    "readableCoordinateAnnotations": 277,
+    "knownIncompleteAnnotationPages": [
+      11
+    ],
+    "grooveRowsPrinted": 6,
+    "zeroLengthGrooveRows": 2,
+    "declaredDrillingByLabel": {
+      "A": 162,
+      "B": 54,
+      "C": 64,
+      "D": 24,
+      "E": 8,
+      "F": 12,
+      "G": 16,
+      "H": 16
+    }
+  },
+  "limitations": [
+    "Not a .pb-parametric project and cannot reconstruct all dependencies or placement rules.",
+    "Five C-coordinate labels on page11 are visibly truncated in the original rendered PDF; they are not guessed.",
+    "Signed negative coordinates and face1/face2 require the original datum/orientation contract before machining.",
+    "Through(0.0) is a through-hole designation, not a zero-depth blind hole.",
+    "Page20 contains two identical printed zero-length groove rows; preserved as source data requiring review.",
+    "No validated postprocessor, tools, feeds, machine controller, hold-down or physical acceptance data supplied.",
+    "Furniture/hardware identifiers are references in one project, not supplier-certified catalogs.",
+    "Current RokaDex prototype cannot claim exact production equivalence to this report."
+  ]
+}

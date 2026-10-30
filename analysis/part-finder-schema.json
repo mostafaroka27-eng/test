@@ -1,0 +1,881 @@
+{
+  "analysis_format": "rokadex.reference-schema.v1",
+  "source": {
+    "file": "ncd-part-finder.html",
+    "bytes": 51274,
+    "sha256": "e12814055108a4473105881bb9922955996ddc5a1cef67cdaef7dd2ef414bdf8",
+    "method": "static inspection only; no uploaded JavaScript executed",
+    "line_count": 506
+  },
+  "scope": "Observed interchange format facts, not an approved manufacturing model or a JSON Schema implementation.",
+  "payload_present_in_uploaded_file": false,
+  "transport": {
+    "input": "URL fragment without leading #",
+    "suffix_handling": "source ignores content from the first dot onward",
+    "binary_text_encoding": "base64url, -/_ accepted, missing = padding restored",
+    "byte_order": "little-endian",
+    "compression": "deflate-raw",
+    "source_decoder_lines": [
+      87,
+      139
+    ]
+  },
+  "primitives": {
+    "u8": {
+      "bytes": 1,
+      "source_numeric_range": [
+        0,
+        255
+      ]
+    },
+    "u16": {
+      "bytes": 2,
+      "source_numeric_range": [
+        0,
+        65535
+      ]
+    },
+    "str8": {
+      "prefix": "u8 byte length",
+      "encoding": "UTF-8",
+      "maximum_encoded_bytes": 255
+    },
+    "rgb": {
+      "bytes": 3,
+      "order": [
+        "red",
+        "green",
+        "blue"
+      ]
+    },
+    "d10": {
+      "storage": "u8",
+      "unit": "mm",
+      "formula_description": "stored byte multiplied by 10",
+      "representable_range_mm": [
+        0,
+        2550
+      ],
+      "resolution_mm": 10
+    },
+    "h10plus1000": {
+      "storage": "u8",
+      "unit": "mm",
+      "formula_description": "stored byte multiplied by 10, then add 1000",
+      "representable_range_mm": [
+        1000,
+        3550
+      ],
+      "resolution_mm": 10
+    }
+  },
+  "enums": {
+    "part_classes": [
+      "side",
+      "top",
+      "bottom",
+      "shelf",
+      "back",
+      "door",
+      "drawer",
+      "rod",
+      "plinth",
+      "divider",
+      "all"
+    ],
+    "furniture_labels_ar": [
+      "تسريحة",
+      "مراية",
+      "كرسي",
+      "بف",
+      "جزيرة",
+      "رف معلق",
+      "بانل شرائح",
+      "تلبيس",
+      "زاوية",
+      "نهاية دائرية",
+      "قطعة"
+    ],
+    "part_name_labels_ar": [
+      "جانب",
+      "سقف",
+      "أرضية",
+      "رف",
+      "رف فاصل فوق الأدراج",
+      "ظهر",
+      "باب",
+      "وجه درج",
+      "جانب درج",
+      "أمام وخلف صندوق الدرج",
+      "قاع درج",
+      "واجهة القاعدة",
+      "خلفية القاعدة",
+      "عارضة قاعدة",
+      "السطح العلوي (حواف ظاهرة من 3 جهات)",
+      "جوانب الحامل (يمين/يسار)",
+      "قاع الحامل",
+      "ظهر الحامل",
+      "قاعدة غائرة",
+      "وجه درج الحامل",
+      "وجه الدرج الأوسط",
+      "ظهر فتحة الجلوس",
+      "جوانب صندوق الدرج",
+      "قاع الدرج",
+      "إطار السطح الأمامي والخلفي",
+      "قاع صينية العرض (مبطن مخمل) (تنجيد مخمل)",
+      "جوانب صينية العرض",
+      "الجانب (الطرف)",
+      "القاع",
+      "العلوي الداخلي",
+      "الظهر (واجهة خلفية مكسوة)",
+      "قاعدة غائرة (أمام/خلف)",
+      "قاعدة غائرة (جوانب)",
+      "لوح تثبيت خلفي",
+      "قاعدة المقعد (خشب) (تنجيد إسفنج 100 ملم)",
+      "ظهر الكرسي (خشب) (تنجيد)",
+      "قرص علوي/سفلي (قطر)",
+      "رف معلق (رف سميك (طبقتين أو إطار مجوف))",
+      "لوح خلفي للبانل (يثبت على الجدار)",
+      "شريحة (مسافة 10 ملم)",
+      "لوح تلبيس",
+      "مرابيع تثبيت خلفية (تُثبت على الجدار)",
+      "قاطع",
+      "فاصل",
+      "قاعدة",
+      "اسكرتنج",
+      "عمود تعليق",
+      "رف ثابت",
+      "رف متحرك",
+      "باب زجاج",
+      "سقف علوي",
+      "جانب علوي",
+      "باب علوي"
+    ],
+    "wall_indices": [
+      "back",
+      "left",
+      "right",
+      "front"
+    ],
+    "wall_rotation_degrees": [
+      0,
+      90,
+      270,
+      180
+    ],
+    "column_item_type": {
+      "0": "shelf",
+      "1": "rod",
+      "2": "drawer"
+    }
+  },
+  "part_v1": {
+    "source_lines": [
+      128,
+      139
+    ],
+    "envelope": {
+      "prefix_r": "raw binary base64url follows r",
+      "prefix_z": "base64url follows z and must inflate deflate-raw"
+    },
+    "ordered_header": [
+      {
+        "name": "version",
+        "type": "u8",
+        "expected": 1
+      },
+      {
+        "name": "code",
+        "type": "str8"
+      },
+      {
+        "name": "name",
+        "type": "str8"
+      },
+      {
+        "name": "group",
+        "type": "str8"
+      },
+      {
+        "name": "L",
+        "type": "u16",
+        "unit": "mm"
+      },
+      {
+        "name": "W",
+        "type": "u16",
+        "unit": "mm"
+      },
+      {
+        "name": "t",
+        "type": "u8",
+        "unit": "mm"
+      },
+      {
+        "name": "k",
+        "type": "u8",
+        "meaning": "piece ordinal"
+      },
+      {
+        "name": "q",
+        "type": "u8",
+        "meaning": "identical-piece count"
+      },
+      {
+        "name": "client",
+        "type": "str8"
+      },
+      {
+        "name": "pid",
+        "type": "str8"
+      },
+      {
+        "name": "loc",
+        "type": "str8"
+      },
+      {
+        "name": "si",
+        "type": "u8",
+        "meaning": "sheet index"
+      },
+      {
+        "name": "sn",
+        "type": "u8",
+        "meaning": "sheet count"
+      },
+      {
+        "name": "online",
+        "type": "str8",
+        "meaning": "optional project link destination"
+      },
+      {
+        "name": "kind",
+        "type": "u8",
+        "known_values": {
+          "0": "cabinet run",
+          "1": "special furniture"
+        }
+      }
+    ],
+    "cabinet_kind0": {
+      "fields": [
+        {
+          "name": "roomH",
+          "type": "u16",
+          "unit": "mm"
+        },
+        {
+          "name": "body",
+          "type": "rgb"
+        },
+        {
+          "name": "door",
+          "type": "rgb"
+        },
+        {
+          "name": "cls",
+          "type": "u8",
+          "enum": "part_classes"
+        },
+        {
+          "name": "unit_count",
+          "type": "u8"
+        }
+      ],
+      "unit_sequence": [
+        {
+          "name": "w",
+          "type": "u16",
+          "unit": "mm"
+        },
+        {
+          "name": "h",
+          "type": "u16",
+          "unit": "mm"
+        },
+        {
+          "name": "d",
+          "type": "u16",
+          "unit": "mm"
+        },
+        {
+          "name": "flags",
+          "type": "u8",
+          "bits": {
+            "0": "target unit",
+            "2": "external drawers"
+          }
+        },
+        {
+          "name": "nc",
+          "type": "u8",
+          "meaning": "column count"
+        }
+      ],
+      "target_unit_extension": "if flags bit 0: hl:u8 highlight-column mask, then nc columns",
+      "target_column_sequence": [
+        {
+          "name": "doors",
+          "type": "u8"
+        },
+        {
+          "name": "item_count",
+          "type": "u8"
+        }
+      ],
+      "column_item_sequence": [
+        {
+          "name": "t",
+          "type": "u8",
+          "enum": "column_item_type"
+        },
+        {
+          "name": "y",
+          "type": "u16",
+          "unit": "mm"
+        }
+      ]
+    },
+    "special_furniture_kind1": {
+      "fields": [
+        {
+          "name": "ft",
+          "type": "u8",
+          "enum": "furniture_labels_ar"
+        },
+        {
+          "name": "fw",
+          "type": "u16",
+          "unit": "mm"
+        },
+        {
+          "name": "fd",
+          "type": "u16",
+          "unit": "mm"
+        },
+        {
+          "name": "fh",
+          "type": "u16",
+          "unit": "mm"
+        },
+        {
+          "name": "fy",
+          "type": "u16",
+          "unit": "mm"
+        },
+        {
+          "name": "body",
+          "type": "rgb"
+        },
+        {
+          "name": "door",
+          "type": "rgb"
+        }
+      ]
+    }
+  },
+  "part_v2": {
+    "source_lines": [
+      95,
+      126
+    ],
+    "envelope": "unprefixed base64url; first decoded byte is 2",
+    "ordered_header": [
+      {
+        "name": "version",
+        "type": "u8",
+        "expected": 2
+      },
+      {
+        "name": "tag",
+        "type": "u8",
+        "meaning": "single character for generated label code"
+      },
+      {
+        "name": "row",
+        "type": "u8"
+      },
+      {
+        "name": "k",
+        "type": "u8"
+      },
+      {
+        "name": "q",
+        "type": "u8"
+      },
+      {
+        "name": "name_index",
+        "type": "u8",
+        "enum": "part_name_labels_ar"
+      },
+      {
+        "name": "L",
+        "type": "u16",
+        "unit": "mm"
+      },
+      {
+        "name": "W",
+        "type": "u16",
+        "unit": "mm"
+      },
+      {
+        "name": "t",
+        "type": "u8",
+        "unit": "mm"
+      },
+      {
+        "name": "si",
+        "type": "u8"
+      },
+      {
+        "name": "sn",
+        "type": "u8"
+      },
+      {
+        "name": "kind",
+        "type": "u8",
+        "known_values": {
+          "0": "cabinet run",
+          "1": "special furniture"
+        }
+      }
+    ],
+    "generated_code_description": "NCD- followed by tag + two-digit row + hyphen + ordinal k",
+    "special_furniture_kind1": {
+      "fields": [
+        {
+          "name": "ft",
+          "type": "u8"
+        },
+        {
+          "name": "fw",
+          "type": "d10"
+        },
+        {
+          "name": "fd",
+          "type": "d10"
+        },
+        {
+          "name": "fh",
+          "type": "d10"
+        },
+        {
+          "name": "fy",
+          "type": "d10"
+        },
+        {
+          "name": "body",
+          "type": "rgb"
+        },
+        {
+          "name": "door",
+          "type": "rgb"
+        },
+        {
+          "name": "wall_index",
+          "type": "u8"
+        }
+      ],
+      "location_condition": "wall_index < 4: a:u16 mm along wall; otherwise fx:u16 mm then fz:u16 mm measured from back-left corner"
+    },
+    "cabinet_kind0": {
+      "fields": [
+        {
+          "name": "wall_index",
+          "type": "u8"
+        },
+        {
+          "name": "cls",
+          "type": "u8",
+          "enum": "part_classes"
+        },
+        {
+          "name": "body",
+          "type": "rgb"
+        },
+        {
+          "name": "door",
+          "type": "rgb"
+        },
+        {
+          "name": "run_start",
+          "type": "u16",
+          "unit": "mm"
+        },
+        {
+          "name": "unit_count",
+          "type": "u8"
+        }
+      ],
+      "unit_sequence": [
+        {
+          "name": "w",
+          "type": "d10"
+        },
+        {
+          "name": "h",
+          "type": "h10plus1000"
+        },
+        {
+          "name": "d",
+          "type": "d10"
+        },
+        {
+          "name": "f",
+          "type": "u8",
+          "bits": {
+            "0": "target unit",
+            "1": "detailed columns",
+            "2": "external drawers",
+            "5-7": "column count nc, 0..7"
+          }
+        }
+      ],
+      "target_unit_extension": "if f bit 0: hl:u8 then column representation",
+      "detailed_columns": "if f bit 1: nc repeated compact_column sequences",
+      "low_detail_columns": "otherwise: one u8 for each group of up to four columns; two bits per column encode door count"
+    },
+    "optional_tail": {
+      "first_marker_or_project_length": "u8 n if remaining bytes exist",
+      "marker_0xFE": "three room-id bytes, then another n byte if present",
+      "marker_0xFD": "room compression flag:u8, then remainder is inline room data; no project-id bytes follow",
+      "ordinary_n": "n bytes converted to character codes for pid; source does not decode these bytes as UTF-8"
+    }
+  },
+  "compact_column": {
+    "source_lines": [
+      114,
+      117
+    ],
+    "ordered_header": [
+      {
+        "name": "hd",
+        "type": "u8",
+        "bits": {
+          "6-7": "door count 0..3",
+          "3-5": "drawer count 0..7",
+          "0-2": "rod count 0..7"
+        }
+      },
+      {
+        "name": "shelf_count",
+        "type": "u8"
+      }
+    ],
+    "items_order": "drawer_count items synthesized with type=2/y=0; shelf_count y:d10 values; rod_count y:d10 values"
+  },
+  "room_chunk_v3": {
+    "source_lines": [
+      99,
+      158
+    ],
+    "envelope": "unprefixed base64url; first decoded byte is 3",
+    "ordered_fields": [
+      {
+        "name": "version",
+        "type": "u8",
+        "expected": 3
+      },
+      {
+        "name": "rid",
+        "type": "bytes",
+        "count": 3
+      },
+      {
+        "name": "i",
+        "type": "u8",
+        "meaning": "zero-based chunk index"
+      },
+      {
+        "name": "n",
+        "type": "u8",
+        "meaning": "expected chunk count"
+      },
+      {
+        "name": "flag",
+        "type": "u8",
+        "meaning": "source inflates assembled bytes if truthy"
+      },
+      {
+        "name": "data",
+        "type": "bytes",
+        "count": "remainder"
+      }
+    ],
+    "assembly": "join chunks in ascending index order; inflate whole assembled byte stream if flag truthy; parse result as room binary v1",
+    "storage_key_prefix": "ncd-room- followed by hexadecimal rid",
+    "recent_room_index_key": "ncd-rooms",
+    "recent_index_retention": 8
+  },
+  "room_binary_v1": {
+    "source_lines": [
+      160,
+      171
+    ],
+    "ordered_header": [
+      {
+        "name": "version",
+        "type": "u8",
+        "expected": 1
+      },
+      {
+        "name": "W",
+        "type": "u16",
+        "unit": "mm"
+      },
+      {
+        "name": "D",
+        "type": "u16",
+        "unit": "mm"
+      },
+      {
+        "name": "H",
+        "type": "u16",
+        "unit": "mm"
+      },
+      {
+        "name": "body",
+        "type": "rgb"
+      },
+      {
+        "name": "door",
+        "type": "rgb"
+      },
+      {
+        "name": "unit_count",
+        "type": "u8"
+      }
+    ],
+    "unit_sequence": [
+      {
+        "name": "hd",
+        "type": "u8",
+        "bits": {
+          "0-1": "kind",
+          "2": "external drawers"
+        }
+      },
+      {
+        "name": "cx",
+        "type": "u16",
+        "unit": "mm"
+      },
+      {
+        "name": "cz",
+        "type": "u16",
+        "unit": "mm"
+      },
+      {
+        "name": "rot",
+        "type": "u8",
+        "decoded_unit": "degrees",
+        "scale": 2,
+        "representable_degrees": [
+          0,
+          510
+        ]
+      },
+      {
+        "name": "w",
+        "type": "d10"
+      },
+      {
+        "name": "h",
+        "type": "h10plus1000"
+      },
+      {
+        "name": "d",
+        "type": "d10"
+      }
+    ],
+    "kind0_unit_extension": "nc:u8 then nc compact_column sequences; other kinds have no column block",
+    "furniture_section": "furniture_count:u8 followed by furniture_sequence repetitions",
+    "furniture_sequence": [
+      {
+        "name": "ft",
+        "type": "u8"
+      },
+      {
+        "name": "cx",
+        "type": "u16",
+        "unit": "mm"
+      },
+      {
+        "name": "cz",
+        "type": "u16",
+        "unit": "mm"
+      },
+      {
+        "name": "rot",
+        "type": "u8",
+        "decoded_unit": "degrees",
+        "scale": 2
+      },
+      {
+        "name": "w",
+        "type": "d10"
+      },
+      {
+        "name": "d",
+        "type": "d10"
+      },
+      {
+        "name": "h",
+        "type": "d10"
+      },
+      {
+        "name": "y",
+        "type": "d10"
+      }
+    ],
+    "openings_section": "opening_count:u8 followed by opening_sequence repetitions",
+    "opening_sequence": [
+      {
+        "name": "k",
+        "type": "u8",
+        "bits": {
+          "0-3": "kind",
+          "4-7": "wall index"
+        }
+      },
+      {
+        "name": "a",
+        "type": "u16",
+        "unit": "mm"
+      },
+      {
+        "name": "w",
+        "type": "d10"
+      },
+      {
+        "name": "h",
+        "type": "d10"
+      },
+      {
+        "name": "y",
+        "type": "d10"
+      }
+    ],
+    "coordinate_origin": "back-left room corner for cx/cz; viewer translates by half room width/depth into centered world coordinates",
+    "rotation_convention": "positive Y rotation; 0 back,90 left,180 front,270 right; source format permits more angles than these quarter turns"
+  },
+  "source_model_assumptions": {
+    "source_lines": [
+      81,
+      81
+    ],
+    "carcass_thickness_mm": 18,
+    "plinth_height_mm": 100,
+    "drawer_front_height_mm": 200,
+    "back_thickness_mm": 6,
+    "status": "hardcoded viewer approximations, not user-verified workshop standards"
+  },
+  "observed_gaps_and_risks": [
+    {
+      "id": "no_payload",
+      "evidence_lines": [
+        479,
+        491
+      ],
+      "detail": "No actual URL-fragment payload supplied; cannot enumerate a real project or validate a decoded example."
+    },
+    {
+      "id": "unbounded_inflate",
+      "evidence_lines": [
+        88,
+        91,
+        128,
+        129,
+        153,
+        158
+      ],
+      "detail": "No explicit cap on compressed input or decompressed output before allocating arrays/text; source DataView bounds errors are caught only by top-level boot."
+    },
+    {
+      "id": "chunk_integrity",
+      "evidence_lines": [
+        99,
+        99,
+        147,
+        158
+      ],
+      "detail": "No explicit range validation i<n, positive n, consistent n/flag across scans, strong hash or checksum. Room id is 24 bits; conflicting room data can collide or overwrite indexed chunks."
+    },
+    {
+      "id": "unknown_kind",
+      "evidence_lines": [
+        105,
+        124,
+        290,
+        290
+      ],
+      "detail": "Decoder kind branch accepts non-1 as cabinet whereas renderer accepts only 0 as cabinet, so unknown kind can be decoded and rendered inconsistently."
+    },
+    {
+      "id": "approximate_identity",
+      "evidence_lines": [
+        204,
+        212,
+        467,
+        467
+      ],
+      "detail": "Part is inferred from class/highlight mask and ordinal ratio among reconstructed candidates; identifier does not directly address an immutable panel in a verified model."
+    },
+    {
+      "id": "quantization",
+      "evidence_lines": [
+        104,
+        117,
+        164,
+        168
+      ],
+      "detail": "Geometry dimensions/locations may be quantized to 10 mm and room rotations to 2 degrees; label dimensions can be more precise than the reconstructed view."
+    },
+    {
+      "id": "url_scheme",
+      "evidence_lines": [
+        131,
+        131,
+        461,
+        462
+      ],
+      "detail": "online link text is HTML-escaped but no HTTPS scheme/host allowlist is enforced before creating the optional project link."
+    },
+    {
+      "id": "storage_silent",
+      "evidence_lines": [
+        143,
+        150
+      ],
+      "detail": "localStorage write exceptions are swallowed, so scanned room chunks may not persist despite optimistic feedback."
+    },
+    {
+      "id": "animation_drift",
+      "evidence_lines": [
+        329,
+        334
+      ],
+      "detail": "Replaying a drawer animation increments its stored base Z, allowing repeated calls to drift displayed position."
+    },
+    {
+      "id": "not_cam",
+      "evidence_lines": [
+        175,
+        225,
+        370,
+        372
+      ],
+      "detail": "Nominal viewer boxes and generic installation text do not supply hardware drilling, machining face, tool definitions, approved tolerances or CNC postprocessor output."
+    }
+  ],
+  "recommended_independent_decoder_requirements": [
+    "Bound encoded and decoded bytes before allocation; bound inflate output; require exact byte consumption or explicitly specified tails.",
+    "Reject unsupported versions/kinds and invalid enums/counts/dimensions; validate every reader access and UTF-8 length.",
+    "For chunks enforce 1<=n<=configured limit,0<=i<n,consistent room metadata, bounded total bytes, duplicate consistency and integrity checks.",
+    "Preserve the distinction between QR-label dimensions and approximate reconstructed geometry; do not silently coerce arbitrary angles to RokaDex quarter turns.",
+    "Use stable RokaDex project/revision/part semantic IDs for newly generated labels rather than copying approximate ordinal matching.",
+    "Restrict optional destinations to HTTPS and explicit allowed origins; do not execute content from the fragment.",
+    "Report storage failures; do not send decoded customer metadata to external services by default.",
+    "Add real fixture payloads before claiming compatibility with this observed legacy protocol."
+  ]
+}

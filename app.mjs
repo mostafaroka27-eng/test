@@ -1,0 +1,269 @@
+import {initReferenceLibrary} from './reference-library.mjs';
+import {initWorkspace} from './workspace.mjs';
+import {DEFAULT_COSTING} from './costing.mjs';
+import {remapPartOverrides} from './topology.mjs';
+import {partSize} from './geometry.mjs';
+import {cabinetDrawingSvg} from './drawing.mjs';
+import {applyLanguage,getLanguage,t} from './i18n.mjs';
+import {parseProject,serializeProject,createHistory,saveBackup,loadBackup,MAX_PROJECT_BYTES} from './project.mjs';
+import {reviewProject,projectManufacturingCsv,partDrawingSvg,projectSheetPlan,projectSheetCsv,projectSheetSvg} from './review.mjs';
+import {hardwareLibraryTemplate,validateHardwareLibrary,joineryPlan,joineryCsv} from './joinery.mjs';
+import {drillingPreview,drillingSvg,drillingCsv} from './machining.mjs';
+import {DEFAULT_ROOM,validateRoom,inspectLayout,snapUnitToWall,roomPlanSvg} from './room.mjs';
+import {DEFAULTS,cabinet,layoutSheets,csv,applyMethod,METHODS,hardwareSchedule,dxfPanels} from './engine.mjs';
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+const newConfig=()=>({...DEFAULTS,stockGrainAxis:'y',backConstruction:'inset'});
+let workspace=null,costing=structuredClone(DEFAULT_COSTING);
+const $=id=>document.getElementById(id);let units=[{id:'CAB-001',name:'Cabinet Unit',type:'cabinet',x:0,z:0,finish:'oak',config:newConfig()}],selected='CAB-001',selectedPart=null,room={...DEFAULT_ROOM},mode='design',wire=false,exploded=false;
+let backupError='';
+try{const backup=loadBackup(localStorage);if(backup){units=backup.units;room=backup.room;selected=units[0].id;costing=backup.costing??structuredClone(DEFAULT_COSTING)}}catch(error){backupError='Local backup unavailable: '+error.message}
+const inputKeys=['width','height','depth','thickness','partitions','shelves','backThickness','backInset','material','construction','grain','edgeThickness','kerf','sheetWidth','sheetHeight','trim','doors','doorGap','doorOverlay','finish','stockGrainAxis','backConstruction'];
+const scene=new THREE.Scene();scene.background=new THREE.Color('#142130');
+const camera=new THREE.PerspectiveCamera(42,1,.1,30000);camera.position.set(2200,1800,2800);
+// A graphics failure must not prevent project editing, preservation or 2D outputs.
+function createRenderer(){
+ for(const antialias of [true,false]){
+  const canvas=document.createElement('canvas');
+  try{
+   const context=canvas.getContext('webgl2',{antialias,preserveDrawingBuffer:true});
+   if(context)return new THREE.WebGLRenderer({canvas,context,antialias,preserveDrawingBuffer:true});
+  }catch(error){console.warn('3D initialization unavailable:',error.message)}
+ }
+ return null;
+}
+let renderer=createRenderer(),controls=null;
+const renderStatus=document.createElement('p');renderStatus.id='renderStatus';renderStatus.className='render-status hidden';renderStatus.setAttribute('role','status');
+const fallbackDrawing=document.createElement('div');fallbackDrawing.id='fallbackDrawing';fallbackDrawing.className='fallback-drawing hidden';
+$('viewport').append(renderStatus,fallbackDrawing);
+function activate2D(){
+ renderStatus.textContent='3D unavailable in this session. 2D drawings are active; editing, saving and exports remain available.';
+ renderStatus.classList.remove('hidden');fallbackDrawing.classList.remove('hidden');
+ $('viewTag').textContent='2D DESIGN VIEW';
+ document.querySelector('[data-mode="render"]').disabled=true;
+ for(const id of ['wire','explode','reset','front','iso','top','present','screenshot']){
+  $(id).disabled=true;$(id).title='Requires 3D graphics / يتطلب الرسومات ثلاثية الأبعاد';
+ }
+ applyLanguage(getLanguage());
+}
+if(renderer){
+ renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,window.innerWidth<=740?1.5:2));renderer.shadowMap.enabled=true;
+ renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.3;
+ $('viewport').appendChild(renderer.domElement);controls=new OrbitControls(camera,renderer.domElement);
+ controls.target.set(0,900,0);controls.enableDamping=true;controls.maxDistance=14000;controls.minDistance=250;
+ renderer.domElement.addEventListener('webglcontextlost',event=>{
+  event.preventDefault();const previous=renderer;renderer=null;controls?.dispose();controls=null;
+  previous.domElement.remove();previous.dispose();
+  $('presentation').classList.add('hidden');activate2D();renderScene();setMode('design');
+ });
+}else activate2D();
+scene.add(new THREE.HemisphereLight('#f4f8ff','#526879',2.3));const sun=new THREE.DirectionalLight('#fff0dd',3);sun.position.set(-1800,4200,2200);sun.castShadow=true;sun.shadow.mapSize.set(window.innerWidth<=740?1024:2048,window.innerWidth<=740?1024:2048);sun.shadow.camera.left=-6000;sun.shadow.camera.right=6000;sun.shadow.camera.top=6000;sun.shadow.camera.bottom=-6000;scene.add(sun);const floor=new THREE.Mesh(new THREE.PlaneGeometry(12000,12000),new THREE.MeshStandardMaterial({color:'#273746',roughness:.94}));floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;floor.position.y=-8;scene.add(floor);const grid=new THREE.GridHelper(12000,80,'#466073','#304459');grid.position.y=-6;scene.add(grid);const objects=new THREE.Group();scene.add(objects);const roomWalls=new THREE.Group();scene.add(roomWalls);
+function renderRoom(){if(!renderer)return;clearGroup(roomWalls);const w=room.width,d=room.depth,h=room.height;const wallMat=new THREE.MeshStandardMaterial({color:'#5f8c9b',transparent:true,opacity:.12,side:THREE.DoubleSide,depthWrite:false});for(const [pw,ph,x,y,z,ry] of [[w,h,0,h/2,-d/2,0],[d,h,-w/2,h/2,0,Math.PI/2],[d,h,w/2,h/2,0,Math.PI/2]]){const mesh=new THREE.Mesh(new THREE.PlaneGeometry(pw,ph),wallMat);mesh.position.set(x,y,z);mesh.rotation.y=ry;roomWalls.add(mesh)}const outline=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(w,h,d)),new THREE.LineBasicMaterial({color:'#3f8e9b',transparent:true,opacity:.45}));outline.position.y=h/2;roomWalls.add(outline)}
+function refreshRoomWarnings(){const issues=inspectLayout(room,units);$('roomWarnings').textContent=issues.length?issues.map(i=>'⚠ '+i.message).join(' · '):'✓ No rectangular footprint conflicts detected';$('roomWarnings').classList.toggle('has-issues',!!issues.length)}
+function refreshRoomControls(){for(const k of ['width','depth','height'])$('room'+k[0].toUpperCase()+k.slice(1)).value=room[k];renderRoom();refreshRoomWarnings()}
+
+const palette={oak:'#c7a47b',walnut:'#77513a',white:'#eceae4',charcoal:'#444f59'};
+const materialFor=(u,back=false)=>new THREE.MeshStandardMaterial({color:back?'#a9a49a':palette[u.finish]||palette.oak,roughness:.65,metalness:0,transparent:false});
+function addPanel(group,u,p){const dims=partSize(p);
+ const pos=[p.position.x,p.position.y,p.position.z];
+ const mesh=new THREE.Mesh(new THREE.BoxGeometry(...dims),materialFor(u,p.kind==='back'));mesh.position.set(pos[0]+(exploded?pos[0]*.18:0),pos[1]+(exploded?(p.kind==='top'?180:p.kind==='bottom'?-90:0):0),pos[2]+(exploded?(p.kind==='back'?-160:0):0));if(p.id===selectedPart&&u.id===selected){mesh.material.emissive=new THREE.Color('#20a18a');mesh.material.emissiveIntensity=.5}mesh.castShadow=true;mesh.receiveShadow=true;mesh.userData={unit:u.id,part:p.id};group.add(mesh);const edges=new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry),new THREE.LineBasicMaterial({color:'#2c3d4c',transparent:true,opacity:.55}));mesh.add(edges);if(wire)mesh.material.wireframe=true;
+}
+function renderScene(){
+ clearGroup(objects);
+ if(renderer)for(const u of units){
+  const g=new THREE.Group();g.position.set(u.x,0,u.z);g.rotation.y=THREE.MathUtils.degToRad(u.rotation??0);g.userData.unit=u.id;
+  const model=cabinet(u.config,u.id);for(const p of model.parts)addPanel(g,u,p);
+  objects.add(g);if(u.id===selected){g.updateWorldMatrix(true,true);objects.add(new THREE.BoxHelper(g,'#87d9ba'))}
+ }
+ if(!renderer)fallbackDrawing.innerHTML=cabinetDrawingSvg(current());
+ refreshTree();refreshRoomWarnings();workspace?.refresh();
+}
+function current(){return units.find(u=>u.id===selected)}
+function clearGroup(group){
+ const geometries=new Set(),materials=new Set();
+ group.traverse(object=>{if(object.geometry)geometries.add(object.geometry);for(const material of (Array.isArray(object.material)?object.material:[object.material]))if(material)materials.add(material)});
+ group.clear();geometries.forEach(geometry=>geometry.dispose());materials.forEach(material=>material.dispose());
+}
+function refreshTree(){$('tree').innerHTML=units.map(u=>`<button data-id="${esc(u.id)}" class="${u.id===selected?'active':''}">▣ &nbsp; ${esc(u.id)} · ${esc(u.name)}</button>`).join('');$('tree').querySelectorAll('button').forEach(b=>b.onclick=()=>choose(b.dataset.id))}
+function choose(id){if(selected!==id)selectedPart=null;selected=id;const u=current();if(!u)return;$('selectedName').textContent=u.id;$('previewTitle').textContent=u.name;for(const k of inputKeys){const el=$(k);if(el)el.value=k==='finish'?u.finish:u.config[k]}$('posX').value=u.x;$('posZ').value=u.z;$('rotation').value=u.rotation??0;$('warning').textContent='';renderScene();refreshOutput();refreshBayEditor();refreshDrawerEditor();refreshPartEditor()}
+function refreshOutput(){const u=current();if(!u){$('parts').innerHTML='';$('summary').textContent='';return}try{const c=cabinet(u.config,u.id);$('parts').innerHTML=c.parts.map(p=>`<tr data-part="${esc(p.id)}" class="${p.id===selectedPart?'part-selected':''}"><td>${esc(p.id)}</td><td>${esc(p.kind)}</td><td>${p.length}</td><td>${p.width}</td><td>${p.thickness}</td><td>${esc(p.material)}</td><td>${p.bandLength}</td></tr>`).join('');$('summary').textContent=t('partsSummary',{parts:c.parts.length,area:c.totalAreaM2,edge:c.edgeLengthM});$('parts').querySelectorAll('tr[data-part]').forEach(row=>row.onclick=()=>selectPart(row.dataset.part));if(mode==='drawings')drawShop();if(mode==='manufacturing')drawNesting()}catch(e){$('warning').textContent=e.message}}
+function esc(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function updateConfig(u,next,topology=false){
+ const previousKey=cabinet(u.config,u.id).parts.find(part=>part.id===selectedPart)?.key;
+ const config=topology?remapPartOverrides(u.config,next):next;
+ const model=cabinet(config,u.id);u.config=config;
+ selectedPart=previousKey?model.parts.find(part=>part.key===previousKey)?.id??null:null;
+ renderScene();refreshOutput();refreshBayEditor();refreshDrawerEditor();refreshPartEditor();
+}
+for(const k of inputKeys)$(k).addEventListener('change',()=>{
+ const u=current();if(!u)return;const before=structuredClone(u.config),previousFinish=u.finish;
+ try{
+  const next={...u.config};
+  if(k==='finish')u.finish=$(k).value;
+  else next[k]=['material','construction','grain','stockGrainAxis','backConstruction'].includes(k)?$(k).value:Number($(k).value);
+  if(k==='partitions'){delete next.bayShelves;delete next.bayDrawers}
+  if(k==='shelves')delete next.bayShelves;
+  updateConfig(u,next,['shelves','partitions'].includes(k));$('warning').textContent='';
+ }catch(error){u.config=before;u.finish=previousFinish;$(k).value=k==='finish'?previousFinish:before[k];$('warning').textContent=error.message}
+});
+$('rotation').addEventListener('change',()=>{const u=current();u.rotation=Number($('rotation').value);choose(u.id)});
+
+for(const [field,prop] of [['posX','x'],['posZ','z']])$(field).addEventListener('change',()=>{const u=current(),v=Number($(field).value);if(!Number.isFinite(v)||Math.abs(v)>100000){$('warning').textContent='Position must be within ±100000 mm';$(field).value=u[prop];return}u[prop]=v;renderScene()});
+function refreshBayEditor(){const u=current();if(!u)return;const n=u.config.partitions+1;const counts=u.config.bayShelves?.length===n?u.config.bayShelves:Array(n).fill(u.config.shelves);$('bayEditor').innerHTML=counts.map((v,i)=>`<label>Bay ${i+1}<input type="number" min="0" max="30" step="1" data-bay="${i}" value="${v}"></label>`).join('');$('bayEditor').querySelectorAll('[data-bay]').forEach(el=>el.onchange=()=>{const next=Number(el.value),copy=[...counts];copy[Number(el.dataset.bay)]=next;try{const cfg={...u.config,bayShelves:copy};updateConfig(u,cfg,true)}catch(err){$('warning').textContent=err.message;el.value=counts[Number(el.dataset.bay)]}})}
+function refreshDrawerEditor(){const u=current();if(!u)return;const n=u.config.partitions+1;const counts=u.config.bayDrawers?.length===n?u.config.bayDrawers:Array(n).fill(0);$('drawerEditor').innerHTML=counts.map((v,i)=>`<label>Bay ${i+1}<input type="number" min="0" max="12" step="1" data-drawer="${i}" value="${v}"></label>`).join('');$('drawerEditor').querySelectorAll('[data-drawer]').forEach(el=>el.onchange=()=>{const copy=[...counts];copy[Number(el.dataset.drawer)]=Number(el.value);try{const cfg={...u.config,bayDrawers:copy};updateConfig(u,cfg,true)}catch(err){$('warning').textContent=err.message;el.value=counts[Number(el.dataset.drawer)]}})}
+function selectPart(id){selectedPart=id;renderScene();refreshOutput();refreshPartEditor()}
+function refreshPartEditor(){const u=current();if(!u)return;const part=cabinet(u.config,u.id).parts.find(p=>p.id===selectedPart);$('partLabel').textContent=part?`${part.id} · ${part.kind} · ${part.length} × ${part.width} × ${part.thickness} mm`:'Select a panel in the 3D scene or cutting list';$('partEditor').querySelectorAll('[data-edge]').forEach(el=>{el.disabled=!part;el.checked=!!part?.edges[Number(el.dataset.edge)]});$('resetPartEdges').disabled=!part}
+$('partEditor').querySelectorAll('[data-edge]').forEach(el=>el.onchange=()=>{const u=current(),part=cabinet(u.config,u.id).parts.find(p=>p.id===selectedPart);if(!part)return;const edges=[...part.edges];edges[Number(el.dataset.edge)]=el.checked?1:0;const cfg={...u.config,partOverrides:{...u.config.partOverrides,[part.overrideKey]:{edges}}};try{cabinet(cfg,u.id);u.config=cfg;renderScene();refreshOutput();refreshPartEditor()}catch(err){$('warning').textContent=err.message;refreshPartEditor()}});
+$('resetPartEdges').onclick=()=>{const u=current(),part=cabinet(u.config,u.id).parts.find(p=>p.id===selectedPart);if(!part)return;const overrides={...u.config.partOverrides};delete overrides[part.overrideKey];u.config={...u.config,partOverrides:overrides};renderScene();refreshOutput();refreshPartEditor()};
+function drillSelection(){const u=current();if(!u||!selectedPart)throw Error('Select a panel in the model or cut list first');const part=cabinet(u.config,u.id).parts.find(p=>p.id===selectedPart);if(!part)throw Error('Selected panel is unavailable');const settings={pitch:Number($('drillPitch').value),offset:Number($('drillOffset').value),margin:Number($('drillMargin').value),diameter:Number($('drillDiameter').value),depth:Number($('drillDepth').value)};return drillingPreview(part,settings)}
+function previewDrilling(){try{const result=drillSelection();$('drillSummary').textContent=`${result.panel.id}: ${result.holes.length} conceptual holes · ${result.status}`;$('drillDrawing').innerHTML=drillingSvg(result)}catch(e){$('drillSummary').textContent=e.message;$('drillDrawing').replaceChildren()}}
+$('drillPreview').onclick=previewDrilling;
+$('drillSvg').onclick=()=>{try{const r=drillSelection();download('drilling-reference-'+r.panel.id+'.svg',drillingSvg(r),'image/svg+xml')}catch(e){$('drillSummary').textContent=e.message}};
+$('drillCsv').onclick=()=>{try{const r=drillSelection();download('drilling-reference-'+r.panel.id+'.csv',drillingCsv(r),'text/csv;charset=utf-8')}catch(e){$('drillSummary').textContent=e.message}};
+function allParts(){return units.flatMap(u=>cabinet(u.config,u.id).parts)}
+$('projectDxf').onclick=()=>download('rokadex-panel-outlines-PRELIMINARY.dxf',dxfPanels(allParts()),'application/dxf');
+$('projectCsv').onclick=()=>download('rokadex-project-cutlist.csv',csv(allParts()),'text/csv;charset=utf-8');
+$('assemblyPrint').onclick=()=>{const u=current(),model=cabinet(u.config,u.id);const w=window.open('','_blank');if(!w){$('warning').textContent='Allow popups to print assembly report';return}const rows=model.parts.map(p=>`<tr data-part="${esc(p.id)}" class="${p.id===selectedPart?'part-selected':''}"><td>${esc(p.id)}</td><td>${esc(p.kind)}</td><td>${p.length} × ${p.width} × ${p.thickness}</td><td>${esc(p.material)}</td><td>${p.edges.join(' / ')}</td></tr>`).join('');w.document.write(`<!doctype html><html><head><title>Assembly · ${esc(u.id)}</title><style>body{font:14px Arial;margin:32px;color:#233}table{width:100%;border-collapse:collapse}td,th{padding:7px;border:1px solid #abb}h1{font-size:22px}small{color:#a43}</style></head><body><h1>ROKADEX · ASSEMBLY COMPONENT SCHEDULE</h1><p>${esc(u.id)} — ${esc(u.name)} | ${u.config.width} × ${u.config.height} × ${u.config.depth} mm</p><small>PRELIMINARY ONLY. VERIFY JOINERY, HARDWARE, BACK PANEL AND MACHINING BEFORE FABRICATION.</small><table><thead><tr><th>Part ID</th><th>Type</th><th>Dimensions (mm)</th><th>Material</th><th>Edge flags</th></tr></thead><tbody>${rows}</tbody></table></body></html>`);w.document.close();w.focus();setTimeout(()=>w.print(),300)};
+function addUnit(name,overrides={}){if(units.length>=100){$('warning').textContent='Maximum 100 units per project';return}const id=`CAB-${String(nextUnitNumber()).padStart(3,'0')}`;units.push({id,name,type:'cabinet',x:(units.length%4)*1250,z:Math.floor(units.length/4)*900,finish:'oak',config:{...newConfig(),...overrides}});choose(id)}
+$('addCab').onclick=()=>addUnit('Cabinet Unit');$('addTall').onclick=()=>addUnit('Tall Wardrobe',{width:1600,height:2400,depth:600,partitions:2,shelves:4});$('addDoor').onclick=()=>addUnit('Two-door Cabinet',{width:1000,height:2100,depth:550,partitions:1,shelves:3,doors:2});$('addBase').onclick=()=>addUnit('Base Kitchen Unit',{width:800,height:850,depth:580,partitions:0,shelves:1});$('delete').onclick=()=>{if(units.length===1){$('warning').textContent='Keep at least one unit in the project';return}units=units.filter(u=>u.id!==selected);choose(units[0].id)};
+function setMode(next){
+ mode=next;document.querySelectorAll('.mode').forEach(button=>{button.classList.toggle('active',button.dataset.mode===next);button.setAttribute('aria-pressed',String(button.dataset.mode===next))});
+ for(const [panel,value] of Object.entries({drawingsPanel:'drawings',manufacturingPanel:'manufacturing',renderPanel:'render',planPanel:'plan',costingPanel:'costing',reviewPanel:'review',referencesPanel:'references'}))$(panel).classList.toggle('hidden',next!==value);
+ $('viewTag').textContent=!renderer&&next==='design'?'2D DESIGN VIEW':next.toUpperCase()+' VIEW';refreshOutput();workspace?.refresh();applyLanguage(getLanguage());
+}document.querySelectorAll('.mode').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+function drawingSvg(){return cabinetDrawingSvg(current())}
+function drawShop(){$('drawingContent').innerHTML=drawingSvg()}
+function drawNesting(){const u=current(),model=cabinet(u.config,u.id),nest=layoutSheets(model.parts,u.config);$('sheetInfo').textContent=`${nest.sheets.length} sheets · ${nest.unplaced.length} unplaced · Shelf-packing preview, not a production cut plan`;const totals=new Map();for(const p of model.parts){const key=p.material+' / '+p.thickness+'mm';const v=totals.get(key)||{count:0,area:0,edge:0};v.count++;v.area+=p.length*p.width/1e6;v.edge+=p.bandLength/1000;totals.set(key,v)}$('materialSummary').textContent=[...totals].map(([k,v])=>`${k}: ${v.count} parts · ${v.area.toFixed(2)} m² · ${v.edge.toFixed(2)} m edge`).join('  |  ');$('sheetDrawings').innerHTML=nest.sheets.map((s,i)=>{const k=260/Math.max(s.width,s.height);return `<div><div style="font-size:10px;margin-bottom:5px">Sheet ${i+1} · ${esc(s.group)} · ${s.utilization}%</div><svg viewBox="0 0 ${s.width} ${s.height}" xmlns="http://www.w3.org/2000/svg"><rect width="${s.width}" height="${s.height}" fill="#f3eee5"/>${s.placed.map(p=>`<rect x="${p.x}" y="${p.y}" width="${p.w}" height="${p.h}" fill="#8bbfb4" stroke="#214e57" stroke-width="5"/><text x="${p.x+12}" y="${p.y+28}" font-size="30" fill="#173f45">${esc(p.id.split('-').slice(-2).join('-'))}</text>`).join('')}</svg></div>`}).join('')+nest.unplaced.map(p=>`<p class="note">Unplaced: ${esc(p.id)} — ${esc(p.reason)}</p>`).join('')}
+function download(name,content,type){const url=URL.createObjectURL(new Blob([content],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+$('downloadSvg').onclick=()=>download(`${selected}-GA.svg`,drawingSvg(),'image/svg+xml');$('exportCsv').onclick=()=>{const u=current();download(`${u.id}-cutlist.csv`,csv(cabinet(u.config,u.id).parts),'text/csv;charset=utf-8')};$('save').onclick=()=>{try{download('rokadex-project.json',serializeProject(snapshot()),'application/json')}catch(error){$('projectStatus').textContent=error.message}};
+$('load').onclick=()=>$('file').click();
+$('file').onchange=async event=>{
+ try{
+  const file=event.target.files?.[0];if(!file)return;
+  if(file.size>MAX_PROJECT_BYTES)throw Error('Project exceeds 5 MB');
+  const project=parseProject(await file.text());
+  applyProject(project);checkpoint();
+ }catch(error){$('projectStatus').textContent=t('openFailed',{error:error.message})}
+ finally{event.target.value=''}
+};
+
+$('wire').onclick=()=>{wire=!wire;renderScene()};$('explode').onclick=()=>{exploded=!exploded;renderScene()};$('reset').onclick=()=>{camera.position.set(2200,1800,2800);controls?.target.set(0,900,0);controls?.update()};$('front').onclick=()=>{camera.position.set(0,1200,4000);controls?.target.set(0,1100,0)};$('top').onclick=()=>{camera.position.set(0,4500,0);controls?.target.set(0,0,0)};$('iso').onclick=$('reset').onclick;
+const raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2();let pointerStart=null;if(renderer){renderer.domElement.addEventListener('pointerdown',event=>{pointerStart={x:event.clientX,y:event.clientY,id:event.pointerId}});renderer.domElement.addEventListener('pointercancel',()=>{pointerStart=null});renderer.domElement.addEventListener('pointerup',e=>{const start=pointerStart;pointerStart=null;if(!start||start.id!==e.pointerId||Math.hypot(e.clientX-start.x,e.clientY-start.y)>4)return;const r=renderer.domElement.getBoundingClientRect();mouse.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);raycaster.setFromCamera(mouse,camera);const hits=raycaster.intersectObjects(objects.children,true);if(hits.length&&hits[0].object.userData.unit){choose(hits[0].object.userData.unit);selectPart(hits[0].object.userData.part)}});}
+function screenshot(){if(!renderer)return;renderer.render(scene,camera);renderer.domElement.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='rokadex-preview.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)})}$('screenshot').onclick=screenshot;
+$('present').onclick=()=>{if(!renderer)return;$('presentation').classList.remove('hidden');$('presentationTitle').textContent=current().name;$('presentationCanvas').appendChild(renderer.domElement);resize()};$('closePresentation').onclick=()=>{if(!renderer)return;$('presentation').classList.add('hidden');$('viewport').appendChild(renderer.domElement);resize()};$('lang').onclick=()=>{applyLanguage(getLanguage()==='ar'?'en':'ar');try{localStorage.setItem('rokadex.language',getLanguage())}catch{}};
+function resize(){if(!renderer)return;const el=renderer.domElement.parentElement;const w=el.clientWidth,h=el.clientHeight;if(w>0&&h>0){camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false)}}window.addEventListener('resize',resize);new ResizeObserver(resize).observe($('viewport'));new ResizeObserver(resize).observe($('presentationCanvas'));function tick(){if(!renderer)return;requestAnimationFrame(tick);controls.update();if(!document.hidden&&(['design','render'].includes(mode)||!$('presentation').classList.contains('hidden')))renderer.render(scene,camera)}for(const k of ['width','depth','height']){const field=$('room'+k[0].toUpperCase()+k.slice(1));field.addEventListener('change',()=>{const next={...room,[k]:Number(field.value)};try{validateRoom(next);room=next;refreshRoomControls()}catch(e){$('warning').textContent=e.message;field.value=room[k]}})}
+$('snapWall').onclick=()=>{try{const pos=snapUnitToWall(room,current(),$('wallSide').value);current().x=pos.x;current().z=pos.z;choose(selected)}catch(e){$('warning').textContent=e.message}};
+$('roomPlan').onclick=()=>download('rokadex-room-plan-PRELIMINARY.svg',roomPlanSvg(room,units),'image/svg+xml');
+refreshRoomControls();choose(selected);resize();tick();
+
+// Alpha 0.4 manufacturing method templates and hardware estimate (no CNC coordinates).
+const methodSelect=document.getElementById('manufacturingMethod');
+if(methodSelect){methodSelect.innerHTML='<option value="">Select construction method…</option>'+Object.entries(METHODS).map(([k,v])=>`<option value="${k}">${v.name}</option>`).join('');
+ document.getElementById('applyManufacturingMethod').onclick=()=>{try{if(!methodSelect.value)return;current().config=applyMethod(current().config,methodSelect.value);choose(selected)}catch(err){document.getElementById('warning').textContent=err.message}};
+ document.getElementById('hardwareReport').onclick=()=>{const h=hardwareSchedule(current().config,current().id);document.getElementById('hardwareResults').textContent=h.status+'\n'+h.rows.map(r=>`${r.item}: ${r.qty??'TBD'} ${r.unit} — ${r.notes}`).join('\n')};
+}
+
+// User-controlled verified hardware library; never execute or trust imported JSON as code.
+let verifiedHardware={items:[]};
+const hardwareFileInput=document.getElementById('hardwareFile');
+const hardwareItemSelect=document.getElementById('hardwareItem');
+const hardwareStatus=document.getElementById('hardwareStatus');
+document.getElementById('hardwareTemplate').onclick=()=>download('rokadex-hardware-template.json',JSON.stringify(hardwareLibraryTemplate(),null,2),'application/json');
+hardwareFileInput.onchange=async()=>{try{const f=hardwareFileInput.files?.[0];if(!f)return;if(f.size>1024*1024)throw Error('Library exceeds 1 MB');const data=JSON.parse(await f.text());validateHardwareLibrary(data);verifiedHardware=data;hardwareItemSelect.replaceChildren(new Option('Select verified hardware…',''),...data.items.map(i=>new Option(`${i.manufacturer} — ${i.model||i.id}`,i.id)));hardwareStatus.textContent=`Imported ${data.items.length} verified items. Review documentation and datum before use.`}catch(e){verifiedHardware={items:[]};hardwareItemSelect.replaceChildren(new Option('Import a verified library…',''));hardwareStatus.textContent='Import rejected: '+e.message}};
+function currentHardwarePlan(){const u=current();if(!u||!selectedPart)throw Error('Select a panel first');const p=cabinet(u.config,u.id).parts.find(x=>x.id===selectedPart);if(!p)throw Error('Panel no longer exists');if(!hardwareItemSelect.value)throw Error('Select verified hardware');return joineryPlan(p,verifiedHardware,hardwareItemSelect.value)}
+document.getElementById('hardwarePreview').onclick=()=>{try{const r=currentHardwarePlan();hardwareStatus.textContent=`${r.panel.id}: ${r.holes.length} reference holes. ${r.status}. Confirm origin/face/rotation manually.`}catch(e){hardwareStatus.textContent=e.message}};
+document.getElementById('hardwareCsv').onclick=()=>{try{const r=currentHardwarePlan();download('hardware-reference-'+r.panel.id+'.csv',joineryCsv(r),'text/csv;charset=utf-8')}catch(e){hardwareStatus.textContent=e.message}};
+
+// Standalone engineering review workspace — does not connect to Rokadex SaaS.
+const reviewStatus=document.getElementById('reviewStatus');
+function latestReview(){return reviewProject(room,units)}
+function showReview(){try{const r=latestReview();reviewStatus.textContent=`${r.status} · ${r.summary.units} units · ${r.summary.parts} parts · ${r.summary.blockers} blockers · ${r.summary.warnings} warnings`;
+ const rows=r.issues.map(i=>`<tr><td>${esc(i.severity)}</td><td>${esc(i.code)}</td><td>${esc(i.unit)}</td><td>${esc(i.message)}</td></tr>`).join('');
+ const materials=r.materials.map(m=>`<tr><td>${esc(m.material)}</td><td>${m.thickness}</td><td>${m.count}</td><td>${m.areaM2}</td><td>${m.edgeM}</td></tr>`).join('');
+ document.getElementById('reviewOutput').innerHTML=`<p class="note">PRELIMINARY REVIEW ONLY · ${r.summary.areaM2} m² panels · ${r.summary.edgeM} m edges · ${r.summary.previewSheets} preview sheets</p><h4>Review issues</h4><div class="review-scroll"><table><thead><tr><th>Severity</th><th>Code</th><th>Unit</th><th>Finding</th></tr></thead><tbody>${rows}</tbody></table></div><h4>Material rollup</h4><div class="review-scroll"><table><thead><tr><th>Material</th><th>mm</th><th>Parts</th><th>m²</th><th>Edge m</th></tr></thead><tbody>${materials}</tbody></table></div>`;
+ }catch(e){reviewStatus.textContent='Review failed: '+e.message;document.getElementById('reviewOutput').textContent=e.message}}
+document.getElementById('runReview').onclick=showReview;
+document.getElementById('reviewCsv').onclick=()=>{try{download('rokadex-project-REVIEW-ONLY.csv',projectManufacturingCsv(latestReview()),'text/csv;charset=utf-8')}catch(e){reviewStatus.textContent=e.message}};
+document.getElementById('panelDetail').onclick=()=>{try{if(!selectedPart)throw Error('Select a panel in the 3D view or parts list');const p=cabinet(current().config,current().id).parts.find(p=>p.id===selectedPart);if(!p)throw Error('Selected panel is unavailable');download(p.id+'-PANEL-REVIEW.svg',partDrawingSvg(p),'image/svg+xml')}catch(e){reviewStatus.textContent=e.message}};
+showReview();
+
+// Combined sheet preview across all cabinets, grouped by stock dimensions/material/grain.
+const sheetPlanStatus=document.getElementById('projectSheetStatus');
+function showProjectSheets(){try{const plan=projectSheetPlan(units);sheetPlanStatus.textContent=`${plan.sheets.length} sheets · ${plan.placedCount} placed · ${plan.unplaced.length} unplaced · ${plan.utilization}% area utilization · REVIEW ONLY`;document.getElementById('projectSheetPreview').innerHTML=projectSheetSvg(plan)}catch(e){sheetPlanStatus.textContent=e.message;document.getElementById('projectSheetPreview').replaceChildren()}}
+document.getElementById('projectSheetRun').onclick=showProjectSheets;
+document.getElementById('projectSheetSvg').onclick=()=>{try{download('rokadex-project-sheet-PREVIEW.svg',projectSheetSvg(projectSheetPlan(units)),'image/svg+xml')}catch(e){sheetPlanStatus.textContent=e.message}};
+document.getElementById('projectSheetCsv').onclick=()=>{try{download('rokadex-project-sheet-PREVIEW.csv',projectSheetCsv(projectSheetPlan(units)),'text/csv;charset=utf-8')}catch(e){sheetPlanStatus.textContent=e.message}};
+showProjectSheets();
+
+// Project history stores validated, detached model snapshots; view-only changes are excluded.
+function snapshot(){return {format:'rokadex-standalone',version:2,units,room,costing}}
+function nextUnitNumber(){let number=1;while(units.some(unit=>unit.id===`CAB-${String(number).padStart(3,'0')}`))number++;return number}
+function applyProject(project){
+ units=project.units;room=project.room;costing=project.costing??structuredClone(DEFAULT_COSTING);selectedPart=null;
+ refreshRoomControls();choose(units.some(unit=>unit.id===selected)?selected:units[0].id);
+ showReview();showProjectSheets();workspace?.refresh();applyLanguage(getLanguage());
+}
+const history=createHistory(snapshot(),{limit:30});
+function refreshHistory(){$('undo').disabled=!history.canUndo;$('redo').disabled=!history.canRedo}
+function persist(){
+ try{saveBackup(localStorage,snapshot());$('projectStatus').textContent='Saved locally · export JSON for a portable copy'}
+ catch(error){$('projectStatus').textContent='Local backup failed: '+error.message+' · export JSON to keep your work'}
+}
+function checkpoint(){
+ try{if(history.push(snapshot())){persist();showReview();showProjectSheets();workspace?.refresh()}}
+ catch(error){applyProject(history.current());$('projectStatus').textContent='Change rejected: '+error.message}
+ refreshHistory();
+}
+function travel(direction){const project=history[direction]();if(project){applyProject(project);persist()}refreshHistory()}
+$('undo').onclick=()=>travel('undo');$('redo').onclick=()=>travel('redo');
+$('newProject').onclick=()=>{
+ if(!confirm('Create a new project? Export JSON first if you need a portable copy. / إنشاء مشروع جديد؟ صدّر ملف JSON للاحتفاظ بنسخة مستقلة.'))return;
+ applyProject({room:{...DEFAULT_ROOM},costing:structuredClone(DEFAULT_COSTING),units:[{id:'CAB-001',name:'Cabinet Unit',type:'cabinet',x:0,z:0,finish:'oak',config:newConfig()}]});
+ checkpoint();
+};
+$('duplicate').onclick=()=>{
+ if(units.length>=100){$('projectStatus').textContent='Maximum 100 units per project';return}
+ const copy=structuredClone(current());copy.id=`CAB-${String(nextUnitNumber()).padStart(3,'0')}`;
+ copy.name=copy.name.slice(0,180)+' (copy)';copy.x=Math.min(100000,copy.x+100);
+ units.push(copy);choose(copy.id);checkpoint();
+};
+document.addEventListener('change',event=>{if(event.composedPath().some(node=>node.matches?.('.inspector,.sidebar'))&&event.target.id!=='hardwareFile')checkpoint()});
+document.addEventListener('click',event=>{
+ const button=event.target.closest('button');
+ if(button&&['addCab','addBase','addTall','addDoor','delete','resetPartEdges','snapWall','applyManufacturingMethod'].includes(button.id))checkpoint();
+});
+document.addEventListener('keydown',event=>{
+ if(event.target.closest('input,textarea,select,[contenteditable="true"]'))return;
+ if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='z'){event.preventDefault();travel(event.shiftKey?'redo':'undo')}
+});
+refreshHistory();
+if(backupError)$('projectStatus').textContent=backupError+' · export JSON to keep your work';
+
+let preferredLanguage=navigator.language.startsWith('ar')?'ar':'en';
+try{const savedLanguage=localStorage.getItem('rokadex.language');if(['ar','en'].includes(savedLanguage))preferredLanguage=savedLanguage}catch{}
+applyLanguage(preferredLanguage);
+document.addEventListener('click',()=>applyLanguage(getLanguage()));
+document.addEventListener('change',()=>applyLanguage(getLanguage()));
+
+workspace=initWorkspace({
+ getProject:snapshot,getSelectedId:()=>selected,select:choose,download,
+ commit:project=>{const validated=parseProject(project);applyProject(validated);checkpoint()},
+ onError:message=>{$('projectStatus').textContent=message}
+});
+
+initReferenceLibrary({getProject:snapshot,download,commit:project=>{applyProject(parseProject(project));checkpoint()},onError:message=>{$('projectStatus').textContent=message}});
+
+// View-only layout state never enters project history or manufacturing data.
+const focusWorkspace=$('focusWorkspace');
+function setWorkspaceFocus(focused){
+ document.body.classList.toggle('workspace-focused',focused);
+ focusWorkspace.setAttribute('aria-pressed',String(focused));
+ focusWorkspace.textContent=focused?'Restore panels':'Focus workspace';
+ applyLanguage(getLanguage());
+}
+focusWorkspace.onclick=()=>setWorkspaceFocus(!document.body.classList.contains('workspace-focused'));
+document.addEventListener('keydown',event=>{
+ if(event.key==='Escape'&&document.body.classList.contains('workspace-focused')){
+  setWorkspaceFocus(false);focusWorkspace.focus();
+ }
+});
