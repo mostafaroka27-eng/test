@@ -89,19 +89,26 @@ test('semantic panel edge edits survive another bay gaining a shelf',async({page
  await expect(page.locator('[data-edge="1"]')).not.toBeChecked();
 });
 
-test('extracted reference facts are searchable and room presets convert cm to mm with undo',async({page})=>{
+test('reference data builds wardrobe templates, finishes and room templates without a raw data view',async({page})=>{
  const errors=[];page.on('pageerror',error=>errors.push(error.message));await page.goto('/');
- await expect(page.locator('[data-mode="references"]')).toBeVisible();
- await page.locator('[data-mode="references"]').click();
- await page.locator('#referenceSource').selectOption('./analysis/room-planner-data.json');
- await page.locator('#referenceSearch').fill('ROOM_TYPES.kitchen.w');
- await expect(page.locator('#referenceRows tr')).toHaveCount(1);
- await expect(page.locator('#referenceRows')).toContainText('300');
+ await expect(page.locator('[data-mode="references"]')).toHaveCount(0);await expect(page.locator('#referencesPanel')).toHaveCount(0);
+ await expect(page.locator('#referenceTemplates .library-item')).toHaveCount(7);
+ await expect(page.locator('#referenceSkipped')).toContainText('Double hanging');
+ await page.locator('[data-template="ncd-drawHang"]').click();
+ await expect(page.locator('#tree button')).toHaveCount(2);
+ await expect(page.locator('#width')).toHaveValue('600');await expect(page.locator('#height')).toHaveValue('2400');
+ await expect(page.locator('#finish')).toHaveValue('#f1f0eb');
+ await expect(page.locator('#parts')).toContainText('drawerFace');
+ await page.locator('#undo').click();await expect(page.locator('#tree button')).toHaveCount(1);
+ await page.locator('#redo').click();await expect(page.locator('#tree button')).toHaveCount(2);
+ await page.locator('#tree button').nth(1).click();await page.locator('#finish').selectOption('#6a4731');await expect(page.locator('#finish')).toHaveValue('#6a4731');
+ const saved=page.waitForEvent('download');await page.locator('#save').click();
+ const project=JSON.parse(await readFile(await(await saved).path(),'utf8'));
+ expect(project.units[1].finish).toBe('#6a4731');expect(project.units[1].config.bayDrawers).toEqual([3]);
  await page.locator('#referenceRoomPreset').selectOption('kitchen');
  page.once('dialog',dialog=>dialog.accept());await page.locator('#applyReferenceRoom').click();
  await expect(page.locator('#roomWidth')).toHaveValue('3000');await expect(page.locator('#roomDepth')).toHaveValue('4000');
  await page.locator('#undo').click();await expect(page.locator('#roomWidth')).toHaveValue('4200');
- const downloaded=page.waitForEvent('download');await page.locator('#referenceDownload').click();
- const data=JSON.parse(await readFile(await(await downloaded).path(),'utf8'));expect(data.schema).toBe('rokadex.reference.room-planner.v1');
+ await page.locator('#lang').click();await expect(page.locator('[data-template="ncd-hang"] b')).toHaveText('تعليق طويل');
  expect(errors).toEqual([]);
 });

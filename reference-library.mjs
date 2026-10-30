@@ -1,40 +1,46 @@
-import {referenceFacts,referenceRoomPresets,applyReferenceRoom} from './reference-data.mjs';
+import {referenceCatalog} from './reference-catalog.mjs';
+import {applyReferenceRoom} from './reference-data.mjs';
 import {applyLanguage,getLanguage} from './i18n.mjs';
+import ncd from './analysis/ncd-data.json';
+import planner from './analysis/room-planner-data.json';
 
-// These JSON files contain extracted facts and independently authored schemas, never uploaded JS.
-const documents=import.meta.glob('./analysis/*.json',{eager:true,import:'default'});
-const reports=import.meta.glob('./analysis/*.md',{eager:true,query:'?url',import:'default'});
 const escape=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-export function initReferenceLibrary({getProject,commit,download,onError}){
- const $=id=>document.getElementById(id),entries=Object.entries(documents).sort(([a],[b])=>a.localeCompare(b));
- $('referenceSource').replaceChildren(...entries.map(([path])=>new Option(path.split('/').at(-1),path)));
- let page=0,filtered=[];
- function render(){
-  try{
-   const data=documents[$('referenceSource').value],query=$('referenceSearch').value.trim().toLocaleLowerCase();
-   const all=referenceFacts(data);filtered=all.filter(fact=>!query||(fact.path+' '+fact.path.replace(/\.value\./g,'.')+' '+fact.value).toLocaleLowerCase().includes(query));
-   const pages=Math.max(1,Math.ceil(filtered.length/60));page=Math.min(page,pages-1);
-   $('referenceRows').innerHTML=filtered.slice(page*60,(page+1)*60).map(fact=>`<tr><td data-i18n-skip>${escape(fact.path)}</td><td data-i18n-skip>${escape(fact.value)}</td></tr>`).join('');
-   $('referenceStatus').textContent=`${filtered.length} / ${all.length} reference facts · ${page+1} / ${pages}`;
-   $('referencePrev').disabled=page===0;$('referenceNext').disabled=page===pages-1;
-   applyLanguage(getLanguage());
-  }catch(error){onError(error.message)}
+/** The reference files are not shown as raw data; their content feeds the library, finishes and room templates. */
+export function initReferenceLibrary({getProject,addUnit,commit,onError}){
+ const $=id=>document.getElementById(id);
+ let catalog;
+ try{catalog=referenceCatalog({ncd,planner})}catch(error){onError(error.message);return}
+ const ar=()=>getLanguage()==='ar';
+ $('referenceTemplates').replaceChildren(...catalog.templates.map(template=>{
+  const button=document.createElement('button');button.className='library-item';button.dataset.template=template.id;button.dataset.i18nSkip='';
+  const {width,height,depth}=template.config;
+  button.innerHTML=`<span class="item-icon" aria-hidden="true">▥</span><span><b data-en="${escape(template.nameEn)}" data-ar="${escape(template.name)}">${escape(template.nameEn)}</b><small>${width} × ${height} × ${depth} mm</small></span><span aria-hidden="true">＋</span>`;
+  button.onclick=()=>{try{addUnit(ar()?template.name:template.nameEn,structuredClone(template.config),template.finish)}catch(error){onError(error.message)}};
+  return button;
+ }));
+ $('referenceSkipped').dataset.i18nSkip='';
+ const GROUP_AR={'NCD finishes':'تشطيبات NCD','NCD colours':'ألوان NCD','Room planner colours':'ألوان مخطط الغرف'};
+ const finish=$('finish');
+ for(const group of catalog.finishes){
+  const node=document.createElement('optgroup');node.label=group.label;node.dataset.en=group.label;
+  node.append(...group.finishes.map(entry=>{const option=new Option(entry.name,entry.color);option.dataset.i18nSkip='';option.style.background=entry.color;return option}));
+  finish.append(node);
  }
- $('referenceSource').onchange=()=>{page=0;render()};$('referenceSearch').oninput=()=>{page=0;render()};
- $('referencePrev').onclick=()=>{page--;render()};$('referenceNext').onclick=()=>{page++;render()};
- $('referenceDownload').onclick=()=>download($('referenceSource').value.split('/').at(-1),JSON.stringify(documents[$('referenceSource').value],null,2),'application/json');
- const roomSource=documents['./analysis/room-planner-data.json'],presets=referenceRoomPresets(roomSource);
- $('referenceRoomPreset').replaceChildren(...presets.map(preset=>new Option(`${preset.name} · ${preset.width} × ${preset.depth} mm`,preset.id)));
+ $('referenceRoomPreset').replaceChildren(...catalog.rooms.map(room=>new Option(`${room.name} · ${room.width} × ${room.depth} mm`,room.id)));
  $('applyReferenceRoom').onclick=()=>{
   try{
-   const project=getProject(),preset=presets.find(entry=>entry.id===$('referenceRoomPreset').value);
+   const project=getProject(),preset=catalog.rooms.find(entry=>entry.id===$('referenceRoomPreset').value);
    if(!confirm('Apply these room dimensions? Existing cabinets remain and conflicts are reported. / تطبيق أبعاد الغرفة؟ تبقى الوحدات الحالية وتظهر التعارضات.'))return;
    commit({...project,room:applyReferenceRoom(project.room,preset)});
   }catch(error){onError(error.message)}
  };
- $('referenceReports').replaceChildren(...Object.entries(reports).map(([path,url])=>{
-  const link=document.createElement('a');link.href=url;link.textContent=path.split('/').at(-1);link.download=link.textContent;return link;
- }));
- render();
+ const relabel=()=>{
+  document.querySelectorAll('#referenceTemplates b[data-en]').forEach(node=>{node.textContent=ar()?node.dataset.ar:node.dataset.en});
+  document.querySelectorAll('#finish optgroup[data-en]').forEach(node=>{node.label=ar()?GROUP_AR[node.dataset.en]||node.dataset.en:node.dataset.en});
+  const skipped=catalog.skipped.map(item=>ar()?item.name:item.nameEn).join('، ');
+  $('referenceSkipped').textContent=!skipped?'':ar()?`غير متاح بعد: ${skipped} (المحرك يدعم قضيب تعليق واحد لكل حجرة).`:`Not available yet: ${skipped} (one hanging rail per bay).`;
+ };
+ relabel();new MutationObserver(relabel).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+ applyLanguage(getLanguage());
 }

@@ -34,7 +34,7 @@ test('Arabic layout fits phone and tablet, with direct access to properties and 
  await expect(page.locator('#width')).toHaveValue('1100');
  await page.locator('.mobile-panel-links a[href="#library"]').click();
  await expect(page.locator('#addCab')).toBeInViewport();await page.locator('#addBase').click();await expect(page.locator('#tree button')).toHaveCount(2);
- await page.locator('[data-mode="references"]').click();await expect(page.locator('#referenceSource')).toBeVisible();
+ await expect(page.locator('[data-mode="references"]')).toHaveCount(0);await expect(page.locator('#referenceTemplates .library-item')).toHaveCount(7);
  await page.locator('[data-mode="design"]').click();await page.locator('#focusWorkspace').click();
  await expect(page.locator('#focusWorkspace')).toHaveText('إظهار اللوحات');await page.keyboard.press('Escape');
  expect(errors).toEqual([]);

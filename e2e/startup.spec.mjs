@@ -24,7 +24,7 @@ test('WebGL unavailable: 2D drawings, editing, undo, backup and project exports 
  await page.locator('#lang').click();await expect(page.locator('#renderStatus')).toContainText('ثنائي الأبعاد');
  await page.locator('[data-mode="manufacturing"]').click();await expect(page.locator('#sheetInfo')).toContainText('sheets');
  await page.locator('[data-mode="plan"]').click();await expect(page.locator('#planDrawing svg')).toBeVisible();
- await page.locator('[data-mode="references"]').click();await expect(page.locator('#referenceRows tr')).not.toHaveCount(0);
+ await expect(page.locator('#referenceTemplates .library-item').first()).toBeVisible();
  expect(errors).toEqual([]);
 });
 

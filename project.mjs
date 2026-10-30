@@ -1,3 +1,4 @@
+import {isFinish} from './reference-catalog.mjs';
 /** Project-file boundary and local edit history. Dimensions are millimetres. */
 import {DEFAULTS,cabinet,validate} from './engine.mjs';
 import {DEFAULT_ROOM,validateRoom} from './room.mjs';
@@ -8,7 +9,6 @@ export const BACKUP_KEY='rokadex-standalone.autosave.v2';
 export const PROJECT_VERSION=3;
 // FNV-1a: a reopened legacy file always receives the same project ID until it is saved as v3.
 const stableId=source=>{let h=0x811c9dc5;for(const byte of new TextEncoder().encode(source)){h^=byte;h=Math.imul(h,0x01000193)>>>0}return 'PRJ-'+h.toString(16).toUpperCase().padStart(8,'0')};
-const finishes=new Set(['oak','walnut','white','charcoal']);
 const isRecord=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
 const text=(value,name,max=200)=>{
  if(typeof value!=='string'||!value.trim()||value.length>max||/[\u0000-\u001f\u007f]/.test(value))throw Error(`Invalid ${name}`);
@@ -37,7 +37,7 @@ export function parseProject(input){
   const name=text(unit.name,'component name');
   const type=unit.type===undefined?'cabinet':text(unit.type,'component type',64);
   const x=bounded(unit.x,'X position',100000),z=bounded(unit.z,'Z position',100000);
-  if(!finishes.has(unit.finish))throw Error('Invalid component finish');
+  if(!isFinish(unit.finish))throw Error('Invalid component finish');
   if(!isRecord(unit.config))throw Error('Invalid component configuration');
   // Only supported settings enter the model; inherited/prototype fields are discarded.
   const config={...DEFAULTS};

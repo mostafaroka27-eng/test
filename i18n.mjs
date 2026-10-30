@@ -1,5 +1,7 @@
 // UI translations only. Project names, materials, part IDs and export data stay intact.
 const labels = {
+ 'WARDROBE TEMPLATES · NCD':'قوالب الدواليب · NCD','Apply room template':'تطبيق قالب الغرفة',
+ 'Powered by Rokadex · © Mostafa Mabrouk':'بدعم من روكادكس · © مصطفى مبروك',
  "CABINET RULES · cab-2.0":"قواعد الخزائن · cab-2.0",
  "Editable software conventions, not a workshop standard. Confirm supplier and workshop values before production.":"اصطلاحات برمجية قابلة للتعديل وليست معيار ورشة. أكّد قيم المورد والورشة قبل الإنتاج.",
  "Bay construction":"تركيب الحجرات",
@@ -249,7 +251,7 @@ export function applyLanguage(next, root = document) {
   const doc = root.ownerDocument || root;
   doc.documentElement.lang = next;
   doc.documentElement.dir = next === 'ar' ? 'rtl' : 'ltr';
-  doc.title = next === 'ar' ? 'روكادكس ستوديو — التصميم والتصنيع' : 'RokaDex Studio — Design & Manufacturing';
+  doc.title = next === 'ar' ? 'روكادكس ستوديو — التصميم والتصنيع' : 'Rokadex Studio — Design & Manufacturing';
   const walker = doc.createTreeWalker(root.body || root, 4);
   for (let node = walker.nextNode(); node; node = walker.nextNode()) {
     if (node.parentElement?.closest(excluded)) continue;

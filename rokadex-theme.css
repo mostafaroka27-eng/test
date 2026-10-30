@@ -1,0 +1,97 @@
+/* Rokadex design system for the Studio — same tokens as the Rokadex app (theme.css):
+   navy navigation, teal actions, light grey canvas, IBM Plex Sans Arabic bundled locally (no CDN). */
+@import "@fontsource/ibm-plex-sans-arabic/400.css";
+@import "@fontsource/ibm-plex-sans-arabic/500.css";
+@import "@fontsource/ibm-plex-sans-arabic/600.css";
+@import "@fontsource/ibm-plex-sans-arabic/700.css";
+
+:root {
+  --navy: #172B3A; --navy-2: #1F3A4D; --navy-ink: #C9D5DF; --navy-mute: #7F95A6;
+  --teal: #0F8B8D; --teal-2: #0B7375; --teal-bg: #E3F2F2;
+  --bg: #F3F5F7; --panel: #FFFFFF; --panel-2: #F6F8FA; --line: #E2E8EE; --line-2: #D2DAE2;
+  --fg: #263746; --muted: #6B7785; --faint: #8F99A4;
+  --ok: #23966B; --warn: #E6A23C; --err: #D9534F; --info: #3979C3;
+  --accent: var(--teal); --surface: var(--panel-2); --surface-raised: var(--panel);
+  font-family: "IBM Plex Sans Arabic", "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
+  color: var(--fg); background: var(--bg);
+}
+body { background: var(--bg); color: var(--fg); }
+a { color: var(--teal-2); } a:hover { color: var(--navy); }
+button { border-color: var(--line-2); color: var(--fg); border-radius: 6px; }
+button:hover { background: var(--teal-bg); border-color: var(--teal); }
+button:active:not(:disabled) { background: #cfe9e9; }
+button.primary { background: var(--teal); border-color: var(--teal); color: #fff; }
+button.primary:hover { background: var(--teal-2); }
+button.danger { color: var(--err); border-color: #efc2c0; }
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible,[tabindex]:focus-visible { outline-color: var(--teal); }
+input,select { border-color: var(--line-2); color: var(--fg); border-radius: 6px; }
+input:hover,select:hover { border-color: var(--teal); }
+input::placeholder { color: var(--faint); }
+label { color: var(--muted); }
+
+/* Header: white bar with the gold hex-nut Rokadex mark, as in the Rokadex app. */
+.top { background: var(--panel); border-bottom: 1px solid var(--line); }
+.brand .logo { width: 40px; height: 40px; background: none; border-radius: 10px; display: block; }
+.brand .logo svg { width: 40px; height: 40px; display: block; }
+.brand strong { color: var(--fg); letter-spacing: .2px; font-size: 17px; }
+.brand em { color: var(--teal-2); font-weight: 600; }
+.brand small { color: var(--muted); letter-spacing: .2px; font-size: 10px; }
+.app-version { color: var(--teal-2); font-weight: 600; }
+.project-name { color: var(--muted); }
+.green-dot { background: var(--ok); }
+.draft { border-color: var(--line-2); border-radius: 999px; padding: 3px 9px; color: var(--muted); background: var(--panel-2); }
+#save { border-color: var(--teal); color: var(--teal-2); }
+.project-status { background: var(--teal-bg); color: var(--teal-2); }
+
+/* Workspace tabs */
+.modes { background: var(--panel); border-color: var(--line); }
+.mode { color: var(--muted); }
+.mode:hover { color: var(--fg); background: var(--panel-2); }
+.mode.active { color: var(--teal-2); background: var(--teal-bg); border-bottom-color: var(--teal); }
+.mode-hint, .mode-hint b { color: var(--faint); }
+
+/* Library = navy navigation rail. */
+.sidebar { background: var(--navy); color: var(--navy-ink); border-inline-end: 0; scrollbar-color: var(--navy-2) transparent; }
+.sidebar .side-title { color: #fff; }
+.sidebar .side-title span, .sidebar .side-section { color: var(--navy-mute); }
+.sidebar label { color: var(--navy-ink); }
+.sidebar .library-item { color: var(--navy-ink); border-radius: 6px; }
+.sidebar .library-item:hover { background: var(--navy-2); border-color: transparent; }
+.sidebar .library-item.active { background: var(--navy-2); border-color: transparent; box-shadow: inset 3px 0 0 var(--teal); }
+[dir="rtl"] .sidebar .library-item.active { box-shadow: inset -3px 0 0 var(--teal); }
+.sidebar .library-item b { color: #fff; }
+.sidebar .library-item small { color: var(--navy-mute); }
+.sidebar .library-item > span:last-child, .sidebar .item-icon { color: #4FC1C3; }
+.sidebar input, .sidebar select { background: var(--navy-2); border-color: #2F4554; color: #fff; }
+.sidebar button { background: transparent; border-color: #2F4554; color: var(--navy-ink); }
+.sidebar button:hover { background: var(--navy-2); border-color: var(--teal); color: #fff; }
+.sidebar #tree button.active { background: var(--teal); border-color: var(--teal); color: #fff; }
+.sidebar #roomWarnings { color: #F0B65A; }
+.sidebar #roomWarnings:not(.has-issues) { color: #5ACB9C; }
+.sidebar-bottom { border-top-color: var(--navy-2); color: var(--navy-mute); }
+.sidebar-bottom span { color: #4FC1C3; }
+.sidebar-bottom small { color: var(--navy-mute); }
+.powered { display: block; margin-top: 8px; color: var(--navy-ink); font-size: 11px; }
+
+/* Viewport: dark control-room surface. */
+.viewport-toolbar { background: var(--navy); }
+.viewport-toolbar button { border-color: #2F4554; color: var(--navy-ink); }
+.viewport-toolbar button:hover,.viewport-toolbar button[aria-pressed="true"] { background: var(--navy-2); border-color: var(--teal); }
+
+/* Inspector, tables and panels */
+.inspector { background: var(--panel); border-inline-start: 1px solid var(--line); }
+.inspector-head b, #selectedName { color: var(--teal-2); }
+.preview-card { background: var(--teal-bg); border-inline-start-color: var(--teal); }
+.preview-card strong { color: var(--fg); }
+.preview-card span, .preview-card small { color: var(--muted); }
+.section-heading { color: var(--navy); border-top-color: var(--line); letter-spacing: .3px; }
+.section-heading small { color: var(--muted); }
+.note { color: var(--muted); }
+.bottom-head span { color: var(--teal-2); }
+th { color: var(--muted); background: var(--panel-2); }
+tr.part-selected td { background: var(--teal-bg); }
+.overlay-panel { background: var(--panel); }
+.model-warnings { margin: 12px 0; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--line); border-inline-start: 3px solid var(--warn); background: #FBF0DD; color: #6b4a12; font-size: 11px; line-height: 1.7; }
+#warning:not(:empty) { margin: 10px 0; padding: 9px 12px; border-radius: 6px; background: #FBE6E5; color: #9b2c28; border-inline-start: 3px solid var(--err); }
+.side-note { margin: 4px 2px 8px; font-size: 10.5px; line-height: 1.6; color: var(--navy-mute); }
+.side-note:empty { display: none; }

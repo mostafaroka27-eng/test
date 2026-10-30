@@ -1,4 +1,5 @@
 import {initReferenceLibrary} from './reference-library.mjs';
+import {finishColor} from './reference-catalog.mjs';
 import {initWorkspace} from './workspace.mjs';
 import {DEFAULT_COSTING} from './costing.mjs';
 import {remapPartOverrides} from './topology.mjs';
@@ -71,8 +72,7 @@ function renderRoom(){if(!renderer)return;clearGroup(roomWalls);const w=room.wid
 function refreshRoomWarnings(){const issues=inspectLayout(room,units);$('roomWarnings').textContent=issues.length?issues.map(i=>'⚠ '+i.message).join(' · '):'✓ No rectangular footprint conflicts detected';$('roomWarnings').classList.toggle('has-issues',!!issues.length)}
 function refreshRoomControls(){for(const k of ['width','depth','height'])$('room'+k[0].toUpperCase()+k.slice(1)).value=room[k];renderRoom();refreshRoomWarnings()}
 
-const palette={oak:'#c7a47b',walnut:'#77513a',white:'#eceae4',charcoal:'#444f59'};
-const materialFor=(u,back=false)=>new THREE.MeshStandardMaterial({color:back?'#a9a49a':palette[u.finish]||palette.oak,roughness:.65,metalness:0,transparent:false});
+const materialFor=(u,back=false)=>new THREE.MeshStandardMaterial({color:back?'#a9a49a':finishColor(u.finish),roughness:.65,metalness:0,transparent:false});
 function addPanel(group,u,p){const dims=partSize(p);
  const pos=[p.position.x,p.position.y,p.position.z];
  const glass=p.kind==='door'&&p.sheetGood===false;const mesh=new THREE.Mesh(new THREE.BoxGeometry(...dims),glass?new THREE.MeshStandardMaterial({color:'#a9d6e5',transparent:true,opacity:.35,roughness:.05,metalness:.1}):materialFor(u,p.kind==='back'));mesh.position.set(pos[0]+(exploded?pos[0]*.18:0),pos[1]+(exploded?(p.kind==='top'?180:p.kind==='bottom'?-90:0):0),pos[2]+(exploded?(p.kind==='back'?-160:0):0));if(p.id===selectedPart&&u.id===selected){mesh.material.emissive=new THREE.Color('#20a18a');mesh.material.emissiveIntensity=.5}mesh.castShadow=true;mesh.receiveShadow=true;mesh.userData={unit:u.id,part:p.id};group.add(mesh);const edges=new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry),new THREE.LineBasicMaterial({color:'#2c3d4c',transparent:true,opacity:.55}));mesh.add(edges);if(wire)mesh.material.wireframe=true;
@@ -166,11 +166,11 @@ $('projectCsv').onclick=()=>download('rokadex-project-cutlist.csv',csv(allParts(
 $('mfgCsv').onclick=()=>{try{download(`${projectId}-R${designRevision}-manufacturing-PRELIMINARY.csv`,manufacturingCsv(snapshot()),'text/csv;charset=utf-8')}catch(e){$('warning').textContent=e.message}};
 $('partLabels').onclick=()=>{try{download(`${projectId}-R${designRevision}-part-labels.html`,labelsHtml(snapshot()),'text/html;charset=utf-8')}catch(e){$('warning').textContent=e.message}};
 $('assemblyPrint').onclick=()=>{const u=current(),model=cabinet(u.config,u.id);const w=window.open('','_blank');if(!w){$('warning').textContent='Allow popups to print assembly report';return}const rows=model.parts.map(p=>`<tr data-part="${esc(p.id)}" class="${p.id===selectedPart?'part-selected':''}"><td>${esc(p.id)}</td><td>${esc(p.kind)}</td><td>${p.length} × ${p.width} × ${p.thickness}</td><td>${esc(p.material)}</td><td>${p.edges.join(' / ')}</td></tr>`).join('');w.document.write(`<!doctype html><html><head><title>Assembly · ${esc(u.id)}</title><style>body{font:14px Arial;margin:32px;color:#233}table{width:100%;border-collapse:collapse}td,th{padding:7px;border:1px solid #abb}h1{font-size:22px}small{color:#a43}</style></head><body><h1>ROKADEX · ASSEMBLY COMPONENT SCHEDULE</h1><p>${esc(u.id)} — ${esc(u.name)} | ${u.config.width} × ${u.config.height} × ${u.config.depth} mm</p><small>PRELIMINARY ONLY. VERIFY JOINERY, HARDWARE, BACK PANEL AND MACHINING BEFORE FABRICATION.</small><table><thead><tr><th>Part ID</th><th>Type</th><th>Dimensions (mm)</th><th>Material</th><th>Edge flags</th></tr></thead><tbody>${rows}</tbody></table></body></html>`);w.document.close();w.focus();setTimeout(()=>w.print(),300)};
-function addUnit(name,overrides={}){if(units.length>=100){$('warning').textContent='Maximum 100 units per project';return}const id=`CAB-${String(nextUnitNumber()).padStart(3,'0')}`;units.push({id,name,type:'cabinet',x:(units.length%4)*1250,z:Math.floor(units.length/4)*900,finish:'oak',config:{...newConfig(),...overrides}});choose(id)}
+function addUnit(name,overrides={},finish='oak'){if(units.length>=100){$('warning').textContent='Maximum 100 units per project';return}const id=`CAB-${String(nextUnitNumber()).padStart(3,'0')}`;units.push({id,name,type:'cabinet',x:(units.length%4)*1250,z:Math.floor(units.length/4)*900,finish,config:{...newConfig(),...overrides}});choose(id)}
 $('addCab').onclick=()=>addUnit('Cabinet Unit');$('addTall').onclick=()=>addUnit('Tall Wardrobe',{width:1600,height:2400,depth:600,partitions:2,shelves:4});$('addDoor').onclick=()=>addUnit('Two-door Cabinet',{width:1000,height:2100,depth:550,partitions:1,shelves:3,doors:2});$('addBase').onclick=()=>addUnit('Base Kitchen Unit',{width:800,height:850,depth:580,partitions:0,shelves:1});$('delete').onclick=()=>{if(units.length===1){$('warning').textContent='Keep at least one unit in the project';return}units=units.filter(u=>u.id!==selected);choose(units[0].id)};
 function setMode(next){
  mode=next;document.querySelectorAll('.mode').forEach(button=>{button.classList.toggle('active',button.dataset.mode===next);button.setAttribute('aria-pressed',String(button.dataset.mode===next))});
- for(const [panel,value] of Object.entries({drawingsPanel:'drawings',manufacturingPanel:'manufacturing',renderPanel:'render',planPanel:'plan',costingPanel:'costing',reviewPanel:'review',referencesPanel:'references'}))$(panel).classList.toggle('hidden',next!==value);
+ for(const [panel,value] of Object.entries({drawingsPanel:'drawings',manufacturingPanel:'manufacturing',renderPanel:'render',planPanel:'plan',costingPanel:'costing',reviewPanel:'review'}))$(panel).classList.toggle('hidden',next!==value);
  $('viewTag').textContent=!renderer&&next==='design'?'2D DESIGN VIEW':next.toUpperCase()+' VIEW';refreshOutput();workspace?.refresh();applyLanguage(getLanguage());
 }document.querySelectorAll('.mode').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
 function drawingSvg(){return cabinetDrawingSvg(current(),{projectId,revision:designRevision})}
@@ -276,7 +276,7 @@ $('duplicate').onclick=()=>{
 document.addEventListener('change',event=>{if(event.composedPath().some(node=>node.matches?.('.inspector,.sidebar'))&&event.target.id!=='hardwareFile')checkpoint()});
 document.addEventListener('click',event=>{
  const button=event.target.closest('button');
- if(button&&['addCab','addBase','addTall','addDoor','delete','resetPartEdges','snapWall','applyManufacturingMethod'].includes(button.id))checkpoint();
+ if(button&&(['addCab','addBase','addTall','addDoor','delete','resetPartEdges','snapWall','applyManufacturingMethod'].includes(button.id)||button?.dataset.template))checkpoint();
 });
 document.addEventListener('keydown',event=>{
  if(event.target.closest('input,textarea,select,[contenteditable="true"]'))return;
@@ -297,7 +297,7 @@ workspace=initWorkspace({
  onError:message=>{$('projectStatus').textContent=message}
 });
 
-initReferenceLibrary({getProject:snapshot,download,commit:project=>{applyProject(parseProject(project));checkpoint()},onError:message=>{$('projectStatus').textContent=message}});
+initReferenceLibrary({getProject:snapshot,addUnit,commit:project=>{applyProject(parseProject(project));checkpoint()},onError:message=>{$('projectStatus').textContent=message}});
 
 // View-only layout state never enters project history or manufacturing data.
 const focusWorkspace=$('focusWorkspace');
