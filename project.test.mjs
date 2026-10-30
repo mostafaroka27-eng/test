@@ -101,3 +101,12 @@ test('quarter-turn placement survives projects and rejects unsupported angles',(
  assert.equal(parseProject(serializeProject(input)).units[0].rotation,90);
  for(const rotation of [45,360,-90,'90',null]){input.units[0].rotation=rotation;assert.throws(()=>parseProject(input),/rotation/)}
 });
+
+test('optional project and client names round-trip and are validated',async()=>{
+ const {parseProject}=await import('./project.mjs');
+ const base=JSON.parse(await (await import('node:fs/promises')).readFile(new URL('./samples/cab2-wardrobe-example.json',import.meta.url),'utf8'));
+ const p=parseProject({...base,projectName:'Villa A',clientName:'Mr. B'});
+ assert.equal(p.projectName,'Villa A');assert.equal(p.clientName,'Mr. B');
+ assert.equal(Object.hasOwn(parseProject(base),'projectName'),false);
+ assert.throws(()=>parseProject({...base,clientName:'x'.repeat(121)}),/client name/);
+});

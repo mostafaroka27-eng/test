@@ -76,6 +76,8 @@ export function parseProject(input){
  const project={format:'rokadex-standalone',version:PROJECT_VERSION,projectId:data.version===3?data.projectId:stableId(source),designRevision:data.version===3?data.designRevision:1,lengthUnit:'mm',room:{width:room.width,depth:room.depth,height:room.height},units};
  if(data.version<3)project.migratedFrom=data.version;
  else if(Object.hasOwn(data,'migratedFrom')&&[1,2].includes(data.migratedFrom))project.migratedFrom=data.migratedFrom;
+ // Optional presentation identity (v3): free text shown on drawings and client presentations, never used by geometry.
+ for(const key of ['projectName','clientName'])if(Object.hasOwn(data,key)&&data[key]!==''){project[key]=text(data[key],key==='projectName'?'project name':'client name',120)}
  if(Object.hasOwn(data,'costing'))project.costing=validateCosting(data.costing);
  return project;
 }

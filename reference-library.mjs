@@ -43,4 +43,5 @@ export function initReferenceLibrary({getProject,addUnit,commit,onError}){
  };
  relabel();new MutationObserver(relabel).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
  applyLanguage(getLanguage());
+ return catalog;
 }

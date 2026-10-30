@@ -64,9 +64,9 @@ export function ncdTemplates(ncd){
 /** Finish colours from NCD (PRESETS, COLORS) and the room planner (COLORS), de-duplicated by colour. */
 export function referenceFinishes(ncd,planner){
  const g=declarations(ncd),groups=[],seen=new Set(Object.values(LEGACY_FINISHES).map(c=>c.toLowerCase()));
- const take=(label,entries)=>{const list=[];for(const [name,color] of entries){if(!HEX.test(color||'')||typeof name!=='string')continue;const key=color.toLowerCase();if(seen.has(key))continue;seen.add(key);list.push({name,color:key})}if(list.length)groups.push({label,finishes:list})};
- take('NCD finishes',Object.entries(g.PRESETS||{}).filter(([key])=>key!=='custom').map(([,v])=>[v.n,v.c]));
- take('NCD colours',(g.COLORS||[]).map(v=>[v.n,v.c]));
+ const take=(label,entries)=>{const list=[];for(const [name,color,wood] of entries){if(!HEX.test(color||'')||typeof name!=='string')continue;const key=color.toLowerCase();if(seen.has(key))continue;seen.add(key);list.push({name,color:key,wood:Boolean(wood)})}if(list.length)groups.push({label,finishes:list})};
+ take('NCD finishes',Object.entries(g.PRESETS||{}).filter(([key])=>key!=='custom').map(([,v])=>[v.n,v.c,v.wood]));
+ take('NCD colours',(g.COLORS||[]).map(v=>[v.n,v.c,v.wood]));
  take('Room planner colours',(planner?.tables?.COLORS?.value||[]).map(([color,name])=>[name,color]));
  return groups;
 }

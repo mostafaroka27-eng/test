@@ -1,5 +1,9 @@
 import {initReferenceLibrary} from './reference-library.mjs';
 import {finishColor} from './reference-catalog.mjs';
+import {setupLook,panelMaterial,handleFor,STAGES} from './viewer-look.mjs';
+import {shopDrawingSvg,drawingSetHtml} from './shop-drawing.mjs';
+import {loadCompany,saveCompany,validateCompany,validateLogo,MAX_LOGO_BYTES} from './company.mjs';
+import {initShowroom} from './showroom.mjs';
 import {initWorkspace} from './workspace.mjs';
 import {DEFAULT_COSTING} from './costing.mjs';
 import {remapPartOverrides} from './topology.mjs';
@@ -18,11 +22,11 @@ import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 // New units use the versioned cab-2.0 rules; opened files keep whatever rules they were saved with.
 const newConfig=()=>({...DEFAULTS,...MODERN_RULES});
 const newProjectId=()=>'PRJ-'+(globalThis.crypto?.randomUUID?.().slice(0,8)??Date.now().toString(16)).toUpperCase();
-let projectId=newProjectId(),designRevision=1,migratedFrom=null;
+let projectId=newProjectId(),designRevision=1,migratedFrom=null,projectName='',clientName='',company=loadCompany(globalThis.localStorage);
 let workspace=null,costing=structuredClone(DEFAULT_COSTING);
 const $=id=>document.getElementById(id);let units=[{id:'CAB-001',name:'Cabinet Unit',type:'cabinet',x:0,z:0,finish:'oak',config:newConfig()}],selected='CAB-001',selectedPart=null,room={...DEFAULT_ROOM},mode='design',wire=false,exploded=false;
 let backupError='';
-try{const backup=loadBackup(localStorage);if(backup){units=backup.units;room=backup.room;selected=units[0].id;costing=backup.costing??structuredClone(DEFAULT_COSTING);projectId=backup.projectId;designRevision=backup.designRevision;migratedFrom=backup.migratedFrom??null}}catch(error){backupError='Local backup unavailable: '+error.message}
+try{const backup=loadBackup(localStorage);if(backup){units=backup.units;room=backup.room;selected=units[0].id;costing=backup.costing??structuredClone(DEFAULT_COSTING);projectId=backup.projectId;designRevision=backup.designRevision;migratedFrom=backup.migratedFrom??null;projectName=backup.projectName??'';clientName=backup.clientName??''}}catch(error){backupError='Local backup unavailable: '+error.message}
 const inputKeys=['width','height','depth','thickness','partitions','shelves','backThickness','backInset','material','construction','grain','edgeThickness','kerf','sheetWidth','sheetHeight','trim','doors','doorGap','doorOverlay','finish','stockGrainAxis','backConstruction',
  'bayMode','plinthHeight','plinthSetback','backGrooveDepth','backGrooveAllowance','shelfMode','shelfSideClearance','shelfFrontSetback','edgeDeduction',
  'drawerLayout','drawerStyle','drawerFrontHeight','drawerBoxHeight','drawerSlideMode','drawerSlideLength','drawerSlideRearClearance','doorType','doorThickness','doorEdgeThickness','glassThickness','drawerBoxThickness',
@@ -30,7 +34,7 @@ const inputKeys=['width','height','depth','thickness','partitions','shelves','ba
 const textKeys=['material','construction','grain','stockGrainAxis','backConstruction','bayMode','shelfMode','edgeDeduction','drawerLayout','drawerStyle','drawerSlideMode','doorType','doorMaterial','glassMaterial','drawerBoxMaterial','drawerBottomMaterial','backMaterial'];
 const topologyKeys=['shelves','partitions','bayMode','drawerLayout','drawerStyle','plinthHeight'];
 const scene=new THREE.Scene();scene.background=new THREE.Color('#142130');
-const camera=new THREE.PerspectiveCamera(42,1,.1,30000);camera.position.set(2200,1800,2800);
+const camera=new THREE.PerspectiveCamera(42,1,10,40000);camera.position.set(2200,1800,2800);
 // A graphics failure must not prevent project editing, preservation or 2D outputs.
 function createRenderer(){
  for(const antialias of [true,false]){
@@ -58,32 +62,72 @@ function activate2D(){
 }
 if(renderer){
  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,window.innerWidth<=740?1.5:2));renderer.shadowMap.enabled=true;
- renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.3;
+ renderer.outputColorSpace=THREE.SRGBColorSpace;setupLook(renderer,scene);
  $('viewport').appendChild(renderer.domElement);controls=new OrbitControls(camera,renderer.domElement);
  controls.target.set(0,900,0);controls.enableDamping=true;controls.maxDistance=14000;controls.minDistance=250;
  renderer.domElement.addEventListener('webglcontextlost',event=>{
   event.preventDefault();const previous=renderer;renderer=null;controls?.dispose();controls=null;
   previous.domElement.remove();previous.dispose();
-  $('presentation').classList.add('hidden');activate2D();renderScene();setMode('design');
+  $('presentation').classList.add('hidden');display.stage='workshop';display.open.clear();display.led.clear();activate2D();renderScene();setMode('design');
  });
 }else activate2D();
-scene.add(new THREE.HemisphereLight('#f4f8ff','#526879',2.3));const sun=new THREE.DirectionalLight('#fff0dd',3);sun.position.set(-1800,4200,2200);sun.castShadow=true;sun.shadow.mapSize.set(window.innerWidth<=740?1024:2048,window.innerWidth<=740?1024:2048);sun.shadow.camera.left=-6000;sun.shadow.camera.right=6000;sun.shadow.camera.top=6000;sun.shadow.camera.bottom=-6000;scene.add(sun);const floor=new THREE.Mesh(new THREE.PlaneGeometry(12000,12000),new THREE.MeshStandardMaterial({color:'#273746',roughness:.94}));floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;floor.position.y=-8;scene.add(floor);const grid=new THREE.GridHelper(12000,80,'#466073','#304459');grid.position.y=-6;scene.add(grid);const objects=new THREE.Group();scene.add(objects);const roomWalls=new THREE.Group();scene.add(roomWalls);
-function renderRoom(){if(!renderer)return;clearGroup(roomWalls);const w=room.width,d=room.depth,h=room.height;const wallMat=new THREE.MeshStandardMaterial({color:'#5f8c9b',transparent:true,opacity:.12,side:THREE.DoubleSide,depthWrite:false});for(const [pw,ph,x,y,z,ry] of [[w,h,0,h/2,-d/2,0],[d,h,-w/2,h/2,0,Math.PI/2],[d,h,w/2,h/2,0,Math.PI/2]]){const mesh=new THREE.Mesh(new THREE.PlaneGeometry(pw,ph),wallMat);mesh.position.set(x,y,z);mesh.rotation.y=ry;roomWalls.add(mesh)}const outline=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(w,h,d)),new THREE.LineBasicMaterial({color:'#3f8e9b',transparent:true,opacity:.45}));outline.position.y=h/2;roomWalls.add(outline)}
+const hemi=new THREE.HemisphereLight('#f4f8ff','#526879',1.2);scene.add(hemi);const sun=new THREE.DirectionalLight('#fff0dd',2.4);sun.position.set(-1800,4200,2200);sun.castShadow=true;sun.shadow.radius=5;sun.shadow.bias=-0.0002;sun.shadow.normalBias=6;sun.shadow.camera.near=100;sun.shadow.camera.far=16000;sun.shadow.mapSize.set(window.innerWidth<=740?1024:2048,window.innerWidth<=740?1024:2048);sun.shadow.camera.left=-6000;sun.shadow.camera.right=6000;sun.shadow.camera.top=6000;sun.shadow.camera.bottom=-6000;scene.add(sun);const floor=new THREE.Mesh(new THREE.PlaneGeometry(12000,12000),new THREE.MeshStandardMaterial({color:'#273746',roughness:.94}));floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;floor.position.y=-8;scene.add(floor);const grid=new THREE.GridHelper(12000,80,'#466073','#304459');grid.position.y=-6;scene.add(grid);const objects=new THREE.Group();scene.add(objects);const roomWalls=new THREE.Group();scene.add(roomWalls);
+// Presentation-only display state: never saved in the project or used by any output.
+const display={stage:'workshop',night:false,open:new Set(),led:new Set(),openAmount:new Map()};let openables=[],woodFinishes=new Set(['oak','walnut']),needsRender=true;
+function applyStage(){
+ const stage=STAGES[display.stage],night=display.night&&display.stage==='studio';
+ scene.background=new THREE.Color(night?'#0d1620':stage.background);floor.material.color.set(night?'#1b2733':stage.floor);grid.visible=stage.grid;floor.visible=display.stage!=='studio';
+ hemi.intensity=night?0.12:1.2;sun.intensity=night?0.15:2.4;if(renderer)renderer.toneMappingExposure=night?1.15:stage.exposure;
+ scene.environmentIntensity=night?0.08:display.stage==='studio'?0.6:1;renderRoom();needsRender=true;
+}
+function renderRoom(){if(!renderer)return;clearGroup(roomWalls);needsRender=true;const w=room.width,d=room.depth,h=room.height;
+ if(display.stage==='studio'){
+  // Dollhouse cut-away: solid floor slab and walls cut at 1.2 m so the room reads from above.
+  const night=display.night,cut=Math.min(1200,h),thick=100;
+  const slab=new THREE.Mesh(new THREE.BoxGeometry(w+2*thick,40,d+2*thick),new THREE.MeshStandardMaterial({color:night?'#2a2f35':'#cdbfab',roughness:.75}));slab.position.y=-31;slab.receiveShadow=true;roomWalls.add(slab);
+  const wallMat=new THREE.MeshStandardMaterial({color:night?'#3a4048':'#e4e0d8',roughness:.9});
+  for(const [sx,sz,x,z] of [[w+2*thick,thick,0,-d/2-thick/2],[thick,d,-w/2-thick/2,0],[thick,d,w/2+thick/2,0]]){const wall=new THREE.Mesh(new THREE.BoxGeometry(sx,cut,sz),wallMat);wall.userData.wall=true;wall.position.set(x,cut/2-8,z);wall.castShadow=true;wall.receiveShadow=true;roomWalls.add(wall)}
+  const capMat=new THREE.MeshStandardMaterial({color:night?'#c9a45c':'#2b3a46',roughness:.6});
+  for(const [sx,sz,x,z] of [[w+2*thick,thick,0,-d/2-thick/2],[thick,d,-w/2-thick/2,0],[thick,d,w/2+thick/2,0]]){const cap=new THREE.Mesh(new THREE.BoxGeometry(sx,6,sz),capMat);cap.userData.wall=true;cap.position.set(x,cut-5,z);roomWalls.add(cap)}
+  return;
+ }
+ const wallMat=new THREE.MeshStandardMaterial({color:'#5f8c9b',transparent:true,opacity:.12,side:THREE.DoubleSide,depthWrite:false});for(const [pw,ph,x,y,z,ry] of [[w,h,0,h/2,-d/2,0],[d,h,-w/2,h/2,0,Math.PI/2],[d,h,w/2,h/2,0,Math.PI/2]]){const mesh=new THREE.Mesh(new THREE.PlaneGeometry(pw,ph),wallMat);mesh.position.set(x,y,z);mesh.rotation.y=ry;roomWalls.add(mesh)}const outline=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(w,h,d)),new THREE.LineBasicMaterial({color:'#3f8e9b',transparent:true,opacity:.45}));outline.position.y=h/2;roomWalls.add(outline)}
 function refreshRoomWarnings(){const issues=inspectLayout(room,units);$('roomWarnings').textContent=issues.length?issues.map(i=>'⚠ '+i.message).join(' · '):'✓ No rectangular footprint conflicts detected';$('roomWarnings').classList.toggle('has-issues',!!issues.length)}
 function refreshRoomControls(){for(const k of ['width','depth','height'])$('room'+k[0].toUpperCase()+k.slice(1)).value=room[k];renderRoom();refreshRoomWarnings()}
 
-const materialFor=(u,back=false)=>new THREE.MeshStandardMaterial({color:back?'#a9a49a':finishColor(u.finish),roughness:.65,metalness:0,transparent:false});
+const materialFor=(u,back=false)=>panelMaterial(finishColor(u.finish),{wood:woodFinishes.has(u.finish),back});
 function addPanel(group,u,p){const dims=partSize(p);
  const pos=[p.position.x,p.position.y,p.position.z];
- const glass=p.kind==='door'&&p.sheetGood===false;const mesh=new THREE.Mesh(new THREE.BoxGeometry(...dims),glass?new THREE.MeshStandardMaterial({color:'#a9d6e5',transparent:true,opacity:.35,roughness:.05,metalness:.1}):materialFor(u,p.kind==='back'));mesh.position.set(pos[0]+(exploded?pos[0]*.18:0),pos[1]+(exploded?(p.kind==='top'?180:p.kind==='bottom'?-90:0):0),pos[2]+(exploded?(p.kind==='back'?-160:0):0));if(p.id===selectedPart&&u.id===selected){mesh.material.emissive=new THREE.Color('#20a18a');mesh.material.emissiveIntensity=.5}mesh.castShadow=true;mesh.receiveShadow=true;mesh.userData={unit:u.id,part:p.id};group.add(mesh);const edges=new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry),new THREE.LineBasicMaterial({color:'#2c3d4c',transparent:true,opacity:.55}));mesh.add(edges);if(wire)mesh.material.wireframe=true;
+ const glass=p.kind==='door'&&p.sheetGood===false;const mesh=new THREE.Mesh(new THREE.BoxGeometry(...dims),glass?new THREE.MeshStandardMaterial({color:'#a9d6e5',transparent:true,opacity:.35,roughness:.05,metalness:.1}):materialFor(u,p.kind==='back'));mesh.position.set(pos[0]+(exploded?pos[0]*.18:0),pos[1]+(exploded?(p.kind==='top'?180:p.kind==='bottom'?-90:0):0),pos[2]+(exploded?(p.kind==='back'?-160:0):0));if(p.id===selectedPart&&u.id===selected){mesh.material.emissive=new THREE.Color('#20a18a');mesh.material.emissiveIntensity=.5}mesh.castShadow=true;mesh.receiveShadow=true;mesh.userData={unit:u.id,part:p.id};group.add(mesh);const edges=new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry),new THREE.LineBasicMaterial({color:'#2c3d4c',transparent:true,opacity:display.stage==='studio'?.18:.45}));mesh.add(edges);if(wire)mesh.material.wireframe=true;return mesh;
 }
 function renderScene(){
- clearGroup(objects);
+ clearGroup(objects);openables=[];needsRender=true;
  if(renderer)for(const u of units){
   const g=new THREE.Group();g.position.set(u.x,0,u.z);g.rotation.y=THREE.MathUtils.degToRad(u.rotation??0);g.userData.unit=u.id;
-  const model=cabinet(u.config,u.id);for(const p of model.parts)addPanel(g,u,p);
+  const model=cabinet(u.config,u.id),doors=model.parts.filter(p=>p.kind==='door'),drawers=new Map();
+  objects.add(g);g.updateMatrixWorld(true);
+  for(const p of model.parts){
+   const mesh=addPanel(g,u,p),size=partSize(p);
+   if(p.kind==='door'){
+    // Doors hang on a pivot at the hinge edge so presentations can open them; handles follow the door.
+    const index=doors.indexOf(p),hingeLeft=doors.length===1||index<doors.length/2,pivot=new THREE.Group();
+    pivot.position.set(mesh.position.x+(hingeLeft?-size[0]/2:size[0]/2),0,mesh.position.z+size[2]/2);g.add(pivot);pivot.updateMatrixWorld(true);pivot.attach(mesh);
+    if(p.sheetGood!==false)mesh.add(handleFor(p,size,{hingeLeft}));
+    openables.push({unit:u.id,type:'door',object:pivot,angle:(hingeLeft?-1:1)*THREE.MathUtils.degToRad(100)});
+   }else if(['drawerFront','drawerFace','drawerSide','drawerBack','drawerBottom'].includes(p.kind)){
+    const key=`${p.bay}:${p.slot}`;if(!drawers.has(key)){const group=new THREE.Group();g.add(group);drawers.set(key,group);openables.push({unit:u.id,type:'drawer',object:group,distance:u.config.depth*0.55})}
+    drawers.get(key).attach(mesh);
+    if(p.kind==='drawerFront'||(p.kind==='drawerFace'&&!doors.length&&!model.parts.some(q=>q.kind==='drawerFront'&&q.bay===p.bay&&q.slot===p.slot)))mesh.add(handleFor(p,size));
+   }
+  }
+  if(display.led.has(u.id))for(const bay of model.bays??[]){
+   // Warm 3000 K strip under the top of each bay (display only).
+   const y=model.internal.ceilY-6,x=bay.x,z=u.config.depth/2-60,strip=new THREE.Mesh(new THREE.BoxGeometry(bay.innerWidth*0.9,6,14),new THREE.MeshStandardMaterial({color:'#ffd9a0',emissive:'#ffc27a',emissiveIntensity:2.5}));
+   strip.position.set(x,y,z);strip.userData.visualOnly=true;g.add(strip);
+   const light=new THREE.PointLight('#ffc27a',display.night?220000:90000,Math.max(1600,model.internal.ceilY),2);light.position.set(x,y-40,z-80);g.add(light);
+  }
   for(const a of model.accessories)if(a.kind==='hangingRail'){const rail=new THREE.Mesh(new THREE.CylinderGeometry(9,9,a.length,16),new THREE.MeshStandardMaterial({color:'#b8c2c8',metalness:.8,roughness:.3}));rail.rotation.z=Math.PI/2;rail.position.set(a.position.x,a.position.y,a.position.z);rail.userData={unit:u.id};g.add(rail)}
-  objects.add(g);if(u.id===selected){g.updateWorldMatrix(true,true);objects.add(new THREE.BoxHelper(g,'#87d9ba'))}
+  if(u.id===selected&&display.stage!=='studio'){g.updateWorldMatrix(true,true);objects.add(new THREE.BoxHelper(g,'#87d9ba'))}
  }
  if(!renderer)fallbackDrawing.innerHTML=cabinetDrawingSvg(current());
  refreshTree();refreshRoomWarnings();workspace?.refresh();
@@ -169,15 +213,18 @@ $('assemblyPrint').onclick=()=>{const u=current(),model=cabinet(u.config,u.id);c
 function addUnit(name,overrides={},finish='oak'){if(units.length>=100){$('warning').textContent='Maximum 100 units per project';return}const id=`CAB-${String(nextUnitNumber()).padStart(3,'0')}`;units.push({id,name,type:'cabinet',x:(units.length%4)*1250,z:Math.floor(units.length/4)*900,finish,config:{...newConfig(),...overrides}});choose(id)}
 $('addCab').onclick=()=>addUnit('Cabinet Unit');$('addTall').onclick=()=>addUnit('Tall Wardrobe',{width:1600,height:2400,depth:600,partitions:2,shelves:4});$('addDoor').onclick=()=>addUnit('Two-door Cabinet',{width:1000,height:2100,depth:550,partitions:1,shelves:3,doors:2});$('addBase').onclick=()=>addUnit('Base Kitchen Unit',{width:800,height:850,depth:580,partitions:0,shelves:1});$('delete').onclick=()=>{if(units.length===1){$('warning').textContent='Keep at least one unit in the project';return}units=units.filter(u=>u.id!==selected);choose(units[0].id)};
 function setMode(next){
- mode=next;document.querySelectorAll('.mode').forEach(button=>{button.classList.toggle('active',button.dataset.mode===next);button.setAttribute('aria-pressed',String(button.dataset.mode===next))});
+ mode=next;needsRender=true;document.querySelectorAll('.mode').forEach(button=>{button.classList.toggle('active',button.dataset.mode===next);button.setAttribute('aria-pressed',String(button.dataset.mode===next))});
  for(const [panel,value] of Object.entries({drawingsPanel:'drawings',manufacturingPanel:'manufacturing',renderPanel:'render',planPanel:'plan',costingPanel:'costing',reviewPanel:'review'}))$(panel).classList.toggle('hidden',next!==value);
  $('viewTag').textContent=!renderer&&next==='design'?'2D DESIGN VIEW':next.toUpperCase()+' VIEW';refreshOutput();workspace?.refresh();applyLanguage(getLanguage());
 }document.querySelectorAll('.mode').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
-function drawingSvg(){return cabinetDrawingSvg(current(),{projectId,revision:designRevision})}
+function drawingSvg(){return shopDrawingSvg(current(),{company,project:projectMeta(),lang:getLanguage(),sheetNumber:units.indexOf(current())+1,sheetCount:units.length})}
+function drawingSet(){return drawingSetHtml(units,{company,project:projectMeta(),lang:getLanguage()})}
 function drawShop(){$('drawingContent').innerHTML=drawingSvg()}
 function drawNesting(){const u=current(),model=cabinet(u.config,u.id),nest=layoutSheets(model.parts,u.config);$('sheetInfo').textContent=`${nest.sheets.length} sheets · ${nest.unplaced.length} unplaced · Shelf-packing preview, not a production cut plan`;const totals=new Map();for(const p of model.parts){const key=p.material+' / '+p.thickness+'mm';const v=totals.get(key)||{count:0,area:0,edge:0};v.count++;v.area+=p.length*p.width/1e6;v.edge+=p.bandLength/1000;totals.set(key,v)}$('materialSummary').textContent=[...totals].map(([k,v])=>`${k}: ${v.count} parts · ${v.area.toFixed(2)} m² · ${v.edge.toFixed(2)} m edge`).join('  |  ');$('sheetDrawings').innerHTML=nest.sheets.map((s,i)=>{const k=260/Math.max(s.width,s.height);return `<div><div style="font-size:10px;margin-bottom:5px">Sheet ${i+1} · ${esc(s.group)} · ${s.utilization}%</div><svg viewBox="0 0 ${s.width} ${s.height}" xmlns="http://www.w3.org/2000/svg"><rect width="${s.width}" height="${s.height}" fill="#f3eee5"/>${s.placed.map(p=>`<rect x="${p.x}" y="${p.y}" width="${p.w}" height="${p.h}" fill="#8bbfb4" stroke="#214e57" stroke-width="5"/><text x="${p.x+12}" y="${p.y+28}" font-size="30" fill="#173f45">${esc(p.id.split('-').slice(-2).join('-'))}</text>`).join('')}</svg></div>`}).join('')+nest.unplaced.map(p=>`<p class="note">Unplaced: ${esc(p.id)} — ${esc(p.reason)}</p>`).join('')}
 function download(name,content,type){const url=URL.createObjectURL(new Blob([content],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
-$('downloadSvg').onclick=()=>download(`${selected}-GA.svg`,drawingSvg(),'image/svg+xml');$('exportCsv').onclick=()=>{const u=current();download(`${u.id}-cutlist.csv`,csv(cabinet(u.config,u.id).parts),'text/csv;charset=utf-8')};$('save').onclick=()=>{try{download('rokadex-project.json',serializeProject(snapshot()),'application/json')}catch(error){$('projectStatus').textContent=error.message}};
+$('downloadSvg').onclick=()=>download(`${selected}-shop-drawing-A3.svg`,drawingSvg(),'image/svg+xml');
+$('downloadDrawingSet').onclick=()=>{try{download(`${projectId}-R${designRevision}-shop-drawings-A3.html`,drawingSet(),'text/html;charset=utf-8')}catch(e){$('warning').textContent=e.message}};
+$('printDrawingSet').onclick=()=>{const w=window.open('','_blank');if(!w){$('warning').textContent='Allow pop-ups to print the drawing set / اسمح بالنوافذ المنبثقة لطباعة اللوحات';return}try{w.document.open();w.document.write(drawingSet());w.document.close();setTimeout(()=>{try{w.focus();w.print()}catch{}},500)}catch(e){w.close();$('warning').textContent=e.message}};$('exportCsv').onclick=()=>{const u=current();download(`${u.id}-cutlist.csv`,csv(cabinet(u.config,u.id).parts),'text/csv;charset=utf-8')};$('save').onclick=()=>{try{download('rokadex-project.json',serializeProject(snapshot()),'application/json')}catch(error){$('projectStatus').textContent=error.message}};
 $('load').onclick=()=>$('file').click();
 $('file').onchange=async event=>{
  try{
@@ -192,10 +239,42 @@ $('file').onchange=async event=>{
 $('wire').onclick=()=>{wire=!wire;renderScene()};$('explode').onclick=()=>{exploded=!exploded;renderScene()};$('reset').onclick=()=>{camera.position.set(2200,1800,2800);controls?.target.set(0,900,0);controls?.update()};$('front').onclick=()=>{camera.position.set(0,1200,4000);controls?.target.set(0,1100,0)};$('top').onclick=()=>{camera.position.set(0,4500,0);controls?.target.set(0,0,0)};$('iso').onclick=$('reset').onclick;
 const raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2();let pointerStart=null;if(renderer){renderer.domElement.addEventListener('pointerdown',event=>{pointerStart={x:event.clientX,y:event.clientY,id:event.pointerId}});renderer.domElement.addEventListener('pointercancel',()=>{pointerStart=null});renderer.domElement.addEventListener('pointerup',e=>{const start=pointerStart;pointerStart=null;if(!start||start.id!==e.pointerId||Math.hypot(e.clientX-start.x,e.clientY-start.y)>4)return;const r=renderer.domElement.getBoundingClientRect();mouse.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);raycaster.setFromCamera(mouse,camera);const hits=raycaster.intersectObjects(objects.children,true);if(hits.length&&hits[0].object.userData.unit){choose(hits[0].object.userData.unit);selectPart(hits[0].object.userData.part)}});}
 function screenshot(){if(!renderer)return;renderer.render(scene,camera);renderer.domElement.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='rokadex-preview.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)})}$('screenshot').onclick=screenshot;
-$('present').onclick=()=>{if(!renderer)return;$('presentation').classList.remove('hidden');$('presentationTitle').textContent=current().name;$('presentationCanvas').appendChild(renderer.domElement);resize()};$('closePresentation').onclick=()=>{if(!renderer)return;$('presentation').classList.add('hidden');$('viewport').appendChild(renderer.domElement);resize()};$('lang').onclick=()=>{applyLanguage(getLanguage()==='ar'?'en':'ar');try{localStorage.setItem('rokadex.language',getLanguage())}catch{}};
-function resize(){if(!renderer)return;const el=renderer.domElement.parentElement;const w=el.clientWidth,h=el.clientHeight;if(w>0&&h>0){camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false)}}window.addEventListener('resize',resize);new ResizeObserver(resize).observe($('viewport'));new ResizeObserver(resize).observe($('presentationCanvas'));function tick(){if(!renderer)return;requestAnimationFrame(tick);controls.update();if(!document.hidden&&(['design','render'].includes(mode)||!$('presentation').classList.contains('hidden')))renderer.render(scene,camera)}for(const k of ['width','depth','height']){const field=$('room'+k[0].toUpperCase()+k.slice(1));field.addEventListener('change',()=>{const next={...room,[k]:Number(field.value)};try{validateRoom(next);room=next;refreshRoomControls()}catch(e){$('warning').textContent=e.message;field.value=room[k]}})}
+function openPresentation(){if(!renderer)return;$('presentation').classList.remove('hidden');$('presentationCanvas').appendChild(renderer.domElement);resize();showroom.enter();applyLanguage(getLanguage())}
+$('present').onclick=openPresentation;$('openShowroom').onclick=openPresentation;
+$('closePresentation').onclick=()=>{if(!renderer)return;$('presentation').classList.add('hidden');$('viewport').appendChild(renderer.domElement);showroom.leave();resize()};$('lang').onclick=()=>{applyLanguage(getLanguage()==='ar'?'en':'ar');try{localStorage.setItem('rokadex.language',getLanguage())}catch{}};
+function resize(){if(!renderer)return;const el=renderer.domElement.parentElement;const w=el.clientWidth,h=el.clientHeight;if(w>0&&h>0){camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false);needsRender=true}}window.addEventListener('resize',resize);new ResizeObserver(resize).observe($('viewport'));new ResizeObserver(resize).observe($('presentationCanvas'));// Render on demand: only after a scene change, camera motion, a flight or an opening animation.
+function tick(now){if(!renderer)return;requestAnimationFrame(tick);const flying=showroom.flying;showroom.update(now??performance.now());animateOpen();const moved=controls.update();if((moved||flying||needsRender)&&!document.hidden&&(['design','render'].includes(mode)||!$('presentation').classList.contains('hidden'))){renderer.render(scene,camera);needsRender=false}}for(const k of ['width','depth','height']){const field=$('room'+k[0].toUpperCase()+k.slice(1));field.addEventListener('change',()=>{const next={...room,[k]:Number(field.value)};try{validateRoom(next);room=next;refreshRoomControls()}catch(e){$('warning').textContent=e.message;field.value=room[k]}})}
 $('snapWall').onclick=()=>{try{const pos=snapUnitToWall(room,current(),$('wallSide').value);current().x=pos.x;current().z=pos.z;choose(selected)}catch(e){$('warning').textContent=e.message}};
 $('roomPlan').onclick=()=>download('rokadex-room-plan-PRELIMINARY.svg',roomPlanSvg(room,units),'image/svg+xml');
+function setOpenAmount(unitId,value){display.openAmount.set(unitId,value);needsRender=true;for(const o of openables)if(o.unit===unitId){if(o.type==='door')o.object.rotation.y=o.angle*value;else o.object.position.z=o.distance*value}}
+function animateOpen(){for(const u of units){const target=display.open.has(u.id)?1:0,currentValue=display.openAmount.get(u.id)??0;if(currentValue!==target||openables.some(o=>o.unit===u.id&&(o.type==='door'?o.object.rotation.y!==o.angle*target:o.object.position.z!==o.distance*target)))setOpenAmount(u.id,Math.abs(target-currentValue)<0.01?target:currentValue+(target-currentValue)*0.14)}}
+const finishName=value=>[...document.querySelectorAll('#finish option')].find(option=>option.value===value)?.textContent||value;
+const showroom=initShowroom({camera,controls,display,applyStage,renderScene,getUnits:()=>units,getSelected:()=>selected,select:choose,getCompany:()=>company,getProject:()=>projectMeta(),getRenderer:()=>renderer,getRoom:()=>room,scene,setWalls:visible=>roomWalls.traverse(object=>{if(object.userData.wall)object.visible=visible}),finishName,setOpenAmount,
+ hasFronts:id=>openables.some(o=>o.unit===id),onError:message=>{$('projectStatus').textContent=message}});
+
+// Settings: project identity is saved with the project; company identity stays in this browser.
+let pendingLogo=company.logo;
+function logoPreview(){$('companyLogoPreview').innerHTML=pendingLogo?`<img src="${esc(pendingLogo)}" alt="">`:'<span>—</span>'}
+$('openSettings').onclick=()=>{
+ $('projectName').value=projectName;$('clientName').value=clientName;
+ for(const [id,key] of [['companyName','name'],['companyNameAr','nameAr'],['companyPhone','phone'],['companyEmail','email'],['companyWebsite','website'],['companyTagline','tagline'],['companyAddress','address']])$(id).value=company[key];
+ pendingLogo=company.logo;logoPreview();$('settingsError').textContent='';$('settingsDialog').showModal();
+};
+$('companyLogo').onchange=()=>{const file=$('companyLogo').files[0];$('companyLogo').value='';if(!file)return;
+ if(file.size>MAX_LOGO_BYTES){$('settingsError').textContent=`Logo must be at most ${MAX_LOGO_BYTES/1024} KB`;return}
+ const reader=new FileReader();reader.onload=()=>{try{pendingLogo=validateLogo(String(reader.result));logoPreview();$('settingsError').textContent=''}catch(e){$('settingsError').textContent=e.message}};reader.readAsDataURL(file)};
+$('companyLogoRemove').onclick=()=>{pendingLogo='';logoPreview()};
+$('settingsSave').onclick=event=>{
+ event.preventDefault();
+ try{
+  const next=validateCompany({name:$('companyName').value,nameAr:$('companyNameAr').value,phone:$('companyPhone').value,email:$('companyEmail').value,website:$('companyWebsite').value,tagline:$('companyTagline').value,address:$('companyAddress').value,logo:pendingLogo});
+  const name=$('projectName').value.trim(),client=$('clientName').value.trim();
+  parseProject({...snapshot(),projectName:name,clientName:client});
+  try{company=saveCompany(localStorage,next)}catch(e){company=next;$('projectStatus').textContent='Company settings apply to this session only: '+e.message}
+  const projectChanged=name!==projectName||client!==clientName;projectName=name;clientName=client;
+  $('settingsDialog').close();if(projectChanged)checkpoint();refreshOutput();showroom.refresh();
+ }catch(e){$('settingsError').textContent=e.message}
+};
 refreshRoomControls();choose(selected);resize();tick();
 
 // Alpha 0.4 manufacturing method templates and hardware estimate (no CNC coordinates).
@@ -238,13 +317,14 @@ document.getElementById('projectSheetCsv').onclick=()=>{try{download('rokadex-pr
 showProjectSheets();
 
 // Project history stores validated, detached model snapshots; view-only changes are excluded.
-function snapshot(){return {format:'rokadex-standalone',version:3,projectId,designRevision,lengthUnit:'mm',...(migratedFrom?{migratedFrom}:{}),units,room,costing}}
+function snapshot(){return {format:'rokadex-standalone',version:3,projectId,designRevision,lengthUnit:'mm',...(migratedFrom?{migratedFrom}:{}),...(projectName?{projectName}:{}),...(clientName?{clientName}:{}),units,room,costing}}
+const projectMeta=()=>({id:projectId,name:projectName,client:clientName,revision:designRevision});
 function refreshIdentity(){$('projectIdLabel').textContent=projectId;$('designRevision').value=designRevision}
 $('designRevision').addEventListener('change',()=>{const v=Number($('designRevision').value);if(!Number.isInteger(v)||v<1||v>9999){$('designRevision').value=designRevision;$('projectStatus').textContent='Design revision must be a whole number 1–9999';return}designRevision=v;checkpoint()});
 function nextUnitNumber(){let number=1;while(units.some(unit=>unit.id===`CAB-${String(number).padStart(3,'0')}`))number++;return number}
 function applyProject(project){
  units=project.units;room=project.room;costing=project.costing??structuredClone(DEFAULT_COSTING);selectedPart=null;
- projectId=project.projectId??newProjectId();designRevision=project.designRevision??1;migratedFrom=project.migratedFrom??null;refreshIdentity();
+ projectId=project.projectId??newProjectId();designRevision=project.designRevision??1;migratedFrom=project.migratedFrom??null;projectName=project.projectName??'';clientName=project.clientName??'';refreshIdentity();
  refreshRoomControls();choose(units.some(unit=>unit.id===selected)?selected:units[0].id);
  showReview();showProjectSheets();workspace?.refresh();applyLanguage(getLanguage());
 }
@@ -297,7 +377,10 @@ workspace=initWorkspace({
  onError:message=>{$('projectStatus').textContent=message}
 });
 
-initReferenceLibrary({getProject:snapshot,addUnit,commit:project=>{applyProject(parseProject(project));checkpoint()},onError:message=>{$('projectStatus').textContent=message}});
+const catalog=initReferenceLibrary({getProject:snapshot,addUnit,commit:project=>{applyProject(parseProject(project));checkpoint()},onError:message=>{$('projectStatus').textContent=message}});
+const finishNames=new Map([...document.querySelectorAll('#finish option')].map(option=>[option.value,option.textContent]));
+for(const group of catalog?.finishes??[])for(const entry of group.finishes)if(entry.wood)woodFinishes.add(entry.color);
+renderScene();
 
 // View-only layout state never enters project history or manufacturing data.
 const focusWorkspace=$('focusWorkspace');

@@ -1,3 +1,16 @@
+# Alpha 1.5.0 Rokadex look, shop drawings and client showroom — 2026-10-30
+
+- **Rokadex design system.** The Studio uses the main Rokadex app's colours, IBM Plex Sans Arabic (bundled locally, no CDN), the gold hex-nut mark and "Powered by Rokadex · © Mostafa Mabrouk". Navy navigation rail, teal actions.
+- **References feed the app instead of a raw data view.** The "Reference library" tab is removed. From `analysis/*.json` the app now builds 7 NCD wardrobe templates (long hanging, shelves, drawers + hanging, drawers + shelves, hanging + shelves, open shelves, glass display), 30 finish colours, and 7 room templates. "Double hanging" is listed as not available (one rail per bay). Prices in the references are not used.
+- **Settings.** Company name (English/Arabic), logo (PNG/JPEG/WebP/SVG ≤ 400 KB), phone, email, website, tagline and address — empty by default, stored only in this browser. Project name and client name are saved in the project file (optional v3 fields).
+- **A3 shop drawings** at a true standard scale (1:5 … 1:100, chosen to fit): front elevation (doors closed, hinge swing marks, handles), interior with doors removed (shelf levels, rails, bay widths, interior height), section through bay 1, plan, dimension chains, grouped parts schedule, notes, finish swatch and a title block with company logo/name/contact, project, client, unit, drawing number, scale, sheet n/N, revision and date. Arabic or English. Print the whole set as A3 PDF or download it as HTML.
+- **3D look.** Image-based lighting, soft shadows, procedural wood grain for wood finishes, satin melamine, bar handles on doors and drawer fronts, doors on hinge pivots and drawers that slide. Handles, LEDs and grain are display only.
+- **Client showroom** (based on the supplied reel): dollhouse room with walls cut at 1.2 m, a card per unit with "Open" and "LED" switches, Overview / Front / Top / Auto-rotate camera, Day/Night, company branding and a **client PDF** (A4 landscape: cover with room render, one page per unit with closed and open renders, size, finish and counted features; no prices).
+
+Local validation: 182 Node checks, Chromium workflows (see HANDOFF), production build. Not validated on Safari/iPhone, the hosted site, a printer, a machine or a workshop.
+
+---
+
 # Alpha 1.4.0 engineering model — 2026-10-30
 
 Cabinet rules **cab-2.0**, one part model for every output, project format v3. Existing projects keep their geometry: a recorded snapshot of the 1.3.2 engine (73 configurations) is compared byte-for-byte in the test suite.

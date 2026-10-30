@@ -1,3 +1,13 @@
+# Known limitations — Alpha 1.5.0 additions
+
+- Shop drawings are drawn at a true scale only when printed at 100 % on A3 landscape. Browser print dialogs may scale "to fit"; check the 1:n bar before measuring. Drawings remain preliminary: no drilling, tolerances or approval.
+- The section is taken through the centre of bay 1 only. Upper cabinets, corners and fillers are not drawn because the engine does not model them yet.
+- Handles in 3D and on drawings are generic bars (320 mm max, NCD default length); no hardware catalogue. LED strips and lights are visual only and do not enter the cut list or estimate.
+- The showroom shows only your cabinets and the room shell. Furniture, people, cars or landscaping like the reference reel need 3D assets that are not included.
+- Night mode and lighting are approximate real-time rendering, not a photoreal render.
+- Company settings live in this browser's storage. Use the same browser or re-enter them on another device; they are not stored in project files.
+- "Double hanging" from NCD is not available until the engine supports two rails per bay.
+
 # Known limitations — Alpha 1.4.0 additions
 
 - cab-2.0 values (slide lengths 250–600, 13 mm slide clearance per side, groove 8 mm / allowance 2 mm, shelf clearances, rail clearance) are editable software conventions taken from the supplied NCD reference or chosen as starting points. None is supplier- or workshop-approved.

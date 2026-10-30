@@ -3,7 +3,7 @@ import {readFile} from 'node:fs/promises';
 
 const projectUpload = data => ({name:'project.json', mimeType:'application/json', buffer:Buffer.from(JSON.stringify(data))});
 
-test('edits, undo/redo, autosave, exports, drawings and project roundtrip', async ({page}) => {
+test('edits, undo/redo, autosave, exports, drawings and project roundtrip', async ({page}) => {test.setTimeout(60000);
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');

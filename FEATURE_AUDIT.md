@@ -1,4 +1,20 @@
-# Feature audit — Alpha 1.3 (updated for 1.4.0)
+# Feature audit — Alpha 1.3 (updated for 1.5.0)
+
+## Alpha 1.5.0 additions — 2026-10-30
+
+| Capability | Status | Evidence |
+| --- | --- | --- |
+| Rokadex theme, local font, logo | Implemented, visually checked | Screenshots EN/AR/phone; font served locally (e2e asset test) |
+| NCD templates from references (7 of 8) | Implemented and tested | Each template builds a valid cabinet; values traced to `defaults`/`CAT`/`DEF_STD` |
+| Double hanging template | Not implemented | Engine supports one rail per bay; shown as "not available" |
+| Reference finishes (30) and room templates (7) | Implemented and tested | De-duplicated colours; project round-trip with a reference finish |
+| Company / project settings | Implemented and tested | Validation, size limit, storage round-trip, browser workflow |
+| A3 shop drawings with scale and title block | Implemented and tested | Layout fits A3 for 5 sizes; front/interior/section/plan from the model; schedule count = parts |
+| Printed scale accuracy | Not verified | Depends on printing at 100 % on A3; no physical print checked |
+| 3D look (IBL, shadows, grain, handles, open fronts, LED) | Implemented, visually checked | Screenshots; display-only |
+| Client showroom + client PDF | Implemented and tested in Chromium | Cards, switches, night mode, proposal pages and images |
+| Reference prices in costing | Not used (by design) | Prices are company/currency specific |
+
 
 ## Alpha 1.4.0 matrix — 2026-10-30
 
