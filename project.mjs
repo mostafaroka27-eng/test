@@ -5,6 +5,9 @@ import {validateCosting} from './costing.mjs';
 
 export const MAX_PROJECT_BYTES=5*1024*1024;
 export const BACKUP_KEY='rokadex-standalone.autosave.v2';
+export const PROJECT_VERSION=3;
+// FNV-1a: a reopened legacy file always receives the same project ID until it is saved as v3.
+const stableId=source=>{let h=0x811c9dc5;for(const byte of new TextEncoder().encode(source)){h^=byte;h=Math.imul(h,0x01000193)>>>0}return 'PRJ-'+h.toString(16).toUpperCase().padStart(8,'0')};
 const finishes=new Set(['oak','walnut','white','charcoal']);
 const isRecord=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
 const text=(value,name,max=200)=>{
@@ -21,7 +24,9 @@ export function parseProject(input){
  if(typeof source!=='string')throw Error('Unsupported project file');
  if(new TextEncoder().encode(source).byteLength>MAX_PROJECT_BYTES)throw Error('Project exceeds 5 MB');
  const data=JSON.parse(source);
- if(!isRecord(data)||data.format!=='rokadex-standalone'||![1,2].includes(data.version))throw Error('Unsupported project file');
+ if(!isRecord(data)||data.format!=='rokadex-standalone'||![1,2,3].includes(data.version))throw Error('Unsupported project file');
+ if(data.version===3&&(typeof data.projectId!=='string'||!/^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/.test(data.projectId)))throw Error('Invalid project ID');
+ if(data.version===3&&(!Number.isInteger(data.designRevision)||data.designRevision<1||data.designRevision>9999))throw Error('Invalid design revision');
  if(!Array.isArray(data.units)||data.units.length<1||data.units.length>100)throw Error('Project must have 1–100 units');
  const room=data.version===1?{...DEFAULT_ROOM}:data.room;
  validateRoom(room);
@@ -41,6 +46,10 @@ export function parseProject(input){
    if(typeof DEFAULTS[key]==='number')bounded(value,key,10000);
    else text(value,key);
   }
+  for(const key of ['bayShelfLevels','bayRails'])if(Object.hasOwn(unit.config,key)){
+   if(!Array.isArray(unit.config[key]))throw Error(`Invalid ${key}`);
+   config[key]=unit.config[key].map(v=>Array.isArray(v)?[...v]:v);
+  }
   for(const key of ['bayShelves','bayDrawers'])if(Object.hasOwn(unit.config,key)){
    if(!Array.isArray(unit.config[key]))throw Error(`Invalid ${key}`);
    config[key]=[...unit.config[key]];
@@ -54,16 +63,19 @@ export function parseProject(input){
    }
   }
   validate(config);
-  const shelves=config.bayShelves??Array(config.partitions+1).fill(config.shelves);
-  const partCount=5+config.partitions+config.doors+shelves.reduce((sum,n)=>sum+n,0)+6*(config.bayDrawers??[]).reduce((sum,n)=>sum+n,0);
+  // Topology inputs are bounded (30 bays/shelves, 12 drawers), so generating before counting is safe.
+  const model=cabinet(config,unit.id);
+  const partCount=model.parts.length;
   totalParts+=partCount;
   if(partCount>2000||totalParts>5000)throw Error('Project exceeds preview limits: 2000 parts per unit / 5000 parts per project');
-  const model=cabinet(config,unit.id);
   if(model.parts.some(part=>![part.length,part.width,part.thickness].every(n=>Number.isFinite(n)&&n>0&&n<=10000)))throw Error('Invalid generated panel dimensions');
   if(Object.hasOwn(unit,'rotation')&&![0,90,180,270].includes(unit.rotation))throw Error('Invalid component rotation');
   return {id:unit.id,name,type,x,z,finish:unit.finish,config,...(Object.hasOwn(unit,'rotation')?{rotation:unit.rotation}:{})};
  });
- const project={format:'rokadex-standalone',version:2,room:{width:room.width,depth:room.depth,height:room.height},units};
+ // v1/v2 files are migrated explicitly: geometry fields they lack keep legacy defaults, never modern rules.
+ const project={format:'rokadex-standalone',version:PROJECT_VERSION,projectId:data.version===3?data.projectId:stableId(source),designRevision:data.version===3?data.designRevision:1,lengthUnit:'mm',room:{width:room.width,depth:room.depth,height:room.height},units};
+ if(data.version<3)project.migratedFrom=data.version;
+ else if(Object.hasOwn(data,'migratedFrom')&&[1,2].includes(data.migratedFrom))project.migratedFrom=data.migratedFrom;
  if(Object.hasOwn(data,'costing'))project.costing=validateCosting(data.costing);
  return project;
 }

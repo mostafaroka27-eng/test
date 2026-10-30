@@ -5,7 +5,7 @@ import {DEFAULT_ROOM} from './room.mjs';
 import {DEFAULT_COSTING} from './costing.mjs';
 import {REVISION_KEY,MAX_REVISIONS,MAX_REVISION_BYTES,saveRevision,listRevisions,loadRevision,deleteRevision} from './revisions.mjs';
 
-const project=()=>({format:'rokadex-standalone',version:2,room:{...DEFAULT_ROOM},units:[{id:'CAB-001',name:'Kitchen',type:'cabinet',x:0,z:0,rotation:90,finish:'oak',config:{...DEFAULTS}}],costing:{...DEFAULT_COSTING,currency:'OMR',materials:[{material:DEFAULTS.material,thickness:18,pricePerM2:25}]}});
+const project=()=>({format:'rokadex-standalone',version:3,projectId:'PRJ-TEST',designRevision:1,lengthUnit:'mm',room:{...DEFAULT_ROOM},units:[{id:'CAB-001',name:'Kitchen',type:'cabinet',x:0,z:0,rotation:90,finish:'oak',config:{...DEFAULTS}}],costing:{...DEFAULT_COSTING,currency:'OMR',materials:[{material:DEFAULTS.material,thickness:18,pricePerM2:25}]}});
 const memory=()=>{const values=new Map();return {values,getItem:key=>values.get(key)??null,setItem:(key,value)=>values.set(key,value)}};
 
 test('named revisions save and restore detached projects including costing and quarter turns',()=>{

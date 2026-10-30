@@ -5,16 +5,25 @@ import {DEFAULT_ROOM} from './room.mjs';
 import {parseProject,serializeProject,createHistory,saveBackup,loadBackup,MAX_PROJECT_BYTES} from './project.mjs';
 import {DEFAULT_COSTING} from './costing.mjs';
 
-const project=()=>({format:'rokadex-standalone',version:2,room:{...DEFAULT_ROOM},units:[{id:'CAB-001',name:'خزانة تجريبية',type:'cabinet',x:0,z:0,finish:'oak',config:{...DEFAULTS,partitions:1,bayShelves:[1,2],bayDrawers:[2,0],partOverrides:{'side:0':{edges:[1,1,0,0]}}}}]});
+const project=()=>({format:'rokadex-standalone',version:3,projectId:'PRJ-TEST',designRevision:1,lengthUnit:'mm',room:{...DEFAULT_ROOM},units:[{id:'CAB-001',name:'خزانة تجريبية',type:'cabinet',x:0,z:0,finish:'oak',config:{...DEFAULTS,partitions:1,bayShelves:[1,2],bayDrawers:[2,0],partOverrides:{'side:0':{edges:[1,1,0,0]}}}}]});
 
-test('version 2 roundtrip preserves room, drawers, materials and individual edge overrides',()=>{
+test('version 3 roundtrip preserves room, drawers, materials and individual edge overrides',()=>{
  const input=project(); input.room.width=5000; input.units[0].config.material='Oak "premium", veneer';
  assert.deepEqual(parseProject(serializeProject(input)),input);
+});
+// Format changed in 1.4: v2 files migrate explicitly to v3 without altering geometry or settings.
+test('version 2 file migrates to v3 with an explicit record and unchanged units',()=>{
+ const legacy=project();legacy.version=2;delete legacy.projectId;delete legacy.designRevision;delete legacy.lengthUnit;
+ const once=parseProject(legacy);
+ assert.equal(once.version,3);assert.equal(once.migratedFrom,2);assert.match(once.projectId,/^PRJ-[0-9A-F]{8}$/);assert.equal(once.designRevision,1);
+ assert.deepEqual(once.units,legacy.units);assert.deepEqual(once.room,legacy.room);
+ assert.equal(parseProject(legacy).projectId,once.projectId,'reopening the same legacy file yields the same project ID');
+ assert.deepEqual(parseProject(serializeProject(once)),once);
 });
 test('legacy version 1 gains default room and missing engineering defaults',()=>{
  const input=project(); input.version=1; delete input.room; delete input.units[0].config.drawerGap;
  const result=parseProject(input);
- assert.equal(result.version,2); assert.deepEqual(result.room,DEFAULT_ROOM); assert.equal(result.units[0].config.drawerGap,DEFAULTS.drawerGap);
+ assert.equal(result.version,3); assert.equal(result.migratedFrom,1); assert.deepEqual(result.room,DEFAULT_ROOM); assert.equal(result.units[0].config.drawerGap,DEFAULTS.drawerGap);
 });
 test('normalized project is detached and parsing does not mutate source on failure',()=>{
  const input=project(),copy=structuredClone(input),result=parseProject(input);
@@ -29,7 +38,7 @@ test('rejects duplicate, non-string and HTML attribute unit IDs',()=>{
  const input=project(); input.units.push(structuredClone(input.units[0])); assert.throws(()=>parseProject(input),/ID/);
 });
 test('rejects unsupported files, empty projects and malformed configurations',()=>{
- for(const input of [null,[],{},'{invalid', {...project(),version:3},{...project(),units:[]}])assert.throws(()=>parseProject(input));
+ for(const input of [null,[],{},'{invalid', {...project(),version:4},{...project(),projectId:undefined},{...project(),designRevision:0},{...project(),units:[]}])assert.throws(()=>parseProject(input));
  for(const value of [null,[],42]){const input=project();input.units[0].config=value;assert.throws(()=>parseProject(input));}
  const input=project(); input.units[0].config.partOverrides={'side:0':null}; assert.throws(()=>parseProject(input));
 });

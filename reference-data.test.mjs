@@ -41,3 +41,23 @@ test('every extracted JSON source can be browsed completely within the reference
  assert.equal(files.length,5);
  for(const name of files){const facts=referenceFacts(JSON.parse(await readFile(new URL(name,directory),'utf8')));assert.ok(facts.length>20&&facts.length<=12000,name)}
 });
+
+test('units convert once: 200 cm becomes 2000 mm and stays 2000 mm when imported again',async()=>{
+ const {importLength}=await import('./reference-data.mjs');
+ const once=importLength(200,'cm');
+ assert.deepEqual(once,{value:2000,unit:'mm',sourceUnit:'cm'});
+ assert.deepEqual(importLength(once,'cm'),once);
+ assert.equal(importLength(2.4,'m').value,2400);
+ assert.throws(()=>importLength(200,'inch'));assert.throws(()=>importLength(-1,'cm'));
+});
+test('furniture catalogue keeps missing heights null and never enters manufacturing',async()=>{
+ const {referenceFurniture}=await import('./reference-data.mjs');
+ const {readFileSync}=await import('node:fs');
+ const data=JSON.parse(readFileSync(new URL('./analysis/room-planner-data.json',import.meta.url),'utf8'));
+ const items=referenceFurniture(data);
+ assert.equal(items.length,20);
+ const wardrobe=items.find(i=>i.type==='ward');
+ assert.deepEqual([wardrobe.width,wardrobe.depth,wardrobe.height,wardrobe.heightSource],[2000,600,null,'missing']);
+ assert.ok(items.every(i=>i.manufacturing===false&&(i.height===null)===(i.heightSource==='missing')));
+ assert.throws(()=>referenceFurniture({...data,units:{roomAndFurniture:'mm'}}),/cm/);
+});

@@ -18,6 +18,10 @@ Preserve the supplied application and compatible project files. Ship working, re
 
 Final local gate: **138 Node checks and ten Chromium workflows passed**. Frozen-build endurance: **57 cycles / 182.744 seconds / zero browser errors**. A prior run was interrupted after an observed 460 cycles/1439.436 seconds. No completed one-hour run is claimed.
 
+## Delivered in Alpha 1.4.0 (2026-10-30)
+
+Cabinet rules cab-2.0, unified part model (uid, finish/cut size, named edges, operations, provenance), project format v3 with migration, manufacturing CSV, QR part labels, packing verifier, annotated drawings. Local gate: 163 Node checks, 18 Chromium workflows, production build. See `HANDOFF.md` for the prioritized remaining work.
+
 ## 1. Complete acceptance and preservation
 
 Enable supported access to the supplied staging host, then verify the exact deployed assets and critical user flows. Broaden browser/GPU/mobile/accessibility checks. Keep hosted evidence separate from local results. Add project metadata and hardware-library persistence with schema regression cases before introducing shared/cloud storage.

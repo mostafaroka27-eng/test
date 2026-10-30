@@ -37,16 +37,19 @@ export function projectSheetPlan(units){
   if(!batches.has(stock))batches.set(stock,{config:c,parts:[]});
   batches.get(stock).parts.push(...parts);
  }
- const sheets=[],unplaced=[];
+ const sheets=[],unplaced=[],excluded=[];
  for(const batch of batches.values()){
   const result=layoutSheets(batch.parts,batch.config);
   sheets.push(...result.sheets);
   unplaced.push(...result.unplaced);
+  excluded.push(...result.excluded);
  }
  const placedCount=sheets.reduce((sum,s)=>sum+s.placed.length,0);
  const totalArea=sheets.reduce((sum,s)=>sum+s.width*s.height,0);
  const usedArea=sheets.reduce((sum,s)=>sum+s.usedArea,0);
- return {sheets,unplaced,placedCount,utilization:totalArea?round(usedArea/totalArea*100):0,status:'PREVIEW ONLY — NOT FOR FABRICATION OR CNC'};
+ // Utilization = placed cut-part area ÷ full sheet area (trim and kerf count as waste). Waste = 100 − utilization.
+ const utilization=totalArea?round(usedArea/totalArea*100):0;
+ return {sheets,unplaced,excluded,placedCount,utilization,wastePercent:totalArea?round(100-utilization):0,formula:'utilization = placed cut area / total sheet area',status:'PREVIEW ONLY — NOT FOR FABRICATION OR CNC'};
 }
 export function projectSheetCsv(plan){
  const rows=['# NOT FOR FABRICATION OR CNC — PREVIEW ONLY','sheet,stock_group,part_id,x_mm,y_mm,length_mm,width_mm,stock_grain_axis,rotated'];

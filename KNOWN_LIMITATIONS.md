@@ -1,3 +1,16 @@
+# Known limitations — Alpha 1.4.0 additions
+
+- cab-2.0 values (slide lengths 250–600, 13 mm slide clearance per side, groove 8 mm / allowance 2 mm, shelf clearances, rail clearance) are editable software conventions taken from the supplied NCD reference or chosen as starting points. None is supplier- or workshop-approved.
+- The NCD-integrated package (ncd-designer.html, legacy originals) was not among the supplied files. There is no NCD project importer; NCD compute rules were read only from the analysis report.
+- Plinth is supported only with top/bottom between sides. Upper cabinets, fillers, end panels and corner units are not modeled.
+- External drawer fronts cannot be combined with full-height doors; mixed door-over-drawer fronts are not modeled.
+- Hanging rail length is the inner bay width; end-support fittings are not deducted.
+- Groove operations are recorded data only (no tool, face origin or machine program). Drilling for hinges/slides is not generated.
+- QR labels were verified by decoding the generated matrix in software, not with a workshop scanner. Label payload length is capped at 700 characters.
+- Furniture catalogue conversion exists (`referenceFurniture`) but generic furniture blocks are not yet placed in the room plan.
+- Cost estimate still combines cost and margin on one screen; supplier price lists are not applied.
+- Version 3 project files cannot be opened by 1.3.x builds.
+
 # Known limitations — Alpha 1.3.2
 
 This remains a standalone engineering prototype. Software tests and reference comparisons do not approve fabrication drawings, procurement, cutting instructions or CNC programs.

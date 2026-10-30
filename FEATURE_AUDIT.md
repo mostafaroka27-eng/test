@@ -1,4 +1,27 @@
-# Feature audit — Alpha 1.3
+# Feature audit — Alpha 1.3 (updated for 1.4.0)
+
+## Alpha 1.4.0 matrix — 2026-10-30
+
+| Capability | Status | Evidence |
+| --- | --- | --- |
+| Legacy geometry preservation | Implemented and tested | 73-configuration byte comparison with the 1.3.2 engine |
+| Separate boxes / shared partitions | Implemented and tested | 764 / 776 mm reference case; browser workflow |
+| Plinth, grooved back, back thickness | Implemented and tested | Hand-computed depths and back sizes; plinth refused with over-construction |
+| Fixed/adjustable shelves, levels, rails | Implemented and tested | Clearances, overlap/ceiling rejection, rail clearance |
+| Drawers bottom + shelves above, internal drawers | Implemented and tested | No-overlap positions, door conflict error, internal setback |
+| Drawer slide selection | Implemented and tested; values unverified | Largest fitting length, explicit error, fixed-length rejection |
+| Glass doors as glass parts | Implemented and tested | Material/thickness, excluded from sheets, supplier warning |
+| Finish vs cut size, named edges | Implemented and tested | Deduction on/off cases; packing uses cut size |
+| Stable part uid | Implemented and tested | Survives topology edits elsewhere; display IDs may renumber |
+| Manufacturing CSV, QR labels | Implemented and tested in software | Model/CSV/label/drawing agreement; jsQR round trip; truncation rejected |
+| Packing verifier | Implemented and tested | No lost parts, overlap, bounds, grain rotation |
+| Project v3 + migration | Implemented and tested | v1/v2 migrate unchanged; v3 roundtrip; browser save/reload |
+| Arabic for new controls | Implemented, partially tested | Browser check of key labels; dynamic messages remain English |
+| NCD project import | Not implemented | Source package not supplied |
+| Generic furniture blocks in plan | Partial | Conversion function only |
+| Safari/iPhone, hosted staging | Not verified | No access from this environment |
+| CNC / machine output | Blocked | No machine, controller, tooling or postprocessor data |
+
 
 Audit date: 2026-10-29. Evidence combines source review, targeted regressions and local Chromium workflows. The supplied staging URL is `https://rokadex-staging.pages.dev/`; this environment received proxy CONNECT 403, so hosted behavior remains unverified here.
 

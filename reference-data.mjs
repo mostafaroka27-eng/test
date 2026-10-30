@@ -29,3 +29,24 @@ export function referenceRoomPresets(data){
 export function applyReferenceRoom(current,preset){
  validateRoom(current);return validateRoom({width:preset.width,depth:preset.depth,height:current.height});
 }
+
+const MM_PER={mm:1,cm:10,m:1000};
+/** Convert a source length to millimetres exactly once. A value already tagged as converted is returned unchanged. */
+export function importLength(value,unit){
+ if(value&&typeof value==='object'&&value.unit==='mm'&&typeof value.sourceUnit==='string')return value;
+ if(!Object.hasOwn(MM_PER,unit))throw Error(`Unsupported source unit: ${unit}`);
+ if(typeof value!=='number'||!Number.isFinite(value)||value<0)throw Error('Invalid source length');
+ return {value:Math.round(value*MM_PER[unit]*100)/100,unit:'mm',sourceUnit:unit};
+}
+
+/** Room-planner furniture catalogue as planning blocks in mm. Heights absent from the source stay null — never invented. */
+export function referenceFurniture(data){
+ const items=data?.tables?.CATALOG?.value,unit=data?.units?.roomAndFurniture;
+ if(!Array.isArray(items))throw Error('Reference furniture catalogue missing');
+ if(unit!=='cm')throw Error('Reference furniture unit must be declared as cm');
+ return items.map(item=>{
+  if(!item||typeof item.t!=='string'||typeof item.n!=='string')throw Error('Invalid reference furniture item');
+  const length=key=>Number.isFinite(item[key])?importLength(item[key],'cm').value:null;
+  return {type:item.t,name:item.n,width:length('w'),depth:length('d'),height:length('h'),sourceUnit:'cm',heightSource:Number.isFinite(item.h)?'source':'missing',manufacturing:false};
+ });
+}

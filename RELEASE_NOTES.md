@@ -1,3 +1,19 @@
+# Alpha 1.4.0 engineering model — 2026-10-30
+
+Cabinet rules **cab-2.0**, one part model for every output, project format v3. Existing projects keep their geometry: a recorded snapshot of the 1.3.2 engine (73 configurations) is compared byte-for-byte in the test suite.
+
+- Separate boxes or shared partitions (2400 mm / 3 bays / 18 mm → 764 or 776 mm inside), plinth with kickboard, grooved back with recorded groove operations, fixed or adjustable shelves with their own clearances, explicit shelf levels, hanging rails, drawers at the bottom with a fixed shelf and shelves/rail above, internal drawers behind doors, slide length chosen from configured lengths with an explicit error when none fits, separate door/drawer-box/drawer-bottom/back materials and thicknesses, real glass doors (supplier items, excluded from sheets).
+- Every part has a stable semantic `uid`, finish size and cut size (edge-band deduction on/off), named edges L1/W1/L2/W2, rotation permission, sheet/non-sheet flag, operations, rule source and verification status.
+- Manufacturing CSV and printable part labels with QR codes carrying project ID, design revision, part uid and full-precision sizes with a checksum. Labels are decoded in tests by an independent QR decoder.
+- Sheet packing uses cut sizes, excludes non-sheet items, never rotates grain-locked parts; an independent verifier checks no lost/duplicated parts, no overlaps (kerf included) and bounds.
+- Drawings show shelf levels, rails, inner bay widths, project ID, revision and rules version.
+- Project files are saved as v3 (`projectId`, `designRevision`, `lengthUnit`, `migratedFrom`); v1/v2 open unchanged.
+- `npm test` now runs on Node 22 and 24.
+
+Local validation: 163 Node checks, 18 Chromium workflows, production build. Not validated on Safari/iPhone, the hosted site, a machine or a workshop.
+
+---
+
 # Alpha 1.3.2 startup recovery — 2026-10-29
 
 A supplied iPhone screenshot shows the older dark interface and a generic startup error. That error came from the catch-all dynamic import handler: it also appeared for missing modules or unrelated initialization exceptions. The screenshot alone does not establish a WebGL failure. Hosted inspection remains blocked by the environment proxy; the exact phone-side cause has not been reproduced.

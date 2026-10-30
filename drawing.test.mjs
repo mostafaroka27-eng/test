@@ -57,3 +57,13 @@ test('drawing rejects invalid model inputs and never emits non-finite coordinate
  for(const u of [null,{},unit({width:1}),unit({height:NaN}),unit({depth:Infinity})])assert.throws(()=>cabinetDrawingSvg(u));
  const svg=cabinetDrawingSvg(unit({}));assert.doesNotMatch(svg,/NaN|Infinity|undefined/);
 });
+
+test('front elevation annotates shelf levels, rails, inner widths and the design revision from the model',async()=>{
+ const {DEFAULTS,MODERN_RULES}=await import('./engine.mjs');
+ const unit={id:'W1',name:'Wardrobe',config:{...DEFAULTS,...MODERN_RULES,width:2400,height:2400,depth:600,partitions:2,bayShelfLevels:[[1000],null,null],bayRails:[0,0,1600]}};
+ const svg=cabinetDrawingSvg(unit,{projectId:'PRJ-X',revision:7});
+ assert.match(svg,/▾1000/);assert.match(svg,/rail 1600/);assert.equal((svg.match(/>776</g)||[]).length,3);
+ assert.match(svg,/PROJECT PRJ-X · REV 7 · cab-2.0/);
+ // Rail 1600 above the 18 mm interior floor of a 2400 mm cabinet: SVG y = 2400 − 18 − 1600 = 782.
+ assert.match(svg,/y1="782" y2="782"/);
+});
