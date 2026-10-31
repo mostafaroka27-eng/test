@@ -1,3 +1,17 @@
+# Alpha 1.7.0 shop-drawing layout, assembly steps and workers' view — 2026-10-31
+
+- **Shop-drawing layout options** (Shop drawings → "Sheet layout", saved in the project): paper A3 or A4 landscape; which views appear (front, interior, section, plan); arrangement (automatic, in a row, two by two, one under another); scale (largest that fits, or a fixed 1:5 … 1:100, with a printed warning and a larger scale when the fixed one does not fit); full or overall-only dimensions; parts table and notes on or off; table column right or left. The default layout draws exactly the 1.5 sheet (checked by test).
+- **Clarification images.** Up to 4 photos or sketches per unit with captions (reduced to ≤ 300 KB, stored in the project). They print on a numbered details sheet (SD-<unit>-D) right after the unit's drawing; sheet n / N counts it.
+- **More on the drawings.** Cover panels, top filler and worktop are drawn with overall dimensions; handle type (bar, knob, profile, none), LED strips and accessory outlines on the interior view; glass and handle notes when not default.
+- **Assembly mode.** A new "Assembly" tab builds the unit in 3D step by step: check parts → carcass → back → top (grooved backs) → plinth → covers → drawers → shelves → rails/LEDs/fittings → doors → handles → worktop → wall fixing. Each step lists its part IDs (same as cutting list and labels), a method text and the counted hardware (hinges by door height, slide pairs, 4 pins per adjustable shelf, 2 brackets per wall unit). Every part appears in exactly one step (tested).
+- **Find a part by barcode.** Type a part ID, use a USB/Bluetooth barcode scanner (it types + Enter), or the phone camera (BarcodeDetector, or the bundled jsQR). The result shows the unit, the part's position (bay, left/right, height from floor), its assembly step and sizes, and highlights it in 3D. A label from another project is refused; a label whose sizes differ from the current design is flagged "reprint".
+- **Assembly booklet.** Print an A4 booklet with a 3D picture, parts and hardware per step.
+- **Workers' view.** One button (or open the site with `?worker`) hides editing, prices and other tabs and keeps Open, language, the 3D model and assembly. It is a view mode, not a security lock: anyone can leave it.
+
+Local validation: 205 Node checks, 24 Chromium workflows, production build. Not validated on a real phone camera, Safari/iPhone, a physical printer or in a workshop. Assembly method texts and hardware counts are RokaDex starting instructions, not a manufacturer's assembly manual.
+
+---
+
 # Alpha 1.6.0 unit details, lighting, kitchens, materials and room sheet — 2026-10-31
 
 - **Unit details.** Left/right cover panels (thickness and forward projection), top filler (height and setback), bottom plinth, and a worktop (thickness, overhang, material). Covers and the top filler are cut parts with their own IDs; the worktop is a supplier item, not packed on sheets. All default to 0, so older projects keep their geometry and part IDs.

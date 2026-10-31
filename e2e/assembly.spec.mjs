@@ -1,0 +1,51 @@
+import {test, expect} from '@playwright/test';
+
+test('1.7 shop drawing layout: A4, fewer views, images on a details sheet, kept after reload', async ({page}) => {
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/');
+  await page.locator('[data-mode="drawings"]').click();
+  await page.locator('.drawing-options details').first().evaluate(node => { node.open = true; });
+  await page.locator('#dlPaper').selectOption('A4');
+  await page.locator('#dlView-section').uncheck();
+  await expect(page.locator('#drawingsPanel svg[data-paper="A4"]').first()).toBeVisible();
+  await expect(page.locator('#drawingsPanel svg [data-view="section"]')).toHaveCount(0);
+  await page.locator('.drawing-options details').nth(1).evaluate(node => { node.open = true; });
+  await page.locator('#drawingImageInput').setInputFiles({name: 'detail.png', mimeType: 'image/png', buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64')});
+  await expect(page.locator('#drawingImageList .drawing-image')).toHaveCount(1);
+  await expect(page.locator('#drawingsPanel svg[data-paper]')).toHaveCount(2);
+  await page.reload();
+  await page.locator('[data-mode="drawings"]').click();
+  await expect(page.locator('#drawingsPanel svg[data-paper="A4"]')).toHaveCount(2);
+  expect(errors).toEqual([]);
+});
+
+test('1.7 assembly steps, part lookup and the workers\' view', async ({page}) => {
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/');
+  await page.locator('[data-mode="assembly"]').click();
+  await expect(page.locator('#assemblyPanel')).toBeVisible();
+  await expect(page.locator('#asmStepLabel')).toContainText('Step 1 /');
+  await page.locator('#asmNext').click();
+  await expect(page.locator('#asmStep')).toContainText('carcass');
+  await page.locator('#scanInput').fill('cab-001-side-001');
+  await page.locator('#scanInput').press('Enter');
+  await expect(page.locator('#scanResult')).toHaveClass(/ok/);
+  await expect(page.locator('#scanResult')).toContainText('CAB-001-SIDE-001');
+  await page.locator('#scanInput').fill('NOPE-1');
+  await page.locator('#scanGo').click();
+  await expect(page.locator('#scanResult')).toHaveClass(/bad/);
+  await page.locator('#asmWorkerView').click();
+  await expect(page.locator('body')).toHaveClass(/worker-mode/);
+  await expect(page.locator('#save')).toBeHidden();
+  await expect(page.locator('[data-mode="design"]')).toBeHidden();
+  await page.locator('#exitWorker').click();
+  await expect(page.locator('body')).not.toHaveClass(/worker-mode/);
+  await page.goto('/?worker');
+  await expect(page.locator('body')).toHaveClass(/worker-mode/);
+  await expect(page.locator('#assemblyPanel')).toBeVisible();
+  await page.locator('#lang').click();
+  await expect(page.locator('#assemblyPanel')).toContainText('التجميع');
+  expect(errors).toEqual([]);
+});

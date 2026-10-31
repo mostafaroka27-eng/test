@@ -1,3 +1,12 @@
+# Known limitations — Alpha 1.7.0 additions
+
+- Camera scanning has only been checked as far as "no camera" handling in a headless browser. It has not been tried on a real phone; use typed IDs or a USB/Bluetooth scanner if the camera does not read the label.
+- The workers' view hides editing controls but is not access control; a worker can leave it or open the full app. Prices are hidden because the cost tab is hidden, not removed from the project file.
+- Assembly steps are generic for the cabinet types RokaDex models. They do not include joinery-specific instructions (dowels, cam locks, screws) and fasteners are not counted. Follow your workshop standard.
+- Drawing images are photos only (PNG/JPEG/WebP, max 4 per unit, ≤ 300 KB each after reduction); PDF or DXF attachments are not supported. They make the project file larger.
+- A fixed drawing scale that does not fit falls back to the next larger scale with a warning on the sheet; the layout does not re-flow tables to make room.
+- Door/window openings, corner units and continuous worktops are still not drawn on shop drawings.
+
 # Known limitations — Alpha 1.6.0 additions
 
 - Corner units are not modelled. The "corner carousel" accessory sits in a normal 900 base; blind-corner geometry is not drawn.

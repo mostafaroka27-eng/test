@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {shopDrawingSvg,drawingSetHtml,layoutViews,chooseScale,partsSchedule,SCALES} from './shop-drawing.mjs';
+import {shopDrawingSvg,drawingSetHtml,layoutViews,chooseScale,partsSchedule,SCALES,normalLayout,isDefaultLayout,planLayout,drawingSheets,validateDrawingImages,DEFAULT_LAYOUT} from './shop-drawing.mjs';
 import {ncdTemplates} from './reference-catalog.mjs';
 import {cabinet,DEFAULTS} from './engine.mjs';
 
@@ -66,4 +66,50 @@ test('drawing set prints one A3 page per unit and escapes text',()=>{
  assert.match(html,/@page\{size:A3 landscape/);
  assert.ok(!html.includes('<b>x</b>'));
  assert.throws(()=>drawingSetHtml([]),/No units/);
+});
+
+const PNG='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+
+test('1.7 layout options are validated and the default layout reproduces the 1.5 sheet',()=>{
+ assert.deepEqual(normalLayout(),{...DEFAULT_LAYOUT,views:[...DEFAULT_LAYOUT.views]});
+ assert.ok(isDefaultLayout({}));assert.ok(!isDefaultLayout({paper:'A4'}));
+ assert.deepEqual(normalLayout({views:['plan','front']}).views,['front','plan'],'views keep drawing order');
+ for(const bad of [{paper:'A0'},{views:[]},{views:['roof']},{arrangement:'spiral'},{scale:7},{schedule:'yes'},{side:'top'},{dims:'some'}])assert.throws(()=>normalLayout(bad),undefined,JSON.stringify(bad));
+ assert.throws(()=>normalLayout([]));
+ const u=unit('drawHang'),legacy=shopDrawingSvg(u,{date:'2026-10-30'});
+ assert.equal(shopDrawingSvg(u,{date:'2026-10-30',layout:{}}),legacy);
+ assert.equal(shopDrawingSvg(u,{date:'2026-10-30',layout:normalLayout()}),legacy);
+ const L=layoutViews(1200,2400,600),P=planLayout(1200,2400,600);
+ assert.equal(P.n,L.n);
+});
+
+test('1.7 A4 paper, view subsets, tables off and the left column',()=>{
+ const u=unit('drawHang');
+ const svg=shopDrawingSvg(u,{date:'2026-10-30',layout:{paper:'A4',views:['front','section'],schedule:false,notes:false,side:'left',arrangement:'column'}});
+ assert.match(svg,/width="297mm" height="210mm" viewBox="0 0 297 210"/);
+ assert.match(svg,/data-paper="A4"/);assert.match(svg,/data-arrangement="column"/);
+ assert.match(svg,/data-view="front"/);assert.match(svg,/data-view="section"/);
+ assert.doesNotMatch(svg,/data-view="interior"/);assert.doesNotMatch(svg,/data-view="plan"/);
+ const html=drawingSetHtml([u],{layout:{paper:'A4'}});
+ assert.match(html,/@page\{size:A4 landscape/);
+});
+
+test('1.7 a manual scale that does not fit falls back to a larger scale and says so',()=>{
+ const P=planLayout(2400,2400,600,{scale:5});
+ assert.ok(P.n>5);assert.equal(P.scaleAdjusted,true);
+ assert.equal(planLayout(600,900,560,{scale:20}).scaleAdjusted,false);
+ const svg=shopDrawingSvg({...unit('drawHang'),config:{...unit('drawHang').config,width:2400}},{layout:{scale:5}});
+ assert.match(svg,/Chosen scale does not fit/);
+});
+
+test('1.7 clarification images add a numbered details sheet after the unit drawing',()=>{
+ const a={...unit('drawHang'),drawingImages:[{src:PNG,caption:'Handle detail'}]},b=unit('drawHang','CAB-002');
+ const sheets=drawingSheets([a,b],{date:'2026-10-30'});
+ assert.equal(sheets.length,3);
+ assert.match(sheets[1],/Handle detail/);assert.match(sheets[1],/SD-CAB-001-D/);assert.match(sheets[1],/<image /);
+ assert.match(sheets[2],/CAB-002/);
+ sheets.forEach((svg,i)=>assert.ok(svg.includes(`${i+1} / 3`)||svg.includes(`${i+1}/3`),`sheet ${i+1} numbering`));
+ assert.throws(()=>validateDrawingImages([{src:'data:text/html,hi'}]));
+ assert.throws(()=>validateDrawingImages(Array(5).fill({src:PNG})));
+ assert.throws(()=>validateDrawingImages([{src:PNG,caption:'x'.repeat(161)}]));
 });

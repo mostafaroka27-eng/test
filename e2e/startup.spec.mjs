@@ -37,7 +37,7 @@ test('module errors show accurate text and downloadable diagnostics without clai
  await expect(page.locator('#startupError img')).toHaveCount(0);
  const download=page.waitForEvent('download');await page.locator('#downloadDiagnostics').click();
  const report=JSON.parse(await readFile(await (await download).path(),'utf8'));
- expect(report.version).toBe('1.6.0-alpha.0');expect(report.error).toContain('Simulated module failure');expect(report).not.toHaveProperty('units');
+ expect(report.version).toBe('1.7.0-alpha.0');expect(report.error).toContain('Simulated module failure');expect(report).not.toHaveProperty('units');
  await expect(page.locator('#retryStartup')).toBeEnabled();
 });
 

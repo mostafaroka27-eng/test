@@ -185,3 +185,22 @@ tr.part-selected td { background: var(--teal-bg); }
 .material-actions{display:flex;gap:6px}
 .check-label{display:flex!important;align-items:center;gap:6px}.check-label input{width:auto}
 #insideSizes[aria-pressed="true"]{background:#0F8B8D;color:#fff;border-color:#0F8B8D}
+/* 1.7 drawing options */
+.drawing-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin:8px 0}
+.layout-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:end}.layout-form label{display:grid;gap:3px;min-width:0;font-size:12px}.layout-form select{width:100%;min-width:0}
+.view-checks{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px 14px;border:1px solid var(--line,#D2DAE2);border-radius:6px;padding:6px 10px;margin:0}.view-checks legend{font-size:11px;padding:0 4px}
+.drawing-image{display:grid;grid-template-columns:56px 1fr auto;gap:8px;align-items:center;margin-top:6px}.drawing-image img{width:56px;height:42px;object-fit:cover;border-radius:4px;border:1px solid #D2DAE2}.drawing-image input{min-width:0}
+.sheet-view svg+svg{margin-top:12px}
+/* 1.7 assembly & workers' view */
+.assembly-panel{position:absolute;top:var(--toolbar-height);bottom:var(--table-height);inset-inline-end:0;width:min(380px,100%);z-index:3;overflow:auto;padding:16px;background:var(--panel,#fff);border-inline-start:1px solid #D2DAE2;box-shadow:-6px 0 18px rgba(23,43,58,.08);display:grid;gap:10px;align-content:start}
+.assembly-panel .panel-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.scan-box{display:grid;gap:6px;padding:10px;border:1px solid #D2DAE2;border-radius:8px;background:#F6F8FA}.scan-box label,.asm-unit{display:grid;gap:4px;font-size:12px}.scan-box input{font:600 14px/1.2 "IBM Plex Mono",monospace}
+.scan-actions{display:flex;gap:6px}.scan-actions button{flex:1}#scanVideo{width:100%;border-radius:6px;background:#000}
+.scan-result{display:grid;gap:2px;font-size:12px}.scan-result:empty{display:none}.scan-result.ok{padding:8px;border-radius:6px;background:#e6f4f1;border:1px solid #0B7375}.scan-result.bad{color:#a24c2c}.scan-result .warn{color:#a24c2c}
+.step-nav{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;text-align:center;font-weight:600}
+.asm-step h3{margin:0 0 6px;font-size:16px;color:#172B3A}.asm-step h4{margin:10px 0 4px;font-size:12px;color:#6B7785}.asm-step p{margin:0 0 6px;line-height:1.5}.asm-step ul{margin:0;padding-inline-start:18px}
+.asm-parts{list-style:none;padding:0!important;display:grid;gap:4px}.part-chip{width:100%;text-align:start;font-size:12px;padding:6px 8px}.part-chip.active{border-color:#ff7a1a;background:#fff3e8}
+.worker-only{display:none}.worker-mode .worker-only{display:inline-flex}.worker-mode .editor-only{display:none}
+.worker-mode .app{grid-template-columns:minmax(0,1fr)}.worker-mode .sidebar,.worker-mode .inspector,.worker-mode .mobile-panel-links,.worker-mode .bottom,.worker-mode .mode:not([data-mode="assembly"]),.worker-mode #newProject,.worker-mode #duplicate,.worker-mode #undo,.worker-mode #redo,.worker-mode #save,.worker-mode #openSettings,.worker-mode #present,.worker-mode .viewport-toolbar>div:last-child>button:not(#reset){display:none}
+.worker-mode .assembly-panel{bottom:0}
+@media (max-width:760px){.assembly-panel{position:relative;top:auto;bottom:auto;width:100%;box-shadow:none;border:0}}

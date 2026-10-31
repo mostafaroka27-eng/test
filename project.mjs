@@ -4,6 +4,7 @@ import {DEFAULTS,cabinet,validate} from './engine.mjs';
 import {DEFAULT_ROOM,validateRoom,normalRoom} from './room.mjs';
 import {validateCosting} from './costing.mjs';
 import {validateMaterials,MATERIAL_LINKS} from './materials.mjs';
+import {normalLayout,isDefaultLayout,validateDrawingImages} from './shop-drawing.mjs';
 
 export const MAX_PROJECT_BYTES=5*1024*1024;
 export const BACKUP_KEY='rokadex-standalone.autosave.v2';
@@ -84,6 +85,7 @@ export function parseProject(input){
   const extra={};
   // Mounting height for wall units; absent means standing on the floor.
   if(Object.hasOwn(unit,'elevation')&&unit.elevation!==0){bounded(unit.elevation,'mounting height',5000);if(unit.elevation<0)throw Error('Invalid mounting height');extra.elevation=unit.elevation}
+  if(Object.hasOwn(unit,'drawingImages')){const images=validateDrawingImages(unit.drawingImages);if(images.length)extra.drawingImages=images}
   for(const key of MATERIAL_LINKS)if(Object.hasOwn(unit,key)&&unit[key]!==''){if(!materialIds.has(unit[key]))throw Error(`Unknown material ${String(unit[key]).slice(0,40)}`);extra[key]=unit[key]}
   return {id:unit.id,name,type,x,z,finish:unit.finish,config,...(Object.hasOwn(unit,'rotation')?{rotation:unit.rotation}:{}),...extra};
  });
@@ -95,6 +97,8 @@ export function parseProject(input){
  // Optional presentation identity (v3): free text shown on drawings and client presentations, never used by geometry.
  for(const key of ['projectName','clientName'])if(Object.hasOwn(data,key)&&data[key]!==''){project[key]=text(data[key],key==='projectName'?'project name':'client name',120)}
  if(Object.hasOwn(data,'costing'))project.costing=validateCosting(data.costing);
+ // Optional shop-drawing layout; the default layout is not written.
+ if(Object.hasOwn(data,'drawingLayout')){const layout=normalLayout(data.drawingLayout);if(!isDefaultLayout(layout))project.drawingLayout=layout}
  return project;
 }
 

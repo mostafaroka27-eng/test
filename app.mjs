@@ -4,7 +4,9 @@ import {setupLook,panelMaterial,handleFor,STAGES,kelvinColor,glassMaterial,photo
 import {initExtras} from './studio-extras.mjs';
 import {loadLighting,saveLighting,DEFAULT_LIGHTING,QUALITY,sunPosition} from './lighting.mjs';
 import {wallLength} from './room.mjs';
-import {shopDrawingSvg,drawingSetHtml} from './shop-drawing.mjs';
+import {drawingSheets,drawingSetHtml,normalLayout} from './shop-drawing.mjs';
+import {initDrawingUi} from './drawing-ui.mjs';
+import {initAssembly} from './assembly-ui.mjs';
 import {loadCompany,saveCompany,validateCompany,validateLogo,MAX_LOGO_BYTES} from './company.mjs';
 import {initShowroom} from './showroom.mjs';
 import {initWorkspace} from './workspace.mjs';
@@ -25,11 +27,11 @@ import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 // New units use the versioned cab-2.0 rules; opened files keep whatever rules they were saved with.
 const newConfig=()=>({...DEFAULTS,...MODERN_RULES});
 const newProjectId=()=>'PRJ-'+(globalThis.crypto?.randomUUID?.().slice(0,8)??Date.now().toString(16)).toUpperCase();
-let projectId=newProjectId(),designRevision=1,migratedFrom=null,projectName='',clientName='',company=loadCompany(globalThis.localStorage),materials=[],lighting=loadLighting(globalThis.localStorage),showSizes=false;
+let projectId=newProjectId(),designRevision=1,migratedFrom=null,projectName='',clientName='',company=loadCompany(globalThis.localStorage),materials=[],drawingLayout=normalLayout(),lighting=loadLighting(globalThis.localStorage),showSizes=false;
 let workspace=null,costing=structuredClone(DEFAULT_COSTING);
 const $=id=>document.getElementById(id);let units=[{id:'CAB-001',name:'Cabinet Unit',type:'cabinet',x:0,z:0,finish:'oak',config:newConfig()}],selected='CAB-001',selectedPart=null,room={...DEFAULT_ROOM},mode='design',wire=false,exploded=false;
 let backupError='';
-try{const backup=loadBackup(localStorage);if(backup){units=backup.units;room=backup.room;selected=units[0].id;costing=backup.costing??structuredClone(DEFAULT_COSTING);projectId=backup.projectId;designRevision=backup.designRevision;migratedFrom=backup.migratedFrom??null;projectName=backup.projectName??'';clientName=backup.clientName??'';materials=backup.materials??[]}}catch(error){backupError='Local backup unavailable: '+error.message}
+try{const backup=loadBackup(localStorage);if(backup){units=backup.units;room=backup.room;selected=units[0].id;costing=backup.costing??structuredClone(DEFAULT_COSTING);projectId=backup.projectId;designRevision=backup.designRevision;migratedFrom=backup.migratedFrom??null;projectName=backup.projectName??'';clientName=backup.clientName??'';materials=backup.materials??[];drawingLayout=normalLayout(backup.drawingLayout??{})}}catch(error){backupError='Local backup unavailable: '+error.message}
 const inputKeys=['width','height','depth','thickness','partitions','shelves','backThickness','backInset','material','construction','grain','edgeThickness','kerf','sheetWidth','sheetHeight','trim','doors','doorGap','doorOverlay','finish','stockGrainAxis','backConstruction',
  'bayMode','plinthHeight','plinthSetback','backGrooveDepth','backGrooveAllowance','shelfMode','shelfSideClearance','shelfFrontSetback','edgeDeduction',
  'drawerLayout','drawerStyle','drawerFrontHeight','drawerBoxHeight','drawerSlideMode','drawerSlideLength','drawerSlideRearClearance','doorType','doorThickness','doorEdgeThickness','glassThickness','drawerBoxThickness',
@@ -142,11 +144,15 @@ let lightBudget=0;
 function renderScene(){
  clearGroup(objects);openables=[];needsRender=true;lightBudget=QUALITY[lighting.quality].maxLights;
  if(renderer)for(const u of units){
+  // Assembly mode shows one unit, built up to the current step.
+  const vis=asm?.visibility(u);if(vis?.hidden)continue;
   const g=new THREE.Group();g.position.set(u.x,u.elevation??0,u.z);g.rotation.y=THREE.MathUtils.degToRad(u.rotation??0);g.userData.unit=u.id;
   const model=cabinet(u.config,u.id),doors=model.parts.filter(p=>p.kind==='door'),drawers=new Map();
   objects.add(g);g.updateMatrixWorld(true);
   for(const p of model.parts){
+   if(vis?.show&&!vis.show.has(p.id))continue;
    const mesh=addPanel(g,u,p),size=partSize(p);
+   if(vis&&(vis.current.has(p.id)||vis.focus===p.id)){mesh.material=mesh.material.clone();mesh.material.emissive=new THREE.Color(vis.focus===p.id?'#ff7a1a':'#20a18a');mesh.material.emissiveIntensity=vis.focus===p.id?.8:.45}
    if(p.kind==='door'){
     // Doors hang on a pivot at the hinge edge so presentations can open them; handles follow the door.
     const index=doors.indexOf(p),hingeLeft=doors.length===1||index<doors.length/2,pivot=new THREE.Group();
@@ -159,7 +165,7 @@ function renderScene(){
     if(p.kind==='drawerFront'||(p.kind==='drawerFace'&&!doors.length&&!model.parts.some(q=>q.kind==='drawerFront'&&q.bay===p.bay&&q.slot===p.slot))){const handle=handleFor(p,size,handleStyle(u));if(handle)mesh.add(handle)}
    }
   }
-  const strips=model.accessories.filter(a=>a.kind==='ledStrip'),lit=lighting.ledsOn||display.led.has(u.id),glow=kelvinColor(u.config.lightKelvin??3000),level=(u.config.lightLevel??70)/100;
+  const strips=vis&&!vis.accessories?[]:model.accessories.filter(a=>a.kind==='ledStrip'),lit=lighting.ledsOn||display.led.has(u.id),glow=kelvinColor(u.config.lightKelvin??3000),level=(u.config.lightLevel??70)/100;
   for(const a of strips){
    // Strip glows when lights are on; a point light follows while the quality budget allows.
    const strip=new THREE.Mesh(new THREE.BoxGeometry(a.length,6,14),new THREE.MeshStandardMaterial({color:glow,emissive:glow,emissiveIntensity:lit?0.6+2.4*level:0.05}));
@@ -172,10 +178,10 @@ function renderScene(){
    strip.position.set(x,y,z);strip.userData.visualOnly=true;g.add(strip);
    if(lightBudget>0){lightBudget--;const light=new THREE.PointLight('#ffc27a',display.night?220000:90000,Math.max(1600,model.internal.ceilY),2);light.position.set(x,y-40,z-80);g.add(light)}
   }
-  for(const a of model.accessories.filter(a=>a.kind==='fitting'))g.add(fittingMesh(u,a));
+  if(!vis||vis.accessories)for(const a of model.accessories.filter(a=>a.kind==='fitting'))g.add(fittingMesh(u,a));
   if(showSizes&&display.stage!=='studio')for(const space of model.spaces){const bay=model.bays[space.bay],label=sizeLabel(`${Math.round(space.width)} × ${Math.round(space.clearHeight)}`,space.kind==='drawer');label.position.set(bay.x,model.internal.floorY+(space.bottom+space.top)/2,u.config.depth/2+40);g.add(label)}
-  for(const a of model.accessories)if(a.kind==='hangingRail'){const rail=new THREE.Mesh(new THREE.CylinderGeometry(9,9,a.length,16),new THREE.MeshStandardMaterial({color:'#b8c2c8',metalness:.8,roughness:.3}));rail.rotation.z=Math.PI/2;rail.position.set(a.position.x,a.position.y,a.position.z);rail.userData={unit:u.id};g.add(rail)}
-  if(u.id===selected&&display.stage!=='studio'){g.updateWorldMatrix(true,true);objects.add(new THREE.BoxHelper(g,'#87d9ba'))}
+  for(const a of model.accessories)if(a.kind==='hangingRail'&&(!vis||vis.accessories)){const rail=new THREE.Mesh(new THREE.CylinderGeometry(9,9,a.length,16),new THREE.MeshStandardMaterial({color:'#b8c2c8',metalness:.8,roughness:.3}));rail.rotation.z=Math.PI/2;rail.position.set(a.position.x,a.position.y,a.position.z);rail.userData={unit:u.id};g.add(rail)}
+  if(u.id===selected&&display.stage!=='studio'&&!vis){g.updateWorldMatrix(true,true);objects.add(new THREE.BoxHelper(g,'#87d9ba'))}
  }
  if(!renderer)fallbackDrawing.innerHTML=cabinetDrawingSvg(current());
  refreshTree();refreshRoomWarnings();workspace?.refresh();extras?.refresh();
@@ -187,7 +193,7 @@ function clearGroup(group){
  group.clear();geometries.forEach(geometry=>geometry.dispose());materials.forEach(material=>material.dispose());
 }
 function refreshTree(){$('tree').innerHTML=units.map(u=>`<button data-id="${esc(u.id)}" class="${u.id===selected?'active':''}">▣ &nbsp; ${esc(u.id)} · ${esc(u.name)}</button>`).join('');$('tree').querySelectorAll('button').forEach(b=>b.onclick=()=>choose(b.dataset.id))}
-function choose(id){if(selected!==id)selectedPart=null;selected=id;const u=current();if(!u)return;$('selectedName').textContent=u.id;$('previewTitle').textContent=u.name;for(const k of inputKeys){const el=$(k);if(el)el.value=k==='finish'?u.finish:u.config[k]}$('posX').value=u.x;$('posZ').value=u.z;$('rotation').value=u.rotation??0;$('elevation').value=u.elevation??0;$('warning').textContent='';renderScene();refreshOutput();refreshBayEditor();refreshDrawerEditor();refreshLevelEditors();refreshPartEditor()}
+function choose(id){if(selected!==id)selectedPart=null;selected=id;const u=current();if(!u)return;$('selectedName').textContent=u.id;$('previewTitle').textContent=u.name;for(const k of inputKeys){const el=$(k);if(el)el.value=k==='finish'?u.finish:u.config[k]}$('posX').value=u.x;$('posZ').value=u.z;$('rotation').value=u.rotation??0;$('elevation').value=u.elevation??0;$('warning').textContent='';renderScene();refreshOutput();refreshBayEditor();refreshDrawerEditor();refreshLevelEditors();refreshPartEditor();drawingUi?.refresh()}
 function refreshOutput(){const u=current();if(!u){$('parts').innerHTML='';$('summary').textContent='';return}try{const c=cabinet(u.config,u.id);$('parts').innerHTML=c.parts.map(p=>`<tr data-part="${esc(p.id)}" class="${p.id===selectedPart?'part-selected':''}"><td>${esc(p.id)}</td><td>${esc(p.kind)}</td><td>${p.length}</td><td>${p.width}</td><td>${p.thickness}</td><td>${esc(p.material)}</td><td>${p.bandLength}</td><td>${p.sheetGood?`${p.cutLength} × ${p.cutWidth}`:'supplier'}</td></tr>`).join('');refreshModelWarnings(c);$('summary').textContent=t('partsSummary',{parts:c.parts.length,area:c.totalAreaM2,edge:c.edgeLengthM});$('parts').querySelectorAll('tr[data-part]').forEach(row=>row.onclick=()=>selectPart(row.dataset.part));if(mode==='drawings')drawShop();if(mode==='manufacturing')drawNesting()}catch(e){$('warning').textContent=e.message}}
 function esc(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function updateConfig(u,next,topology=false){
@@ -262,17 +268,20 @@ function addUnit(name,overrides={},finish='oak'){if(units.length>=100){$('warnin
 function addRecord(unit){if(units.length>=100){$('warning').textContent='Maximum 100 units per project';return}units.push(unit);choose(unit.id);checkpoint()}
 $('addCab').onclick=()=>addUnit('Cabinet Unit');$('addTall').onclick=()=>addUnit('Tall Wardrobe',{width:1600,height:2400,depth:600,partitions:2,shelves:4});$('addDoor').onclick=()=>addUnit('Two-door Cabinet',{width:1000,height:2100,depth:550,partitions:1,shelves:3,doors:2});$('addBase').onclick=()=>addUnit('Base Kitchen Unit',{width:800,height:850,depth:580,partitions:0,shelves:1});$('delete').onclick=()=>{if(units.length===1){$('warning').textContent='Keep at least one unit in the project';return}units=units.filter(u=>u.id!==selected);choose(units[0].id)};
 function setMode(next){
- mode=next;needsRender=true;document.querySelectorAll('.mode').forEach(button=>{button.classList.toggle('active',button.dataset.mode===next);button.setAttribute('aria-pressed',String(button.dataset.mode===next))});
- for(const [panel,value] of Object.entries({drawingsPanel:'drawings',manufacturingPanel:'manufacturing',renderPanel:'render',planPanel:'plan',costingPanel:'costing',reviewPanel:'review',materialsPanel:'materials'}))$(panel).classList.toggle('hidden',next!==value);
+ const was=mode;mode=next;needsRender=true;if(was==='assembly'&&next!=='assembly')asm?.leave();if((was==='assembly')!==(next==='assembly')){if(next==='assembly')asm?.enter();renderScene()}document.querySelectorAll('.mode').forEach(button=>{button.classList.toggle('active',button.dataset.mode===next);button.setAttribute('aria-pressed',String(button.dataset.mode===next))});
+ for(const [panel,value] of Object.entries({drawingsPanel:'drawings',assemblyPanel:'assembly',manufacturingPanel:'manufacturing',renderPanel:'render',planPanel:'plan',costingPanel:'costing',reviewPanel:'review',materialsPanel:'materials'}))$(panel).classList.toggle('hidden',next!==value);
  $('viewTag').textContent=!renderer&&next==='design'?'2D DESIGN VIEW':next.toUpperCase()+' VIEW';refreshOutput();workspace?.refresh();applyLanguage(getLanguage());
 }document.querySelectorAll('.mode').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
-function drawingSvg(){return shopDrawingSvg(current(),{company,project:projectMeta(),lang:getLanguage(),sheetNumber:units.indexOf(current())+1,sheetCount:units.length})}
-function drawingSet(){return drawingSetHtml(units,{company,project:projectMeta(),lang:getLanguage()})}
-function drawShop(){$('drawingContent').innerHTML=drawingSvg()}
+// The current unit's sheets (drawing + details when it has images), numbered within the whole set.
+function drawingOptions(){return {company,project:projectMeta(),lang:getLanguage(),layout:drawingLayout}}
+function unitSheets(){const all=drawingSheets(units,drawingOptions()),u=current();let i=0;const mine=[];for(const unit of units){const count=(unit.drawingImages??[]).length?2:1;if(unit===u)mine.push(...all.slice(i,i+count));i+=count}return mine}
+function drawingSvg(){return unitSheets()[0]}
+function drawingSet(){return drawingSetHtml(units,drawingOptions())}
+function drawShop(){try{$('drawingContent').innerHTML=unitSheets().join('')}catch(e){$('drawingContent').textContent=e.message}}
 function drawNesting(){const u=current(),model=cabinet(u.config,u.id),nest=layoutSheets(model.parts,u.config);$('sheetInfo').textContent=`${nest.sheets.length} sheets · ${nest.unplaced.length} unplaced · Shelf-packing preview, not a production cut plan`;const totals=new Map();for(const p of model.parts){const key=p.material+' / '+p.thickness+'mm';const v=totals.get(key)||{count:0,area:0,edge:0};v.count++;v.area+=p.length*p.width/1e6;v.edge+=p.bandLength/1000;totals.set(key,v)}$('materialSummary').textContent=[...totals].map(([k,v])=>`${k}: ${v.count} parts · ${v.area.toFixed(2)} m² · ${v.edge.toFixed(2)} m edge`).join('  |  ');$('sheetDrawings').innerHTML=nest.sheets.map((s,i)=>{const k=260/Math.max(s.width,s.height);return `<div><div style="font-size:10px;margin-bottom:5px">Sheet ${i+1} · ${esc(s.group)} · ${s.utilization}%</div><svg viewBox="0 0 ${s.width} ${s.height}" xmlns="http://www.w3.org/2000/svg"><rect width="${s.width}" height="${s.height}" fill="#f3eee5"/>${s.placed.map(p=>`<rect x="${p.x}" y="${p.y}" width="${p.w}" height="${p.h}" fill="#8bbfb4" stroke="#214e57" stroke-width="5"/><text x="${p.x+12}" y="${p.y+28}" font-size="30" fill="#173f45">${esc(p.id.split('-').slice(-2).join('-'))}</text>`).join('')}</svg></div>`}).join('')+nest.unplaced.map(p=>`<p class="note">Unplaced: ${esc(p.id)} — ${esc(p.reason)}</p>`).join('')}
 function download(name,content,type){const url=URL.createObjectURL(new Blob([content],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
-$('downloadSvg').onclick=()=>download(`${selected}-shop-drawing-A3.svg`,drawingSvg(),'image/svg+xml');
-$('downloadDrawingSet').onclick=()=>{try{download(`${projectId}-R${designRevision}-shop-drawings-A3.html`,drawingSet(),'text/html;charset=utf-8')}catch(e){$('warning').textContent=e.message}};
+$('downloadSvg').onclick=()=>download(`${selected}-shop-drawing-${drawingLayout.paper}.svg`,drawingSvg(),'image/svg+xml');
+$('downloadDrawingSet').onclick=()=>{try{download(`${projectId}-R${designRevision}-shop-drawings-${drawingLayout.paper}.html`,drawingSet(),'text/html;charset=utf-8')}catch(e){$('warning').textContent=e.message}};
 $('printDrawingSet').onclick=()=>{const w=window.open('','_blank');if(!w){$('warning').textContent='Allow pop-ups to print the drawing set / اسمح بالنوافذ المنبثقة لطباعة اللوحات';return}try{w.document.open();w.document.write(drawingSet());w.document.close();setTimeout(()=>{try{w.focus();w.print()}catch{}},500)}catch(e){w.close();$('warning').textContent=e.message}};$('exportCsv').onclick=()=>{const u=current();download(`${u.id}-cutlist.csv`,csv(cabinet(u.config,u.id).parts),'text/csv;charset=utf-8')};$('save').onclick=()=>{try{download('rokadex-project.json',serializeProject(snapshot()),'application/json')}catch(error){$('projectStatus').textContent=error.message}};
 $('load').onclick=()=>$('file').click();
 $('file').onchange=async event=>{
@@ -292,7 +301,7 @@ function openPresentation(){if(!renderer)return;$('presentation').classList.remo
 $('present').onclick=openPresentation;$('openShowroom').onclick=openPresentation;
 $('closePresentation').onclick=()=>{if(!renderer)return;$('presentation').classList.add('hidden');$('viewport').appendChild(renderer.domElement);showroom.leave();resize()};$('lang').onclick=()=>{applyLanguage(getLanguage()==='ar'?'en':'ar');extras?.refresh();applyLanguage(getLanguage());try{localStorage.setItem('rokadex.language',getLanguage())}catch{}};
 function resize(){if(!renderer)return;const el=renderer.domElement.parentElement;const w=el.clientWidth,h=el.clientHeight;if(w>0&&h>0){camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false);needsRender=true}}window.addEventListener('resize',resize);new ResizeObserver(resize).observe($('viewport'));new ResizeObserver(resize).observe($('presentationCanvas'));// Render on demand: only after a scene change, camera motion, a flight or an opening animation.
-function tick(now){if(!renderer)return;requestAnimationFrame(tick);const flying=showroom.flying;showroom.update(now??performance.now());animateOpen();const moved=controls.update();if((moved||flying||needsRender)&&!document.hidden&&(['design','render'].includes(mode)||!$('presentation').classList.contains('hidden'))){renderer.render(scene,camera);needsRender=false}}for(const k of ['width','depth','height']){const field=$('room'+k[0].toUpperCase()+k.slice(1));field.addEventListener('change',()=>{const next={...room,[k]:Number(field.value)};try{validateRoom(next);room=next;refreshRoomControls()}catch(e){$('warning').textContent=e.message;field.value=room[k]}})}
+function tick(now){if(!renderer)return;requestAnimationFrame(tick);const flying=showroom.flying;showroom.update(now??performance.now());animateOpen();const moved=controls.update();if((moved||flying||needsRender)&&!document.hidden&&(['design','render','assembly'].includes(mode)||!$('presentation').classList.contains('hidden'))){renderer.render(scene,camera);needsRender=false}}for(const k of ['width','depth','height']){const field=$('room'+k[0].toUpperCase()+k.slice(1));field.addEventListener('change',()=>{const next={...room,[k]:Number(field.value)};try{validateRoom(next);room=next;refreshRoomControls()}catch(e){$('warning').textContent=e.message;field.value=room[k]}})}
 $('snapWall').onclick=()=>{try{const pos=snapUnitToWall(room,current(),$('wallSide').value);current().x=pos.x;current().z=pos.z;choose(selected)}catch(e){$('warning').textContent=e.message}};
 $('roomPlan').onclick=()=>download('rokadex-room-plan-PRELIMINARY.svg',roomPlanSvg(room,units),'image/svg+xml');
 function setOpenAmount(unitId,value){display.openAmount.set(unitId,value);needsRender=true;for(const o of openables)if(o.unit===unitId){if(o.type==='door')o.object.rotation.y=o.angle*value;else o.object.position.z=o.distance*value}}
@@ -366,14 +375,14 @@ document.getElementById('projectSheetCsv').onclick=()=>{try{download('rokadex-pr
 showProjectSheets();
 
 // Project history stores validated, detached model snapshots; view-only changes are excluded.
-function snapshot(){return {format:'rokadex-standalone',version:3,projectId,designRevision,lengthUnit:'mm',...(migratedFrom?{migratedFrom}:{}),...(projectName?{projectName}:{}),...(clientName?{clientName}:{}),...(materials.length?{materials}:{}),units,room,costing}}
+function snapshot(){return {format:'rokadex-standalone',version:3,projectId,designRevision,lengthUnit:'mm',...(migratedFrom?{migratedFrom}:{}),...(projectName?{projectName}:{}),...(clientName?{clientName}:{}),...(materials.length?{materials}:{}),drawingLayout,units,room,costing}}
 const projectMeta=()=>({id:projectId,name:projectName,client:clientName,revision:designRevision});
 function refreshIdentity(){$('projectIdLabel').textContent=projectId;$('designRevision').value=designRevision}
 $('designRevision').addEventListener('change',()=>{const v=Number($('designRevision').value);if(!Number.isInteger(v)||v<1||v>9999){$('designRevision').value=designRevision;$('projectStatus').textContent='Design revision must be a whole number 1–9999';return}designRevision=v;checkpoint()});
 function nextUnitNumber(){let number=1;while(units.some(unit=>unit.id===`CAB-${String(number).padStart(3,'0')}`))number++;return number}
 function applyProject(project){
  units=project.units;room=project.room;costing=project.costing??structuredClone(DEFAULT_COSTING);selectedPart=null;
- projectId=project.projectId??newProjectId();designRevision=project.designRevision??1;migratedFrom=project.migratedFrom??null;projectName=project.projectName??'';clientName=project.clientName??'';materials=project.materials??[];refreshIdentity();
+ projectId=project.projectId??newProjectId();designRevision=project.designRevision??1;migratedFrom=project.migratedFrom??null;projectName=project.projectName??'';clientName=project.clientName??'';materials=project.materials??[];drawingLayout=normalLayout(project.drawingLayout??{});refreshIdentity();drawingUi?.refresh();
  refreshRoomControls();choose(units.some(unit=>unit.id===selected)?selected:units[0].id);
  showReview();showProjectSheets();workspace?.refresh();applyLanguage(getLanguage());
 }
@@ -431,6 +440,11 @@ var extras=null;
 extras=initExtras({current,getUnits:()=>units,getRoom:()=>room,setRoom:next=>{room=next;refreshRoomControls();renderScene()},getMaterials:()=>materials,setMaterials:next=>{materials=next},
  update:updateConfig,commit:checkpoint,choose,render:renderScene,addRecord,nextId:()=>`CAB-${String(nextUnitNumber()).padStart(3,'0')}`,selectedPart:()=>selectedPart,
  warn:message=>{$('warning').textContent=message},download,company:()=>company,projectMeta,captureRoom:()=>showroom.captureRoom()});
+// Camera aimed at one unit (assembly, booklet pictures).
+function focusUnit(u){if(!u||!renderer)return;const H=u.config.height,W=u.config.width,el=u.elevation??0,a=THREE.MathUtils.degToRad(u.rotation??0),dist=Math.max(W,H)*1.7+600;controls.target.set(u.x,el+H/2,u.z);camera.position.set(u.x+Math.sin(a)*dist+Math.cos(a)*dist*0.45,el+H*0.75,u.z+Math.cos(a)*dist-Math.sin(a)*dist*0.45);controls.update();needsRender=true}
+var asm=initAssembly({getUnits:()=>units,current,active:()=>mode==='assembly',render:renderScene,focusUnit,setMode,resize,projectId:()=>projectId,projectMeta,warn:message=>{$('warning').textContent=message},
+ capture:async u=>{if(!renderer)return null;renderScene();focusUnit(u);renderer.render(scene,camera);return renderer.domElement.toDataURL('image/jpeg',0.82)}});
+var drawingUi=initDrawingUi({current,getLayout:()=>drawingLayout,setLayout:next=>{drawingLayout=next},commit:checkpoint,redraw:()=>{if(mode==='drawings')drawShop()},warn:message=>{$('warning').textContent=message}});
 function applyLighting(){
  const q=QUALITY[lighting.quality];
  if(renderer){renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,q.pixelRatio,window.innerWidth<=740?1.5:3));resize()}

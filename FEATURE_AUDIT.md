@@ -1,4 +1,19 @@
-# Feature audit — Alpha 1.3 (updated for 1.6.0)
+# Feature audit — Alpha 1.3 (updated for 1.7.0)
+
+## Alpha 1.7.0 additions — 2026-10-31
+
+| Capability | Status | Evidence |
+| --- | --- | --- |
+| Drawing layout: paper A3/A4, views, arrangement, scale, dims, tables, column side | Implemented and tested | `shop-drawing.test.mjs` (A4 size, view subsets, fallback scale, default = 1.5 sheet byte-for-byte); project round-trip; e2e reload |
+| Clarification images on a details sheet | Implemented and tested | Validation (type, count, caption), sheet numbering, e2e upload + reload |
+| Covers, filler, worktop, handles, LEDs, fittings on drawings | Implemented, visually checked | Screenshots EN/AR; legacy sheet unchanged |
+| Assembly steps in 3D | Implemented and tested | Every part in exactly one step for 8 unit types; Chromium step-through |
+| Part lookup by ID / uid / label QR payload | Implemented and tested | Case/space-insensitive; wrong project refused; changed sizes flagged |
+| Camera barcode scanning | Implemented, not tested on a device | Headless browser has no camera; fallback message checked |
+| Assembly booklet (A4 print) | Implemented, checked in Chromium | Popup with one 3D capture per step; physical print not checked |
+| Workers' view (`?worker`) | Implemented and tested | Hides editing/other tabs; Arabic; phone width 390 px without overflow |
+| Hardware/fasteners per joinery method | Not implemented | Listed as "per your joinery method (not calculated)" |
+
 
 ## Alpha 1.6.0 additions — 2026-10-31
 
@@ -13,7 +28,7 @@
 | Kitchen units (11) and run placement | Implemented and tested | Each template builds; wall units stack above base units in browser workflow |
 | Material library with photo | Implemented and tested | Validation limits, project round-trip, apply to carcass/fronts/worktop/glass, reload |
 | Doors & windows, room areas, room sheet | Implemented and tested | Door-swing and window conflicts; floor/footprint/free; A4 sheet and client PDF room page |
-| Shop drawings for covers/fillers/worktop/accessories | Not implemented | Planned with 1.7 layout options |
+| Shop drawings for covers/fillers/worktop/accessories | Implemented in 1.7.0 | See above |
 | Corner units, continuous worktops, sink/hob cut-outs | Not implemented | See KNOWN_LIMITATIONS |
 | NCD name in the interface | Removed | Internal data file name unchanged |
 

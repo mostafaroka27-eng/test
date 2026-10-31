@@ -110,3 +110,18 @@ test('optional project and client names round-trip and are validated',async()=>{
  assert.equal(Object.hasOwn(parseProject(base),'projectName'),false);
  assert.throws(()=>parseProject({...base,clientName:'x'.repeat(121)}),/client name/);
 });
+
+test('1.7 drawing layout and unit clarification images survive a save, defaults are not written',()=>{
+ const PNG='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+ const input=project();input.drawingLayout={paper:'A4',views:['front','plan'],arrangement:'column',scale:20,schedule:false,notes:true,side:'left',dims:'overall'};
+ input.units[0].drawingImages=[{src:PNG,caption:'تفصيلة المقبض'}];
+ const back=parseProject(serializeProject(input));
+ assert.deepEqual(back.drawingLayout,input.drawingLayout);
+ assert.deepEqual(back.units[0].drawingImages,input.units[0].drawingImages);
+ const plain=project();plain.drawingLayout={paper:'A3'};plain.units[0].drawingImages=[];
+ const text=serializeProject(plain);
+ assert.doesNotMatch(text,/drawingLayout|drawingImages/,'legacy-looking files stay unchanged');
+ assert.throws(()=>parseProject({...project(),drawingLayout:{paper:'A9'}}));
+ const bad=project();bad.units[0].drawingImages=[{src:'javascript:alert(1)'}];
+ assert.throws(()=>parseProject(bad));
+});
