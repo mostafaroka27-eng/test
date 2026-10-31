@@ -204,3 +204,9 @@ tr.part-selected td { background: var(--teal-bg); }
 .worker-mode .app{grid-template-columns:minmax(0,1fr)}.worker-mode .sidebar,.worker-mode .inspector,.worker-mode .mobile-panel-links,.worker-mode .bottom,.worker-mode .mode:not([data-mode="assembly"]),.worker-mode #newProject,.worker-mode #duplicate,.worker-mode #undo,.worker-mode #redo,.worker-mode #save,.worker-mode #openSettings,.worker-mode #present,.worker-mode .viewport-toolbar>div:last-child>button:not(#reset){display:none}
 .worker-mode .assembly-panel{bottom:0}
 @media (max-width:760px){.assembly-panel{position:relative;top:auto;bottom:auto;width:100%;box-shadow:none;border:0}}
+/* render PoC: camera views & image export */
+.cam-buttons{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}.view-list{display:grid;gap:4px}.view-row{display:flex;gap:6px}.view-row button:first-child{flex:1;text-align:start}
+/* Presentation tab docks to the side so the 3D view stays visible while framing and exporting */
+#renderPanel{inset-inline-start:auto;width:min(420px,100%);padding:18px;border-inline-start:1px solid #D2DAE2;box-shadow:-6px 0 18px rgba(23,43,58,.08)}
+#renderPanel .tool-grid{grid-template-columns:minmax(0,1fr)}
+@media (max-width:760px){#renderPanel{position:relative;inset:auto;width:100%;box-shadow:none;border:0}}

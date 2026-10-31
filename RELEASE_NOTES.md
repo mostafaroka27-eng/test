@@ -1,3 +1,16 @@
+# Alpha 1.8.0 camera views, high-resolution images and realistic room — 2026-10-31
+
+- **Realistic room scene** (Presentation → Lighting: Scene "Realistic room"): solid 120 mm walls built from the room plan and cut around its doors and windows, skirting, window glass, frame and sill, a closed door leaf and frame, ceiling, and a floor of oak or walnut parquet, 60 × 60 porcelain tiles or polished concrete; wall colour is selectable. Walls between the camera and the room are hidden (dollhouse view); from inside the room all walls and the ceiling show. Exports use the same scene. Display only: kept in this browser, never in the project file or any output.
+
+- **Camera views** in the Presentation tab: Front, Side, Top, Isometric and Eye level (1.6 m), framed to fit all units at the export's 16:9 shape. "Save current view" keeps named views (max 12) in the project file (optional `views`, not written when empty).
+- **High-resolution image**: screen size, Full HD 1920×1080, 2K 2560×1440 or 4K 3840×2160; PNG, JPEG or WebP; transparent background for PNG/WebP (hides floor, grid and walls); contact shadows (GTAO) on opaque images. Selection outlines and size labels are never in the image. The frame is drawn off-screen at full size and the live view is restored before the browser paints. The GPU size limit is checked and reported.
+- The Presentation panel is docked on the side so the 3D stays visible.
+- Same real-time engine (three.js 0.166 WebGL). This is not path tracing. Views and images never change cut sizes or the manufacturing CSV (tested).
+
+Local validation: 209 Node checks, 25 Chromium workflows. 4K export checked in software rendering (≈ 2–22 s there); not timed on a real GPU, phone or Safari.
+
+---
+
 # Alpha 1.7.0 shop-drawing layout, assembly steps and workers' view — 2026-10-31
 
 - **Shop-drawing layout options** (Shop drawings → "Sheet layout", saved in the project): paper A3 or A4 landscape; which views appear (front, interior, section, plan); arrangement (automatic, in a row, two by two, one under another); scale (largest that fits, or a fixed 1:5 … 1:100, with a printed warning and a larger scale when the fixed one does not fit); full or overall-only dimensions; parts table and notes on or off; table column right or left. The default layout draws exactly the 1.5 sheet (checked by test).

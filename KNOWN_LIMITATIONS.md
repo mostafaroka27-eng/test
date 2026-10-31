@@ -1,3 +1,10 @@
+# Known limitations — Alpha 1.8.0 additions
+
+- Images are real-time renders (three.js WebGL) with contact shadows; there is no path tracing or global illumination yet, so light does not bounce between walls. Not comparable to V-Ray/D5.
+- The realistic room uses procedural floor textures and plain painted walls; no furniture props, curtains or outdoor view. Door leaves are always shown closed.
+- The room is rectangular (width × depth × height); L-shaped rooms and sloped ceilings are not modelled.
+- 4K export was timed on one real GPU (≈ 0.2 s without AO); not tested on phones or Safari.
+
 # Known limitations — Alpha 1.7.0 additions
 
 - Camera scanning has only been checked as far as "no camera" handling in a headless browser. It has not been tried on a real phone; use typed IDs or a USB/Bluetooth scanner if the camera does not read the label.

@@ -1,5 +1,14 @@
 # Feature audit — Alpha 1.3 (updated for 1.7.0)
 
+## Alpha 1.8.0 additions — 2026-10-31
+
+| Feature | Status | Evidence |
+|---|---|---|
+| Camera presets + saved views | Implemented | render-export.test.mjs, e2e/render.spec.mjs |
+| High-resolution image export (FHD/2K/4K, PNG/JPEG/WebP, transparent, AO) | Implemented | e2e/render.spec.mjs; 4K checked by owner on a real GPU |
+| Realistic room scene (walls with openings, floors, ceiling, cut-away) | Implemented, display only | render-export.test.mjs, e2e/render.spec.mjs |
+| Path tracing | Not started (next branch) | — |
+
 ## Alpha 1.7.0 additions — 2026-10-31
 
 | Capability | Status | Evidence |
