@@ -6,7 +6,7 @@ import {RoomEnvironment} from 'three/examples/jsm/environments/RoomEnvironment.j
  * light "studio" stage for client presentations. Nothing here enters the model, cut list or files.
  */
 export function setupLook(renderer,scene){
- renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+ renderer.shadowMap.type=THREE.PCFShadowMap;
  renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
  const pmrem=new THREE.PMREMGenerator(renderer);
  scene.environment=pmrem.fromScene(new RoomEnvironment(),0.04).texture;

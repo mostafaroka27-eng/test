@@ -17,9 +17,12 @@
   },
   "dependencies": {
     "@fontsource/ibm-plex-sans-arabic": "5.3.0",
+    "jsqr": "1.4.0",
     "qrcode-generator": "2.0.4",
-    "three": "0.166.1",
-    "jsqr": "1.4.0"
+    "three": "0.187.0",
+    "three-gpu-pathtracer": "0.0.27",
+    "three-mesh-bvh": "0.9.17",
+    "xatlas-web": "0.1.0"
   },
   "devDependencies": {
     "@playwright/test": "1.64.1",
