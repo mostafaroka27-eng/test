@@ -1,4 +1,14 @@
-# Feature audit — Alpha 1.3 (updated for 1.7.0)
+# Feature audit — Alpha 1.3 (updated for 1.9.0)
+
+## Alpha 1.8.2 – 1.9.0 additions — 2026-10-31
+
+| Feature | Status | Evidence |
+|---|---|---|
+| Edit room in 3D (drag walls, slide doors/windows) | Implemented | room-edit.test.mjs; Chromium mouse check |
+| Room furniture library (16 display models, `items`) | Implemented, display only | room-edit.test.mjs (not in units/cutting); Chromium |
+| Printable cut list (PDF via print) | Implemented and tested | cutlist-doc.test.mjs (hand-checked example, CSV agreement); EN/AR PDF |
+| Draft vs approved, issued numbered packages | Not implemented (next) | Named local revisions only |
+| Free-form drawing-sheet editor | Not implemented (phase 3) | Layout options only |
 
 ## Alpha 1.8.0 additions — 2026-10-31
 

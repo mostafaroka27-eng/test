@@ -1,3 +1,13 @@
+# Alpha 1.9.0 printable cut list (PDF) — 2026-10-31
+
+- **Print cut list · PDF** (next to Manufacturing CSV): one A4-landscape document from the same part records as the manufacturing CSV and labels. Identical parts of a unit are grouped with a quantity and every part ID is listed. Columns: unit, part, qty, thickness, finished L × W, cut L × W, edges L1 W1 L2 W2 with band thickness, grain, notes (groove, may rotate, not from sheet stock), part IDs. Grouped by material and thickness, with total cut area and edge-band length per material. Header: project, client, revision, manufacturing-rules version, date, company name/logo if set; marked preliminary, not a CNC program. English and Arabic (RTL). Save as PDF from the print dialog.
+- The sheet explains the deduction it uses: cut = finished − edge thickness on each banded edge when edge deduction is on; no trimming or saw-kerf allowance is added.
+- Fixed: the startup diagnostics test compared against a hard-coded version (it failed after the 1.8.2 version bump); it now reads package.json.
+
+Local validation: 223 Node checks (hand-checked 900 × 2200 × 580 wardrobe: sides 2200 × 579 ×2, shelves 421 × 553 ×6, 6.18 m² MDF, 10.82 m edge band; every part listed once and equal to the CSV for three units with different thicknesses and deduction on/off), 26 Chromium workflows; a 6-unit kitchen + wardrobe design (94 parts, 53 lines) printed to PDF in English and Arabic.
+
+---
+
 # Alpha 1.8.2 edit the room and add furniture in 3D — 2026-10-31
 
 - **Edit room** button in the 3D toolbar. While it is on: drag a wall (or the floor edge in the workshop view) to make the room wider/deeper, in 10 mm steps, with the size shown live; units and furniture keep their place against the opposite wall and doors/windows stay where they are on the wall. Drag a door or window to slide it along its wall (kept inside the wall). A room under 500 mm, or one that would cut through a door/window, is refused with a message. One undo step per drag.

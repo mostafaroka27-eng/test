@@ -253,6 +253,9 @@ const labels = {
  "256 · good":"256 · كويس",
  "1024 · final, least grain":"1024 · نهائي، أقل حبيبات",
  "Real-time uses the same engine as the 3D view. Path tracing (three-gpu-pathtracer, WebGL) follows light as it bounces between walls, units and floor; it is slower and grainier at low samples. The scene is read when you press Export: changes made while it runs are not in the image.":"الفوري بيستخدم نفس محرك عرض الـ3D. الـ Path tracing (three-gpu-pathtracer، WebGL) بيتتبع الضوء وهو بيرتد بين الحيطان والوحدات والأرضية؛ أبطأ، وفيه حبيبات لو العينات قليلة. المشهد بيتقري لحظة ما تدوس تصدير: أي تعديل أثناء التصوير مش هيظهر في الصورة.",
+ "Print cut list · PDF":"اطبع قائمة التقطيع · PDF",
+ "Grouped cut list with finished and cut sizes, edges and grain · print or save as PDF":"قائمة تقطيع مجمّعة بالمقاس النهائي ومقاس القص والشريط والعرق · اطبعها أو احفظها PDF",
+ // 1.6
  "Edit room":"تعديل الغرفة",
  "ROOM FURNITURE":"أثاث وأجهزة الغرفة",
  "Add to room":"ضيفها للغرفة",
