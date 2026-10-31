@@ -8,6 +8,7 @@ import {drawingSheets,drawingSetHtml,normalLayout} from './shop-drawing.mjs';
 import {initDrawingUi} from './drawing-ui.mjs';
 import {initRenderExport} from './render-ui.mjs';
 import {buildInteriorRoom,updateCutaway} from './room-look.mjs';
+import {dragPosition,otherFootprints,nudge} from './unit-drag.mjs';
 import {initAssembly} from './assembly-ui.mjs';
 import {loadCompany,saveCompany,validateCompany,validateLogo,MAX_LOGO_BYTES} from './company.mjs';
 import {initShowroom} from './showroom.mjs';
@@ -302,6 +303,41 @@ $('file').onchange=async event=>{
 
 $('wire').onclick=()=>{wire=!wire;renderScene()};$('explode').onclick=()=>{exploded=!exploded;renderScene()};$('reset').onclick=()=>{camera.position.set(2200,1800,2800);controls?.target.set(0,900,0);controls?.update()};$('front').onclick=()=>{camera.position.set(0,1200,4000);controls?.target.set(0,1100,0)};$('top').onclick=()=>{camera.position.set(0,4500,0);controls?.target.set(0,0,0)};$('iso').onclick=$('reset').onclick;
 const raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2();let pointerStart=null;if(renderer){renderer.domElement.addEventListener('pointerdown',event=>{pointerStart={x:event.clientX,y:event.clientY,id:event.pointerId}});renderer.domElement.addEventListener('pointercancel',()=>{pointerStart=null});renderer.domElement.addEventListener('pointerup',e=>{const start=pointerStart;pointerStart=null;if(!start||start.id!==e.pointerId||Math.hypot(e.clientX-start.x,e.clientY-start.y)>4)return;const r=renderer.domElement.getBoundingClientRect();mouse.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);raycaster.setFromCamera(mouse,camera);const hits=raycaster.intersectObjects(objects.children,true);if(hits.length&&hits[0].object.userData.unit){choose(hits[0].object.userData.unit);selectPart(hits[0].object.userData.part)}});}
+// Move the selected unit by dragging it on the floor (design and presentation tabs). Alt = no snapping.
+const canMoveUnits=()=>['design','render'].includes(mode)&&!document.body.classList.contains('worker-mode')&&$('presentation').classList.contains('hidden');
+let drag=null;
+if(renderer){
+ const el=renderer.domElement,floorHit=new THREE.Vector3();
+ const rayAt=e=>{const r=el.getBoundingClientRect();mouse.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);raycaster.setFromCamera(mouse,camera)};
+ // Capture phase runs before OrbitControls, so a drag on the selected unit does not also orbit the camera.
+ el.addEventListener('pointerdown',e=>{
+  if(e.button!==0||!canMoveUnits())return;
+  rayAt(e);const hit=raycaster.intersectObjects(objects.children,true).find(h=>h.object.userData.unit);
+  if(!hit||hit.object.userData.unit!==selected)return;
+  const u=current(),plane=new THREE.Plane(new THREE.Vector3(0,1,0),-hit.point.y);
+  drag={id:e.pointerId,unit:u,plane,dx:u.x-hit.point.x,dz:u.z-hit.point.z,start:{x:u.x,z:u.z},others:otherFootprints(units,u.id),group:objects.children.find(g=>g.userData.unit===u.id),moved:false};
+  if(controls)controls.enabled=false;el.setPointerCapture(e.pointerId);el.style.cursor='grabbing';
+ },{capture:true});
+ el.addEventListener('pointermove',e=>{
+  if(!drag||e.pointerId!==drag.id){if(!drag&&canMoveUnits()&&e.buttons===0){rayAt(e);const h=raycaster.intersectObjects(objects.children,true).find(h=>h.object.userData.unit);el.style.cursor=h?.object.userData.unit===selected?'grab':''}return}
+  rayAt(e);if(!raycaster.ray.intersectPlane(drag.plane,floorHit))return;
+  try{
+   const p=dragPosition({room,unit:drag.unit,x:floorHit.x+drag.dx,z:floorHit.z+drag.dz,others:drag.others,free:e.altKey});
+   if(p.x===drag.unit.x&&p.z===drag.unit.z)return;
+   drag.unit.x=p.x;drag.unit.z=p.z;drag.moved=true;
+   drag.group?.position.set(p.x,drag.unit.elevation??0,p.z);needsRender=true;
+   $('posX').value=p.x;$('posZ').value=p.z;
+   $('warning').textContent=p.snapped.length?tr2('Snapped to ','ملزوقة في ')+p.snapped.map(s=>s.replace('wall:',tr2('wall ','حيطة ')).replace('unit:','')).join(' + '):'';
+  }catch(err){$('warning').textContent=err.message}
+ });
+ const endDrag=e=>{
+  if(!drag||e.pointerId!==drag.id)return;const d=drag;drag=null;
+  if(controls)controls.enabled=true;el.style.cursor='';try{el.releasePointerCapture(e.pointerId)}catch{}
+  if(d.moved){renderScene();refreshRoomControls?.();checkpoint()}
+ };
+ el.addEventListener('pointerup',endDrag);el.addEventListener('pointercancel',e=>{if(drag&&e.pointerId===drag.id){drag.unit.x=drag.start.x;drag.unit.z=drag.start.z;drag.moved=false;$('posX').value=drag.start.x;$('posZ').value=drag.start.z;endDrag(e);renderScene()}});
+}
+function tr2(en,ar){return document.documentElement.lang==='ar'?ar:en}
 function screenshot(){if(!renderer)return;renderer.render(scene,camera);renderer.domElement.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='rokadex-preview.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)})}$('screenshot').onclick=screenshot;
 function openPresentation(){if(!renderer)return;$('presentation').classList.remove('hidden');$('presentationCanvas').appendChild(renderer.domElement);resize();showroom.enter();applyLanguage(getLanguage())}
 $('present').onclick=openPresentation;$('openShowroom').onclick=openPresentation;
@@ -424,7 +460,12 @@ document.addEventListener('click',event=>{
 });
 document.addEventListener('keydown',event=>{
  if(event.target.closest('input,textarea,select,[contenteditable="true"]'))return;
- if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='z'){event.preventDefault();travel(event.shiftKey?'redo':'undo')}
+ if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='z'){event.preventDefault();travel(event.shiftKey?'redo':'undo');return}
+ if(event.ctrlKey||event.metaKey||event.altKey||!canMoveUnits()||!current())return;
+ const step=nudge(event.key,event.shiftKey);
+ if(step){event.preventDefault();const u=current();u.x=Math.max(-100000,Math.min(100000,u.x+step[0]));u.z=Math.max(-100000,Math.min(100000,u.z+step[1]));$('posX').value=u.x;$('posZ').value=u.z;renderScene();checkpoint();return}
+ if(event.key==='Delete'||event.key==='Backspace'){event.preventDefault();$('delete').click();return}
+ if(event.key==='r'||event.key==='R'){const sel=$('rotation');sel.value=String(((Number(sel.value)||0)+90)%360);sel.dispatchEvent(new Event('change',{bubbles:true}))}
 });
 refreshHistory();
 if(backupError)$('projectStatus').textContent=backupError+' · export JSON to keep your work';

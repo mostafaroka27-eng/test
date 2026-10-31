@@ -1,3 +1,12 @@
+# Alpha 1.8.1 move units with the mouse and keyboard — 2026-10-31
+
+- **Drag to move.** Select a unit, then drag it in the 3D view (3D design and Presentation tabs). It slides on the floor in 10 mm steps and snaps flush to a room wall or to a neighbouring unit's side (backs lined up) within 60 mm; a wall unit over a base unit lines up with its sides. Hold Alt to move freely. Dragging anything else still orbits the camera. One undo step per drag.
+- **Keyboard.** Arrow keys move the selected unit 10 mm (Shift: 100 mm); R rotates 90°; Delete or Backspace removes it (the last unit cannot be removed); Ctrl+Z undoes. Keys are ignored while typing in a field and in the workers' view.
+
+Local validation: 213 Node checks, 26 Chromium workflows. Mouse dragging not tried on a touch screen.
+
+---
+
 # Alpha 1.8.0 camera views, high-resolution images and realistic room — 2026-10-31
 
 - **Realistic room scene** (Presentation → Lighting: Scene "Realistic room"): solid 120 mm walls built from the room plan and cut around its doors and windows, skirting, window glass, frame and sill, a closed door leaf and frame, ceiling, and a floor of oak or walnut parquet, 60 × 60 porcelain tiles or polished concrete; wall colour is selectable. Walls between the camera and the room are hidden (dollhouse view); from inside the room all walls and the ceiling show. Exports use the same scene. Display only: kept in this browser, never in the project file or any output.

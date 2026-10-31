@@ -1,4 +1,4 @@
-# ابدأ من هنا — Rokadex Studio 1.8.0-alpha.0
+# ابدأ من هنا — Rokadex Studio 1.8.1-alpha.0
 
 ## تشغيل على Windows
 
