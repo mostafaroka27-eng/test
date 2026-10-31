@@ -5,14 +5,15 @@ import {unitFootprint} from './room.mjs';
  * Rounds to a 10 mm grid, then pulls the unit's footprint flush against a room wall or a
  * neighbouring unit's side when it comes within `snap` mm. `free` (Alt held) skips all snapping.
  * `others` are the footprints of the other units, taken once when the drag starts.
+ * `footprint` turns a positioned object into its floor box (room items pass their own).
  * Returns {x, z, snapped:[...]} where snapped names what it locked to ('wall:left', 'unit:CAB-002', ...).
  */
-export function dragPosition({room,unit,x,z,others=[],grid=10,snap=60,free=false}){
+export function dragPosition({room,unit,x,z,others=[],grid=10,snap=60,free=false,footprint=unitFootprint}){
  if(![x,z].every(Number.isFinite))throw Error('Invalid drag position');
  const clamp=v=>Math.max(-100000,Math.min(100000,v));
  if(free)return {x:clamp(Math.round(x)),z:clamp(Math.round(z)),snapped:[]};
  let nx=Math.round(x/grid)*grid,nz=Math.round(z/grid)*grid;const snapped=[];
- const b=unitFootprint({...unit,x:nx,z:nz});
+ const b=footprint({...unit,x:nx,z:nz});
  // Best (smallest) correction per axis among walls and neighbours.
  let bestX=null,bestZ=null;
  const tryX=(delta,label)=>{if(Math.abs(delta)<=snap&&(!bestX||Math.abs(delta)<Math.abs(bestX.delta)))bestX={delta,label}};
@@ -23,7 +24,7 @@ export function dragPosition({room,unit,x,z,others=[],grid=10,snap=60,free=false
  }
  for(const o of others){
   const overlapZ=Math.min(b.front,o.front)-Math.max(b.back,o.back),overlapX=Math.min(b.right,o.right)-Math.max(b.left,o.left);
-  const overlapY=Math.min(b.height,o.height)-Math.max(b.bottom,o.bottom),label=`unit:${o.id}`;
+  const overlapY=Math.min(b.height,o.height)-Math.max(b.bottom,o.bottom),label=o.label??`unit:${o.id}`;
   if(overlapY>0){
    // Same height band, side by side: butt the sides together and line up the backs.
    if(overlapZ>0){tryX(o.left-b.right,label);tryX(o.right-b.left,label);tryZ(o.back-b.back,label)}

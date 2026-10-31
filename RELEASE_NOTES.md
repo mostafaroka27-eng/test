@@ -1,3 +1,13 @@
+# Alpha 1.8.2 edit the room and add furniture in 3D — 2026-10-31
+
+- **Edit room** button in the 3D toolbar. While it is on: drag a wall (or the floor edge in the workshop view) to make the room wider/deeper, in 10 mm steps, with the size shown live; units and furniture keep their place against the opposite wall and doors/windows stay where they are on the wall. Drag a door or window to slide it along its wall (kept inside the wall). A room under 500 mm, or one that would cut through a door/window, is refused with a message. One undo step per drag.
+- **Room furniture** (sidebar, under Doors & windows): 16 generic display models — fridge, freestanding cooker, dishwasher, washing machine, 3-seat sofa, armchair, coffee table, TV on stand, double and single bed, dining table, chair, desk, plant, rug, floor lamp. Add places it on a free floor spot; drag it (snaps to walls, units and other items; Alt = free), R rotates 90°, arrows nudge 10/100 mm, Delete removes, Esc deselects. Sizes are common starting values, not a product's datasheet.
+- Furniture is saved in the project file as optional `items` (not written when empty) and never enters the cutting list, costing, drawings or manufacturing files (tested).
+
+Local validation: 220 Node checks, 26 Chromium workflows; wall, window and furniture dragging checked in Chromium with the mouse. Not tried on a touch screen.
+
+---
+
 # Alpha 1.8.1 move units with the mouse and keyboard — 2026-10-31
 
 - **Drag to move.** Select a unit, then drag it in the 3D view (3D design and Presentation tabs). It slides on the floor in 10 mm steps and snaps flush to a room wall or to a neighbouring unit's side (backs lined up) within 60 mm; a wall unit over a base unit lines up with its sides. Hold Alt to move freely. Dragging anything else still orbits the camera. One undo step per drag.

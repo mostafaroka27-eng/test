@@ -210,3 +210,10 @@ tr.part-selected td { background: var(--teal-bg); }
 #renderPanel{inset-inline-start:auto;width:min(420px,100%);padding:18px;border-inline-start:1px solid #D2DAE2;box-shadow:-6px 0 18px rgba(23,43,58,.08)}
 #renderPanel .tool-grid{grid-template-columns:minmax(0,1fr)}
 @media (max-width:760px){#renderPanel{position:relative;inset:auto;width:100%;box-shadow:none;border:0}}
+
+/* Room furniture (display only) */
+.room-items{display:grid;gap:6px;margin:6px 0}.room-items select{width:100%;min-width:0}
+.sidebar .opening-list .accessory-row.selected{border-color:#f2a33a;background:rgba(242,163,58,.16)}
+.accessory-row .link-button{background:none;border:0;color:inherit;padding:0;font:inherit;text-align:start;cursor:pointer;flex:1}
+.side-note{font-size:11px;opacity:.7;margin:4px 0 10px}
+#editRoom[aria-pressed="true"],#openFronts[aria-pressed="true"]{background:#f2a33a;color:#172B3A}
