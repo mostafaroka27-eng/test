@@ -28,16 +28,17 @@ import {DEFAULT_ROOM,validateRoom,inspectLayout,snapUnitToWall,roomPlanSvg} from
 import {DEFAULTS,MODERN_RULES,cabinet,layoutSheets,csv,applyMethod,METHODS,hardwareSchedule,dxfPanels} from './engine.mjs';
 import {manufacturingCsv,labelsHtml} from './manufacturing.mjs';
 import {cutListHtml} from './cutlist-doc.mjs';
+import {issueRelease,releaseState,revisionAfterEdit,releasedProject} from './releases.mjs';
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 // New units use the versioned cab-2.0 rules; opened files keep whatever rules they were saved with.
 const newConfig=()=>({...DEFAULTS,...MODERN_RULES});
 const newProjectId=()=>'PRJ-'+(globalThis.crypto?.randomUUID?.().slice(0,8)??Date.now().toString(16)).toUpperCase();
-let projectId=newProjectId(),designRevision=1,migratedFrom=null,projectName='',clientName='',company=loadCompany(globalThis.localStorage),materials=[],drawingLayout=normalLayout(),views=[],items=[],lighting=loadLighting(globalThis.localStorage),showSizes=false;
+let projectId=newProjectId(),designRevision=1,migratedFrom=null,projectName='',clientName='',company=loadCompany(globalThis.localStorage),materials=[],drawingLayout=normalLayout(),views=[],items=[],releases=[],lighting=loadLighting(globalThis.localStorage),showSizes=false;
 let workspace=null,costing=structuredClone(DEFAULT_COSTING);
 const $=id=>document.getElementById(id);let units=[{id:'CAB-001',name:'Cabinet Unit',type:'cabinet',x:0,z:0,finish:'oak',config:newConfig()}],selected='CAB-001',selectedPart=null,room={...DEFAULT_ROOM},mode='design',wire=false,exploded=false;
 let backupError='';
-try{const backup=loadBackup(localStorage);if(backup){units=backup.units;room=backup.room;selected=units[0].id;costing=backup.costing??structuredClone(DEFAULT_COSTING);projectId=backup.projectId;designRevision=backup.designRevision;migratedFrom=backup.migratedFrom??null;projectName=backup.projectName??'';clientName=backup.clientName??'';materials=backup.materials??[];drawingLayout=normalLayout(backup.drawingLayout??{});views=backup.views??[];items=backup.items??[]}}catch(error){backupError='Local backup unavailable: '+error.message}
+try{const backup=loadBackup(localStorage);if(backup){units=backup.units;room=backup.room;selected=units[0].id;costing=backup.costing??structuredClone(DEFAULT_COSTING);projectId=backup.projectId;designRevision=backup.designRevision;migratedFrom=backup.migratedFrom??null;projectName=backup.projectName??'';clientName=backup.clientName??'';materials=backup.materials??[];drawingLayout=normalLayout(backup.drawingLayout??{});views=backup.views??[];items=backup.items??[];releases=backup.releases??[]}}catch(error){backupError='Local backup unavailable: '+error.message}
 const inputKeys=['width','height','depth','thickness','partitions','shelves','backThickness','backInset','material','construction','grain','edgeThickness','kerf','sheetWidth','sheetHeight','trim','doors','doorGap','doorOverlay','finish','stockGrainAxis','backConstruction',
  'bayMode','plinthHeight','plinthSetback','backGrooveDepth','backGrooveAllowance','shelfMode','shelfSideClearance','shelfFrontSetback','edgeDeduction',
  'drawerLayout','drawerStyle','drawerFrontHeight','drawerBoxHeight','drawerSlideMode','drawerSlideLength','drawerSlideRearClearance','doorType','doorThickness','doorEdgeThickness','glassThickness','drawerBoxThickness',
@@ -273,7 +274,7 @@ function allParts(){return units.flatMap(u=>cabinet(u.config,u.id).parts)}
 $('projectDxf').onclick=()=>download('rokadex-panel-outlines-PRELIMINARY.dxf',dxfPanels(allParts()),'application/dxf');
 $('projectCsv').onclick=()=>download('rokadex-project-cutlist.csv',csv(allParts()),'text/csv;charset=utf-8');
 $('mfgCsv').onclick=()=>{try{download(`${projectId}-R${designRevision}-manufacturing-PRELIMINARY.csv`,manufacturingCsv(snapshot()),'text/csv;charset=utf-8')}catch(e){$('warning').textContent=e.message}};
-$('cutListPdf').onclick=()=>{const w=window.open('','_blank');if(!w){$('warning').textContent=tr2('Allow pop-ups to print the cut list','اسمح بالنوافذ المنبثقة لطباعة قائمة التقطيع');return}try{w.document.open();w.document.write(cutListHtml(snapshot(),{lang:getLanguage(),company}));w.document.close();setTimeout(()=>{try{w.focus();w.print()}catch{}},500)}catch(e){w.close();$('warning').textContent=e.message}};
+$('cutListPdf').onclick=()=>cutListWindow(snapshot());
 $('partLabels').onclick=()=>{try{download(`${projectId}-R${designRevision}-part-labels.html`,labelsHtml(snapshot()),'text/html;charset=utf-8')}catch(e){$('warning').textContent=e.message}};
 $('assemblyPrint').onclick=()=>{const u=current(),model=cabinet(u.config,u.id);const w=window.open('','_blank');if(!w){$('warning').textContent='Allow popups to print assembly report';return}const rows=model.parts.map(p=>`<tr data-part="${esc(p.id)}" class="${p.id===selectedPart?'part-selected':''}"><td>${esc(p.id)}</td><td>${esc(p.kind)}</td><td>${p.length} × ${p.width} × ${p.thickness}</td><td>${esc(p.material)}</td><td>${p.edges.join(' / ')}</td></tr>`).join('');w.document.write(`<!doctype html><html><head><title>Assembly · ${esc(u.id)}</title><style>body{font:14px Arial;margin:32px;color:#233}table{width:100%;border-collapse:collapse}td,th{padding:7px;border:1px solid #abb}h1{font-size:22px}small{color:#a43}</style></head><body><h1>ROKADEX · ASSEMBLY COMPONENT SCHEDULE</h1><p>${esc(u.id)} — ${esc(u.name)} | ${u.config.width} × ${u.config.height} × ${u.config.depth} mm</p><small>PRELIMINARY ONLY. VERIFY JOINERY, HARDWARE, BACK PANEL AND MACHINING BEFORE FABRICATION.</small><table><thead><tr><th>Part ID</th><th>Type</th><th>Dimensions (mm)</th><th>Material</th><th>Edge flags</th></tr></thead><tbody>${rows}</tbody></table></body></html>`);w.document.close();w.focus();setTimeout(()=>w.print(),300)};
 function addUnit(name,overrides={},finish='oak'){if(units.length>=100){$('warning').textContent='Maximum 100 units per project';return}const id=`CAB-${String(nextUnitNumber()).padStart(3,'0')}`;units.push({id,name,type:'cabinet',x:(units.length%4)*1250,z:Math.floor(units.length/4)*900,finish,config:{...newConfig(),...overrides}});choose(id)}
@@ -350,7 +351,7 @@ function tr2(en,ar){return document.documentElement.lang==='ar'?ar:en}
 function screenshot(){if(!renderer)return;renderer.render(scene,camera);renderer.domElement.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='rokadex-preview.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)})}$('screenshot').onclick=screenshot;
 function openPresentation(){if(!renderer)return;$('presentation').classList.remove('hidden');$('presentationCanvas').appendChild(renderer.domElement);resize();showroom.enter();applyLanguage(getLanguage())}
 $('present').onclick=openPresentation;$('openShowroom').onclick=openPresentation;
-$('closePresentation').onclick=()=>{if(!renderer)return;$('presentation').classList.add('hidden');$('viewport').appendChild(renderer.domElement);showroom.leave();resize()};$('lang').onclick=()=>{applyLanguage(getLanguage()==='ar'?'en':'ar');extras?.refresh();applyLanguage(getLanguage());try{localStorage.setItem('rokadex.language',getLanguage())}catch{}};
+$('closePresentation').onclick=()=>{if(!renderer)return;$('presentation').classList.add('hidden');$('viewport').appendChild(renderer.domElement);showroom.leave();resize()};$('lang').onclick=()=>{applyLanguage(getLanguage()==='ar'?'en':'ar');extras?.refresh();refreshReleases();roomTools?.refresh();applyLanguage(getLanguage());try{localStorage.setItem('rokadex.language',getLanguage())}catch{}};
 function resize(){if(!renderer)return;const el=renderer.domElement.parentElement;const w=el.clientWidth,h=el.clientHeight;if(w>0&&h>0){camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false);needsRender=true}}window.addEventListener('resize',resize);new ResizeObserver(resize).observe($('viewport'));new ResizeObserver(resize).observe($('presentationCanvas'));// Render on demand: only after a scene change, camera motion, a flight or an opening animation.
 function tick(now){if(!renderer)return;requestAnimationFrame(tick);const flying=showroom.flying;showroom.update(now??performance.now());animateOpen();const moved=controls.update();if((moved||flying||needsRender)&&!document.hidden&&(['design','render','assembly'].includes(mode)||!$('presentation').classList.contains('hidden'))){renderer.render(scene,camera);needsRender=false}}for(const k of ['width','depth','height']){const field=$('room'+k[0].toUpperCase()+k.slice(1));field.addEventListener('change',()=>{const next={...room,[k]:Number(field.value)};try{validateRoom(next);room=next;refreshRoomControls()}catch(e){$('warning').textContent=e.message;field.value=room[k]}})}
 $('snapWall').onclick=()=>{try{const pos=snapUnitToWall(room,current(),$('wallSide').value);current().x=pos.x;current().z=pos.z;choose(selected)}catch(e){$('warning').textContent=e.message}};
@@ -426,14 +427,14 @@ document.getElementById('projectSheetCsv').onclick=()=>{try{download('rokadex-pr
 showProjectSheets();
 
 // Project history stores validated, detached model snapshots; view-only changes are excluded.
-function snapshot(){return {format:'rokadex-standalone',version:3,projectId,designRevision,lengthUnit:'mm',...(migratedFrom?{migratedFrom}:{}),...(projectName?{projectName}:{}),...(clientName?{clientName}:{}),...(materials.length?{materials}:{}),drawingLayout,...(views.length?{views}:{}),...(items.length?{items}:{}),units,room,costing}}
+function snapshot(){return {format:'rokadex-standalone',version:3,projectId,designRevision,lengthUnit:'mm',...(migratedFrom?{migratedFrom}:{}),...(projectName?{projectName}:{}),...(clientName?{clientName}:{}),...(materials.length?{materials}:{}),drawingLayout,...(views.length?{views}:{}),...(items.length?{items}:{}),...(releases.length?{releases}:{}),units,room,costing}}
 const projectMeta=()=>({id:projectId,name:projectName,client:clientName,revision:designRevision});
-function refreshIdentity(){$('projectIdLabel').textContent=projectId;$('designRevision').value=designRevision}
+function refreshIdentity(){refreshReleases();$('projectIdLabel').textContent=projectId;$('designRevision').value=designRevision}
 $('designRevision').addEventListener('change',()=>{const v=Number($('designRevision').value);if(!Number.isInteger(v)||v<1||v>9999){$('designRevision').value=designRevision;$('projectStatus').textContent='Design revision must be a whole number 1–9999';return}designRevision=v;checkpoint()});
 function nextUnitNumber(){let number=1;while(units.some(unit=>unit.id===`CAB-${String(number).padStart(3,'0')}`))number++;return number}
 function applyProject(project){
  units=project.units;room=project.room;costing=project.costing??structuredClone(DEFAULT_COSTING);selectedPart=null;
- projectId=project.projectId??newProjectId();designRevision=project.designRevision??1;migratedFrom=project.migratedFrom??null;projectName=project.projectName??'';clientName=project.clientName??'';materials=project.materials??[];drawingLayout=normalLayout(project.drawingLayout??{});views=project.views??[];items=project.items??[];roomTools?.refresh();renderExport?.refresh();refreshIdentity();drawingUi?.refresh();
+ projectId=project.projectId??newProjectId();designRevision=project.designRevision??1;migratedFrom=project.migratedFrom??null;projectName=project.projectName??'';clientName=project.clientName??'';materials=project.materials??[];drawingLayout=normalLayout(project.drawingLayout??{});views=project.views??[];items=project.items??[];releases=project.releases??[];roomTools?.refresh();renderExport?.refresh();refreshIdentity();drawingUi?.refresh();
  refreshRoomControls();choose(units.some(unit=>unit.id===selected)?selected:units[0].id);
  showReview();showProjectSheets();workspace?.refresh();applyLanguage(getLanguage());
 }
@@ -445,11 +446,51 @@ function persist(){
  catch(error){$('projectStatus').textContent='Local backup failed: '+error.message+' · export JSON to keep your work'}
 }
 function checkpoint(){
- try{if(history.push(snapshot())){persist();showReview();showProjectSheets();workspace?.refresh()}}
+ try{
+  // After an issue, the first real change moves the working design to the next revision number (a new draft).
+  if(releases.length){const next=revisionAfterEdit(parseProject(snapshot()));if(next!==designRevision){designRevision=next;refreshIdentity()}}
+  if(history.push(snapshot())){persist();showReview();showProjectSheets();workspace?.refresh()}}
  catch(error){applyProject(history.current());$('projectStatus').textContent='Change rejected: '+error.message}
- refreshHistory();
+ refreshHistory();refreshReleases();
 }
-function travel(direction){const project=history[direction]();if(project){applyProject(project);persist()}refreshHistory()}
+function travel(direction){const project=history[direction]();if(project){
+ // Issued revisions are append-only: undo/redo never removes an issue; the design returns as a draft of the next number.
+ if(releases.length>(project.releases?.length??0)){project.releases=releases;const last=releases.at(-1).revision;if(project.designRevision<=last){project.designRevision=last;try{project.designRevision=revisionAfterEdit(parseProject(project))}catch{project.designRevision=last+1}}}
+ applyProject(project);persist()}refreshHistory()}
+// ---------- Approve & issue (numbered, frozen revisions in the project file) ----------
+function cutListWindow(project){const w=window.open('','_blank');if(!w){$('warning').textContent=tr2('Allow pop-ups to print the cut list','اسمح بالنوافذ المنبثقة لطباعة قائمة التقطيع');return}try{w.document.open();w.document.write(cutListHtml(project,{lang:getLanguage(),company}));w.document.close();setTimeout(()=>{try{w.focus();w.print()}catch{}},500)}catch(e){w.close();$('warning').textContent=e.message}}
+function refreshReleases(){
+ const list=$('releaseList'),badge=$('releaseBadge');if(!list||!badge)return;
+ let state;try{state=releases.length?releaseState(parseProject(snapshot())):{status:'never',revision:designRevision,latest:null}}catch{state={status:'never',revision:designRevision,latest:releases.at(-1)??null}}
+ const latest=state.latest;
+ badge.textContent=state.status==='issued'?tr2(`Issued R${latest.revision}`,`معتمد R${latest.revision}`):state.status==='never'?tr2(`Draft R${designRevision} · not issued`,`مسودة R${designRevision} · غير معتمدة`):state.status==='unchanged'?tr2(`Draft R${designRevision} · same as R${latest.revision}`,`مسودة R${designRevision} · زي R${latest.revision}`):tr2(`Draft R${designRevision} · changed since R${latest.revision}`,`مسودة R${designRevision} · اتعدلت بعد R${latest.revision}`);
+ badge.dataset.state=state.status;
+ $('issueRelease').disabled=state.status==='issued'||state.status==='unchanged';
+ $('issueRelease').textContent=tr2(`Approve & issue R${designRevision}`,`اعتماد وإصدار R${designRevision}`);
+ const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ list.innerHTML=releases.length?releases.slice().reverse().map(r=>`<div class="release-row"><div><b>R${r.revision}</b> <small>${esc(new Date(r.issuedAt).toLocaleString(getLanguage()==='ar'?'ar-EG':'en-GB'))}</small>${r.note?`<div class="note">${esc(r.note)}</div>`:''}</div><div class="release-actions"><button data-release-pdf="${r.revision}">${tr2('Cut list PDF','قائمة التقطيع PDF')}</button><button data-release-csv="${r.revision}">${tr2('Manufacturing CSV','CSV التصنيع')}</button><button data-release-json="${r.revision}">${tr2('Project file','ملف المشروع')}</button><button data-release-restore="${r.revision}">${tr2('Restore as draft','رجّعها مسودة')}</button></div></div>`).join(''):`<p class="note">${tr2('No issued revisions yet.','لسه مفيش نسخ معتمدة.')}</p>`;
+}
+$('issueRelease').onclick=()=>{
+ try{
+  const current=parseProject(snapshot());
+  if(!confirm(tr2(`Issue R${designRevision}? It will be frozen in the project file and cannot be edited. Later changes start R${designRevision+1}.`,`اعتماد وإصدار R${designRevision}؟ هتتقفل جوه ملف المشروع ومش هتتعدل، وأي تعديل بعد كده يبدأ R${designRevision+1}.`)))return;
+  releases=issueRelease(current,{note:$('releaseNote').value});$('releaseNote').value='';
+  checkpoint();refreshReleases();$('projectStatus').textContent=tr2(`R${designRevision} issued · saved in this browser · export the project file to keep a copy`,`تم إصدار R${designRevision} · محفوظة في المتصفح ده · صدّر ملف المشروع عشان تحتفظ بنسخة`);
+ }catch(e){$('warning').textContent=e.message;$('projectStatus').textContent=e.message}
+};
+$('releaseList').addEventListener('click',event=>{
+ const b=event.target.closest('button');if(!b)return;
+ try{
+  const n=Number(b.dataset.releasePdf??b.dataset.releaseCsv??b.dataset.releaseJson??b.dataset.releaseRestore),frozen=releasedProject(snapshot(),n);
+  if(b.dataset.releasePdf)cutListWindow(frozen);
+  else if(b.dataset.releaseCsv)download(`${projectId}-R${n}-manufacturing-ISSUED.csv`,manufacturingCsv(frozen),'text/csv;charset=utf-8');
+  else if(b.dataset.releaseJson)download(`${projectId}-R${n}-issued.rokadex.json`,serializeProject(frozen),'application/json');
+  else if(b.dataset.releaseRestore){
+   if(!confirm(tr2(`Replace the working design with R${n}? Undo is available.`,`استبدال التصميم الحالي بـ R${n}؟ تقدر تتراجع.`)))return;
+   const keep={projectId,designRevision,releases};applyProject({...frozen,...keep});checkpoint();
+  }
+ }catch(e){$('warning').textContent=e.message}
+});
 $('undo').onclick=()=>travel('undo');$('redo').onclick=()=>travel('redo');
 $('newProject').onclick=()=>{
  if(!confirm('Create a new project? Export JSON first if you need a portable copy. / إنشاء مشروع جديد؟ صدّر ملف JSON للاحتفاظ بنسخة مستقلة.'))return;

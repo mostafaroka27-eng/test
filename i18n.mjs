@@ -245,6 +245,11 @@ const labels = {
   'Allow popups to print assembly report':'اسمح بالنوافذ المنبثقة لطباعة تقرير التجميع',
   'Library exceeds 1 MB':'حجم المكتبة يتجاوز 1 ميغابايت',
  // 1.6
+ "Approve & issue":"اعتماد وإصدار",
+ "Issue note":"ملاحظة الإصدار",
+ "e.g. Approved by client":"مثلاً: اعتمدها العميل",
+ "Issuing freezes the current design as a numbered revision (R1, R2 …) inside the project file, with its cut list and manufacturing CSV. An issued revision cannot be edited; the next change starts the next number as a draft. Stored in this browser and in the exported project file only — not in the cloud.":"الإصدار بيقفل التصميم الحالي كنسخة مرقّمة (R1، R2 …) جوه ملف المشروع، ومعاها قائمة التقطيع وCSV التصنيع. النسخة المعتمدة ما تتعدلش؛ وأول تعديل بعدها يبدأ الرقم اللي بعده كمسودة. محفوظة في المتصفح ده وفي ملف المشروع اللي بتصدّره بس — مش على السحابة.",
+ // 1.6
  "Print cut list · PDF":"اطبع قائمة التقطيع · PDF",
  "Grouped cut list with finished and cut sizes, edges and grain · print or save as PDF":"قائمة تقطيع مجمّعة بالمقاس النهائي ومقاس القص والشريط والعرق · اطبعها أو احفظها PDF",
  // 1.6
