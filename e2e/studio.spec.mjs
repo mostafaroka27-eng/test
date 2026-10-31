@@ -29,6 +29,7 @@ test('edits, undo/redo, autosave, exports, drawings and project roundtrip', asyn
   await expect(page.locator('[data-bay="0"]')).toHaveValue('0');
   await expect(page.locator('[data-drawer="0"]')).toHaveValue('2');
   await page.locator('#parts tr').filter({has:page.locator('td', {hasText:/^drawerFront$/})}).first().click();
+  await page.locator('[data-edge="0"]').evaluate(n=>{n.closest('details').open=true});
   await page.locator('[data-edge="0"]').uncheck();
   await page.reload();
   await expect(page.locator('#tree button')).toHaveCount(2);

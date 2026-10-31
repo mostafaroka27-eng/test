@@ -44,7 +44,7 @@ test('company settings, A3 shop drawings, client showroom and client PDF',async(
  await page.locator('.show-card').nth(1).click();await expect(page.locator('.show-card').nth(1)).toHaveClass(/active/);
  const [proposal]=await Promise.all([context.waitForEvent('page'),page.locator('#clientPdf').click()]);
  await proposal.waitForLoadState();
- await expect(proposal.locator('section.page')).toHaveCount(3);
+ await expect(proposal.locator('section.page')).toHaveCount(4);await expect(proposal.locator('body')).toContainText('Room layout');
  await expect(proposal.locator('body')).toContainText('Example Joinery');await expect(proposal.locator('body')).toContainText('Mr. B');
  await expect(proposal.locator('img.hero')).toHaveAttribute('src',/^data:image\/jpeg;base64,/);
  await expect(proposal.locator('img.open')).toHaveCount(1);

@@ -1,3 +1,19 @@
+# Alpha 1.6.0 unit details, lighting, kitchens, materials and room sheet — 2026-10-31
+
+- **Unit details.** Left/right cover panels (thickness and forward projection), top filler (height and setback), bottom plinth, and a worktop (thickness, overhang, material). Covers and the top filler are cut parts with their own IDs; the worktop is a supplier item, not packed on sheets. All default to 0, so older projects keep their geometry and part IDs.
+- **Lighting per shelf.** Tick "under top" or "under shelf N" per bay, or select a shelf in 3D / the parts list and press the light button. LED colour (K) and strength per unit. Strips show in 3D and are counted in the accessories list (strip metres, profile metres, driver and sensor per lit unit). Render panel: quality (normal / high / very high), sun direction, height and strength, room light, exposure and "LEDs on"; kept in this browser only.
+- **Glass doors and handles.** Glass type (clear, frosted, tinted, reflective, fluted) and colour; handle type (bar, knob, edge profile, none / push to open), length and finish.
+- **Interior spaces and accessories.** A table of clear inside sizes per space with guidance on what usually fits. 16 accessories (wardrobe and kitchen: trouser rack, shoe rack, baskets, cutlery tray, bottle pull-out, bins, cargo, corner carousel, sink and hob cut-outs, etc.) placed per bay; each is checked against width, depth, height, worktop and drawer requirements and overlaps, with a warning when it does not fit.
+- **Accessories list with quantities.** Hinges by door height (2 / 3 / 4 / 5), glass hinges, drawer slide pairs by length, handles/knobs/profile metres, shelf pins, rails and supports, LEDs, fittings, wall brackets and worktops, with the rule shown per line. CSV and print. Assembly fasteners are listed as "not calculated".
+- **Kitchen section.** 11 kitchen units (base, drawer base, sink, hob, bottle, corner carousel base, wall units, tall larder, tall cargo, oven housing). "Place next to the selected unit" continues the run, and stacks wall units above base units.
+- **Material library** (saved in the project): name, category, specification, thickness, sheet size, grain, colour and a photo (reduced to 1024 px) that is applied to the 3D model. Apply a material to the carcass, fronts, worktop or glass of a unit.
+- **Room.** Doors and windows on each wall (with checks when a unit blocks a door swing or covers a window), mounting height for wall units, floor area / footprint / free floor and wall usage, and a printable A4 room sheet with a 3D view, top view, plan and areas. The client PDF gets a room page.
+- **Interface.** Properties are grouped into collapsible sections; a context card above them shows the selected part and actions. "Inside sizes" shows clear sizes in 3D. The NCD name is removed from the interface.
+
+Local validation: 196 Node checks, Chromium workflows (see HANDOFF), production build. Not validated on Safari/iPhone, a real GPU, a printer, a machine or a workshop. Accessory sizes and hardware rules are RokaDex starting values, not supplier data.
+
+---
+
 # Alpha 1.5.0 Rokadex look, shop drawings and client showroom — 2026-10-30
 
 - **Rokadex design system.** The Studio uses the main Rokadex app's colours, IBM Plex Sans Arabic (bundled locally, no CDN), the gold hex-nut mark and "Powered by Rokadex · © Mostafa Mabrouk". Navy navigation rail, teal actions.

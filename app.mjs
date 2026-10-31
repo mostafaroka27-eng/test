@@ -1,6 +1,9 @@
 import {initReferenceLibrary} from './reference-library.mjs';
 import {finishColor} from './reference-catalog.mjs';
-import {setupLook,panelMaterial,handleFor,STAGES} from './viewer-look.mjs';
+import {setupLook,panelMaterial,handleFor,STAGES,kelvinColor,glassMaterial,photoMaterial} from './viewer-look.mjs';
+import {initExtras} from './studio-extras.mjs';
+import {loadLighting,saveLighting,DEFAULT_LIGHTING,QUALITY,sunPosition} from './lighting.mjs';
+import {wallLength} from './room.mjs';
 import {shopDrawingSvg,drawingSetHtml} from './shop-drawing.mjs';
 import {loadCompany,saveCompany,validateCompany,validateLogo,MAX_LOGO_BYTES} from './company.mjs';
 import {initShowroom} from './showroom.mjs';
@@ -22,16 +25,17 @@ import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 // New units use the versioned cab-2.0 rules; opened files keep whatever rules they were saved with.
 const newConfig=()=>({...DEFAULTS,...MODERN_RULES});
 const newProjectId=()=>'PRJ-'+(globalThis.crypto?.randomUUID?.().slice(0,8)??Date.now().toString(16)).toUpperCase();
-let projectId=newProjectId(),designRevision=1,migratedFrom=null,projectName='',clientName='',company=loadCompany(globalThis.localStorage);
+let projectId=newProjectId(),designRevision=1,migratedFrom=null,projectName='',clientName='',company=loadCompany(globalThis.localStorage),materials=[],lighting=loadLighting(globalThis.localStorage),showSizes=false;
 let workspace=null,costing=structuredClone(DEFAULT_COSTING);
 const $=id=>document.getElementById(id);let units=[{id:'CAB-001',name:'Cabinet Unit',type:'cabinet',x:0,z:0,finish:'oak',config:newConfig()}],selected='CAB-001',selectedPart=null,room={...DEFAULT_ROOM},mode='design',wire=false,exploded=false;
 let backupError='';
-try{const backup=loadBackup(localStorage);if(backup){units=backup.units;room=backup.room;selected=units[0].id;costing=backup.costing??structuredClone(DEFAULT_COSTING);projectId=backup.projectId;designRevision=backup.designRevision;migratedFrom=backup.migratedFrom??null;projectName=backup.projectName??'';clientName=backup.clientName??''}}catch(error){backupError='Local backup unavailable: '+error.message}
+try{const backup=loadBackup(localStorage);if(backup){units=backup.units;room=backup.room;selected=units[0].id;costing=backup.costing??structuredClone(DEFAULT_COSTING);projectId=backup.projectId;designRevision=backup.designRevision;migratedFrom=backup.migratedFrom??null;projectName=backup.projectName??'';clientName=backup.clientName??'';materials=backup.materials??[]}}catch(error){backupError='Local backup unavailable: '+error.message}
 const inputKeys=['width','height','depth','thickness','partitions','shelves','backThickness','backInset','material','construction','grain','edgeThickness','kerf','sheetWidth','sheetHeight','trim','doors','doorGap','doorOverlay','finish','stockGrainAxis','backConstruction',
  'bayMode','plinthHeight','plinthSetback','backGrooveDepth','backGrooveAllowance','shelfMode','shelfSideClearance','shelfFrontSetback','edgeDeduction',
  'drawerLayout','drawerStyle','drawerFrontHeight','drawerBoxHeight','drawerSlideMode','drawerSlideLength','drawerSlideRearClearance','doorType','doorThickness','doorEdgeThickness','glassThickness','drawerBoxThickness',
- 'doorMaterial','glassMaterial','drawerBoxMaterial','drawerBottomMaterial','backMaterial'];
-const textKeys=['material','construction','grain','stockGrainAxis','backConstruction','bayMode','shelfMode','edgeDeduction','drawerLayout','drawerStyle','drawerSlideMode','doorType','doorMaterial','glassMaterial','drawerBoxMaterial','drawerBottomMaterial','backMaterial'];
+ 'doorMaterial','glassMaterial','drawerBoxMaterial','drawerBottomMaterial','backMaterial',
+ 'coverLeft','coverRight','coverFront','topFiller','topFillerSetback','worktopThickness','worktopOverhang','worktopMaterial','glassType','glassColor','handleType','handleLength','handleFinish','lightKelvin','lightLevel'];
+const textKeys=['material','construction','grain','stockGrainAxis','backConstruction','bayMode','shelfMode','edgeDeduction','drawerLayout','drawerStyle','drawerSlideMode','doorType','doorMaterial','glassMaterial','drawerBoxMaterial','drawerBottomMaterial','backMaterial','worktopMaterial','glassType','glassColor','handleType','handleFinish'];
 const topologyKeys=['shelves','partitions','bayMode','drawerLayout','drawerStyle','plinthHeight'];
 const scene=new THREE.Scene();scene.background=new THREE.Color('#142130');
 const camera=new THREE.PerspectiveCamera(42,1,10,40000);camera.position.set(2200,1800,2800);
@@ -77,7 +81,8 @@ const display={stage:'workshop',night:false,open:new Set(),led:new Set(),openAmo
 function applyStage(){
  const stage=STAGES[display.stage],night=display.night&&display.stage==='studio';
  scene.background=new THREE.Color(night?'#0d1620':stage.background);floor.material.color.set(night?'#1b2733':stage.floor);grid.visible=stage.grid;floor.visible=display.stage!=='studio';
- hemi.intensity=night?0.12:1.2;sun.intensity=night?0.15:2.4;if(renderer)renderer.toneMappingExposure=night?1.15:stage.exposure;
+ hemi.intensity=night?0.12:lighting.ambientStrength;sun.intensity=night?0.15:lighting.sunStrength;if(renderer)renderer.toneMappingExposure=night?1.15:stage.exposure*lighting.exposure/DEFAULT_LIGHTING.exposure;
+ sun.position.set(...sunPosition(lighting));
  scene.environmentIntensity=night?0.08:display.stage==='studio'?0.6:1;renderRoom();needsRender=true;
 }
 function renderRoom(){if(!renderer)return;clearGroup(roomWalls);needsRender=true;const w=room.width,d=room.depth,h=room.height;
@@ -86,24 +91,58 @@ function renderRoom(){if(!renderer)return;clearGroup(roomWalls);needsRender=true
   const night=display.night,cut=Math.min(1200,h),thick=100;
   const slab=new THREE.Mesh(new THREE.BoxGeometry(w+2*thick,40,d+2*thick),new THREE.MeshStandardMaterial({color:night?'#2a2f35':'#cdbfab',roughness:.75}));slab.position.y=-31;slab.receiveShadow=true;roomWalls.add(slab);
   const wallMat=new THREE.MeshStandardMaterial({color:night?'#3a4048':'#e4e0d8',roughness:.9});
-  for(const [sx,sz,x,z] of [[w+2*thick,thick,0,-d/2-thick/2],[thick,d,-w/2-thick/2,0],[thick,d,w/2+thick/2,0]]){const wall=new THREE.Mesh(new THREE.BoxGeometry(sx,cut,sz),wallMat);wall.userData.wall=true;wall.position.set(x,cut/2-8,z);wall.castShadow=true;wall.receiveShadow=true;roomWalls.add(wall)}
+  // Walls are built in pieces so doors leave a gap and windows below the cut show their sill.
+  for(const [wallName,along,run,fixed] of [['back',true,w+2*thick,-d/2-thick/2],['left',false,d,-w/2-thick/2],['right',false,d,w/2+thick/2]]){
+   const start=-run/2,offsetBase=along?-thick:0,cuts=(room.openings??[]).filter(o=>o.wall===wallName).map(o=>({a:start+(along?thick:0)+o.offset+(along?0:0),b:start+(along?thick:0)+o.offset+o.width,top:o.type==='door'?0:Math.min(cut,o.sill)})).sort((p,q)=>p.a-q.a);
+   const pieces=[];let cursor=start;
+   for(const c of cuts){if(c.a>cursor)pieces.push([cursor,c.a,cut]);if(c.top>0)pieces.push([c.a,c.b,c.top]);cursor=Math.max(cursor,c.b)}
+   if(cursor<start+run)pieces.push([cursor,start+run,cut]);
+   for(const [a,b,hgt] of pieces){if(b-a<1)continue;const len=b-a,mid=(a+b)/2,wall=new THREE.Mesh(new THREE.BoxGeometry(along?len:thick,hgt,along?thick:len),wallMat);wall.userData.wall=true;wall.position.set(along?mid:fixed,hgt/2-8,along?fixed:mid);wall.castShadow=true;wall.receiveShadow=true;roomWalls.add(wall)}
+   void offsetBase;
+  }
   const capMat=new THREE.MeshStandardMaterial({color:night?'#c9a45c':'#2b3a46',roughness:.6});
   for(const [sx,sz,x,z] of [[w+2*thick,thick,0,-d/2-thick/2],[thick,d,-w/2-thick/2,0],[thick,d,w/2+thick/2,0]]){const cap=new THREE.Mesh(new THREE.BoxGeometry(sx,6,sz),capMat);cap.userData.wall=true;cap.position.set(x,cut-5,z);roomWalls.add(cap)}
   return;
  }
- const wallMat=new THREE.MeshStandardMaterial({color:'#5f8c9b',transparent:true,opacity:.12,side:THREE.DoubleSide,depthWrite:false});for(const [pw,ph,x,y,z,ry] of [[w,h,0,h/2,-d/2,0],[d,h,-w/2,h/2,0,Math.PI/2],[d,h,w/2,h/2,0,Math.PI/2]]){const mesh=new THREE.Mesh(new THREE.PlaneGeometry(pw,ph),wallMat);mesh.position.set(x,y,z);mesh.rotation.y=ry;roomWalls.add(mesh)}const outline=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(w,h,d)),new THREE.LineBasicMaterial({color:'#3f8e9b',transparent:true,opacity:.45}));outline.position.y=h/2;roomWalls.add(outline)}
+ const wallMat=new THREE.MeshStandardMaterial({color:'#5f8c9b',transparent:true,opacity:.12,side:THREE.DoubleSide,depthWrite:false});
+ // Doors and windows drawn as outlines on the transparent walls.
+ for(const o of room.openings??[]){const along=o.wall==='back'||o.wall==='front',x0=-w/2+o.offset,z0=-d/2+o.offset,pts=along?[[x0,o.sill],[x0+o.width,o.sill],[x0+o.width,o.sill+o.height],[x0,o.sill+o.height]]:[[z0,o.sill],[z0+o.width,o.sill],[z0+o.width,o.sill+o.height],[z0,o.sill+o.height]];const fixed={back:-d/2+2,front:d/2-2,left:-w/2+2,right:w/2-2}[o.wall];const geo=new THREE.BufferGeometry().setFromPoints(pts.map(([a,y])=>along?new THREE.Vector3(a,y,fixed):new THREE.Vector3(fixed,y,a)));const line=new THREE.LineLoop(geo,new THREE.LineBasicMaterial({color:o.type==='door'?'#c9a45c':'#7fc4ef'}));roomWalls.add(line)}for(const [pw,ph,x,y,z,ry] of [[w,h,0,h/2,-d/2,0],[d,h,-w/2,h/2,0,Math.PI/2],[d,h,w/2,h/2,0,Math.PI/2]]){const mesh=new THREE.Mesh(new THREE.PlaneGeometry(pw,ph),wallMat);mesh.position.set(x,y,z);mesh.rotation.y=ry;roomWalls.add(mesh)}const outline=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(w,h,d)),new THREE.LineBasicMaterial({color:'#3f8e9b',transparent:true,opacity:.45}));outline.position.y=h/2;roomWalls.add(outline)}
 function refreshRoomWarnings(){const issues=inspectLayout(room,units);$('roomWarnings').textContent=issues.length?issues.map(i=>'⚠ '+i.message).join(' · '):'✓ No rectangular footprint conflicts detected';$('roomWarnings').classList.toggle('has-issues',!!issues.length)}
 function refreshRoomControls(){for(const k of ['width','depth','height'])$('room'+k[0].toUpperCase()+k.slice(1)).value=room[k];renderRoom();refreshRoomWarnings()}
 
 const materialFor=(u,back=false)=>panelMaterial(finishColor(u.finish),{wood:woodFinishes.has(u.finish),back});
+// Library materials (with photos) override the finish colour on the parts they were applied to.
+function surfaceFor(u,p,size){
+ if(p.kind==='door'&&p.sheetGood===false)return glassMaterial(u.config.glassType,u.config.glassColor);
+ if(p.kind==='back')return materialFor(u,true);
+ const link=p.kind==='worktop'?u.worktopMaterialId:['door','drawerFront'].includes(p.kind)?u.frontMaterialId??u.materialId:u.materialId;
+ const lib=link&&materials.find(m=>m.id===link);
+ if(lib)return photoMaterial(lib,size,{onLoad:()=>{needsRender=true}})??panelMaterial(lib.color);
+ if(p.kind==='worktop')return panelMaterial('#d8d4cc');
+ return materialFor(u);
+}
 function addPanel(group,u,p){const dims=partSize(p);
  const pos=[p.position.x,p.position.y,p.position.z];
- const glass=p.kind==='door'&&p.sheetGood===false;const mesh=new THREE.Mesh(new THREE.BoxGeometry(...dims),glass?new THREE.MeshStandardMaterial({color:'#a9d6e5',transparent:true,opacity:.35,roughness:.05,metalness:.1}):materialFor(u,p.kind==='back'));mesh.position.set(pos[0]+(exploded?pos[0]*.18:0),pos[1]+(exploded?(p.kind==='top'?180:p.kind==='bottom'?-90:0):0),pos[2]+(exploded?(p.kind==='back'?-160:0):0));if(p.id===selectedPart&&u.id===selected){mesh.material.emissive=new THREE.Color('#20a18a');mesh.material.emissiveIntensity=.5}mesh.castShadow=true;mesh.receiveShadow=true;mesh.userData={unit:u.id,part:p.id};group.add(mesh);const edges=new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry),new THREE.LineBasicMaterial({color:'#2c3d4c',transparent:true,opacity:display.stage==='studio'?.18:.45}));mesh.add(edges);if(wire)mesh.material.wireframe=true;return mesh;
+ const mesh=new THREE.Mesh(new THREE.BoxGeometry(...dims),surfaceFor(u,p,dims));mesh.position.set(pos[0]+(exploded?pos[0]*.18:0),pos[1]+(exploded?(p.kind==='top'?180:p.kind==='bottom'?-90:0):0),pos[2]+(exploded?(p.kind==='back'?-160:0):0));if(p.id===selectedPart&&u.id===selected){mesh.material.emissive=new THREE.Color('#20a18a');mesh.material.emissiveIntensity=.5}mesh.castShadow=true;mesh.receiveShadow=true;mesh.userData={unit:u.id,part:p.id};group.add(mesh);const edges=new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry),new THREE.LineBasicMaterial({color:'#2c3d4c',transparent:true,opacity:display.stage==='studio'?.18:.45}));mesh.add(edges);if(wire)mesh.material.wireframe=true;return mesh;
 }
+const handleStyle=u=>({type:u.config.handleType??'bar',length:u.config.handleLength??0,finish:u.config.handleFinish??'black'});
+const fittingLook={kitchen:'#c8ced3',wardrobe:'#a7b0b6'};
+function fittingMesh(u,a){
+ // Simple stand-in for an accessory: translucent box, red when it does not fit.
+ const color=!a.fits?'#d9534f':a.type==='sink'?'#9aa3a9':a.type==='hob'?'#1d1f22':fittingLook[a.group];
+ const mesh=new THREE.Mesh(new THREE.BoxGeometry(...a.size),new THREE.MeshStandardMaterial({color,metalness:a.type==='hob'?0.2:0.7,roughness:.35,transparent:a.place!=='worktop',opacity:a.place==='worktop'?1:0.55}));
+ mesh.position.set(a.position.x,a.position.y,a.position.z);mesh.userData={unit:u.id,visualOnly:true};return mesh;
+}
+function sizeLabel(text,small){
+ const canvas=document.createElement('canvas');canvas.width=256;canvas.height=64;const c=canvas.getContext('2d');
+ if(c){c.fillStyle='rgba(23,43,58,.82)';c.fillRect(0,0,256,64);c.fillStyle='#ffffff';c.font='bold 30px "IBM Plex Sans Arabic",Arial';c.textAlign='center';c.textBaseline='middle';c.fillText(text,128,33)}
+ const sprite=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(canvas),depthTest:false}));sprite.scale.set(small?220:280,small?55:70,1);sprite.renderOrder=10;return sprite;
+}
+let lightBudget=0;
 function renderScene(){
- clearGroup(objects);openables=[];needsRender=true;
+ clearGroup(objects);openables=[];needsRender=true;lightBudget=QUALITY[lighting.quality].maxLights;
  if(renderer)for(const u of units){
-  const g=new THREE.Group();g.position.set(u.x,0,u.z);g.rotation.y=THREE.MathUtils.degToRad(u.rotation??0);g.userData.unit=u.id;
+  const g=new THREE.Group();g.position.set(u.x,u.elevation??0,u.z);g.rotation.y=THREE.MathUtils.degToRad(u.rotation??0);g.userData.unit=u.id;
   const model=cabinet(u.config,u.id),doors=model.parts.filter(p=>p.kind==='door'),drawers=new Map();
   objects.add(g);g.updateMatrixWorld(true);
   for(const p of model.parts){
@@ -112,25 +151,34 @@ function renderScene(){
     // Doors hang on a pivot at the hinge edge so presentations can open them; handles follow the door.
     const index=doors.indexOf(p),hingeLeft=doors.length===1||index<doors.length/2,pivot=new THREE.Group();
     pivot.position.set(mesh.position.x+(hingeLeft?-size[0]/2:size[0]/2),0,mesh.position.z+size[2]/2);g.add(pivot);pivot.updateMatrixWorld(true);pivot.attach(mesh);
-    if(p.sheetGood!==false)mesh.add(handleFor(p,size,{hingeLeft}));
+    const handle=handleFor(p,size,{hingeLeft,...handleStyle(u)});if(handle)mesh.add(handle);
     openables.push({unit:u.id,type:'door',object:pivot,angle:(hingeLeft?-1:1)*THREE.MathUtils.degToRad(100)});
    }else if(['drawerFront','drawerFace','drawerSide','drawerBack','drawerBottom'].includes(p.kind)){
     const key=`${p.bay}:${p.slot}`;if(!drawers.has(key)){const group=new THREE.Group();g.add(group);drawers.set(key,group);openables.push({unit:u.id,type:'drawer',object:group,distance:u.config.depth*0.55})}
     drawers.get(key).attach(mesh);
-    if(p.kind==='drawerFront'||(p.kind==='drawerFace'&&!doors.length&&!model.parts.some(q=>q.kind==='drawerFront'&&q.bay===p.bay&&q.slot===p.slot)))mesh.add(handleFor(p,size));
+    if(p.kind==='drawerFront'||(p.kind==='drawerFace'&&!doors.length&&!model.parts.some(q=>q.kind==='drawerFront'&&q.bay===p.bay&&q.slot===p.slot))){const handle=handleFor(p,size,handleStyle(u));if(handle)mesh.add(handle)}
    }
   }
-  if(display.led.has(u.id))for(const bay of model.bays??[]){
-   // Warm 3000 K strip under the top of each bay (display only).
+  const strips=model.accessories.filter(a=>a.kind==='ledStrip'),lit=lighting.ledsOn||display.led.has(u.id),glow=kelvinColor(u.config.lightKelvin??3000),level=(u.config.lightLevel??70)/100;
+  for(const a of strips){
+   // Strip glows when lights are on; a point light follows while the quality budget allows.
+   const strip=new THREE.Mesh(new THREE.BoxGeometry(a.length,6,14),new THREE.MeshStandardMaterial({color:glow,emissive:glow,emissiveIntensity:lit?0.6+2.4*level:0.05}));
+   strip.position.set(a.position.x,a.position.y,a.position.z);strip.userData={unit:u.id,visualOnly:true};g.add(strip);
+   if(lit&&lightBudget>0){lightBudget--;const light=new THREE.PointLight(glow,(display.night?220000:90000)*level,1400,2);light.position.set(a.position.x,a.position.y-40,a.position.z-80);g.add(light)}
+  }
+  if(!strips.length&&display.led.has(u.id))for(const bay of model.bays??[]){
+   // Warm 3000 K strip under the top of each bay (display only) when the unit has no LED positions.
    const y=model.internal.ceilY-6,x=bay.x,z=u.config.depth/2-60,strip=new THREE.Mesh(new THREE.BoxGeometry(bay.innerWidth*0.9,6,14),new THREE.MeshStandardMaterial({color:'#ffd9a0',emissive:'#ffc27a',emissiveIntensity:2.5}));
    strip.position.set(x,y,z);strip.userData.visualOnly=true;g.add(strip);
-   const light=new THREE.PointLight('#ffc27a',display.night?220000:90000,Math.max(1600,model.internal.ceilY),2);light.position.set(x,y-40,z-80);g.add(light);
+   if(lightBudget>0){lightBudget--;const light=new THREE.PointLight('#ffc27a',display.night?220000:90000,Math.max(1600,model.internal.ceilY),2);light.position.set(x,y-40,z-80);g.add(light)}
   }
+  for(const a of model.accessories.filter(a=>a.kind==='fitting'))g.add(fittingMesh(u,a));
+  if(showSizes&&display.stage!=='studio')for(const space of model.spaces){const bay=model.bays[space.bay],label=sizeLabel(`${Math.round(space.width)} × ${Math.round(space.clearHeight)}`,space.kind==='drawer');label.position.set(bay.x,model.internal.floorY+(space.bottom+space.top)/2,u.config.depth/2+40);g.add(label)}
   for(const a of model.accessories)if(a.kind==='hangingRail'){const rail=new THREE.Mesh(new THREE.CylinderGeometry(9,9,a.length,16),new THREE.MeshStandardMaterial({color:'#b8c2c8',metalness:.8,roughness:.3}));rail.rotation.z=Math.PI/2;rail.position.set(a.position.x,a.position.y,a.position.z);rail.userData={unit:u.id};g.add(rail)}
   if(u.id===selected&&display.stage!=='studio'){g.updateWorldMatrix(true,true);objects.add(new THREE.BoxHelper(g,'#87d9ba'))}
  }
  if(!renderer)fallbackDrawing.innerHTML=cabinetDrawingSvg(current());
- refreshTree();refreshRoomWarnings();workspace?.refresh();
+ refreshTree();refreshRoomWarnings();workspace?.refresh();extras?.refresh();
 }
 function current(){return units.find(u=>u.id===selected)}
 function clearGroup(group){
@@ -139,7 +187,7 @@ function clearGroup(group){
  group.clear();geometries.forEach(geometry=>geometry.dispose());materials.forEach(material=>material.dispose());
 }
 function refreshTree(){$('tree').innerHTML=units.map(u=>`<button data-id="${esc(u.id)}" class="${u.id===selected?'active':''}">▣ &nbsp; ${esc(u.id)} · ${esc(u.name)}</button>`).join('');$('tree').querySelectorAll('button').forEach(b=>b.onclick=()=>choose(b.dataset.id))}
-function choose(id){if(selected!==id)selectedPart=null;selected=id;const u=current();if(!u)return;$('selectedName').textContent=u.id;$('previewTitle').textContent=u.name;for(const k of inputKeys){const el=$(k);if(el)el.value=k==='finish'?u.finish:u.config[k]}$('posX').value=u.x;$('posZ').value=u.z;$('rotation').value=u.rotation??0;$('warning').textContent='';renderScene();refreshOutput();refreshBayEditor();refreshDrawerEditor();refreshLevelEditors();refreshPartEditor()}
+function choose(id){if(selected!==id)selectedPart=null;selected=id;const u=current();if(!u)return;$('selectedName').textContent=u.id;$('previewTitle').textContent=u.name;for(const k of inputKeys){const el=$(k);if(el)el.value=k==='finish'?u.finish:u.config[k]}$('posX').value=u.x;$('posZ').value=u.z;$('rotation').value=u.rotation??0;$('elevation').value=u.elevation??0;$('warning').textContent='';renderScene();refreshOutput();refreshBayEditor();refreshDrawerEditor();refreshLevelEditors();refreshPartEditor()}
 function refreshOutput(){const u=current();if(!u){$('parts').innerHTML='';$('summary').textContent='';return}try{const c=cabinet(u.config,u.id);$('parts').innerHTML=c.parts.map(p=>`<tr data-part="${esc(p.id)}" class="${p.id===selectedPart?'part-selected':''}"><td>${esc(p.id)}</td><td>${esc(p.kind)}</td><td>${p.length}</td><td>${p.width}</td><td>${p.thickness}</td><td>${esc(p.material)}</td><td>${p.bandLength}</td><td>${p.sheetGood?`${p.cutLength} × ${p.cutWidth}`:'supplier'}</td></tr>`).join('');refreshModelWarnings(c);$('summary').textContent=t('partsSummary',{parts:c.parts.length,area:c.totalAreaM2,edge:c.edgeLengthM});$('parts').querySelectorAll('tr[data-part]').forEach(row=>row.onclick=()=>selectPart(row.dataset.part));if(mode==='drawings')drawShop();if(mode==='manufacturing')drawNesting()}catch(e){$('warning').textContent=e.message}}
 function esc(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function updateConfig(u,next,topology=false){
@@ -155,7 +203,7 @@ for(const k of inputKeys)$(k).addEventListener('change',()=>{
   const next={...u.config};
   if(k==='finish')u.finish=$(k).value;
   else next[k]=textKeys.includes(k)?$(k).value:Number($(k).value);
-  if(k==='partitions'){delete next.bayShelves;delete next.bayDrawers;delete next.bayShelfLevels;delete next.bayRails}
+  if(k==='partitions'){delete next.bayShelves;delete next.bayDrawers;delete next.bayShelfLevels;delete next.bayRails;delete next.bayAccessories;delete next.lightPositions}
   if(k==='shelves'){delete next.bayShelves;delete next.bayShelfLevels}
   updateConfig(u,next,topologyKeys.includes(k));$('warning').textContent='';
  }catch(error){u.config=before;u.finish=previousFinish;$(k).value=k==='finish'?previousFinish:before[k];$('warning').textContent=error.message}
@@ -166,7 +214,7 @@ for(const [field,prop] of [['posX','x'],['posZ','z']])$(field).addEventListener(
 function refreshBayEditor(){const u=current();if(!u)return;const n=u.config.partitions+1;const counts=u.config.bayShelves?.length===n?u.config.bayShelves:Array(n).fill(u.config.shelves);$('bayEditor').innerHTML=counts.map((v,i)=>`<label>Bay ${i+1}<input type="number" min="0" max="30" step="1" data-bay="${i}" value="${v}"></label>`).join('');$('bayEditor').querySelectorAll('[data-bay]').forEach(el=>el.onchange=()=>{const next=Number(el.value),copy=[...counts];copy[Number(el.dataset.bay)]=next;try{const cfg={...u.config,bayShelves:copy};updateConfig(u,cfg,true)}catch(err){$('warning').textContent=err.message;el.value=counts[Number(el.dataset.bay)]}})}
 function refreshDrawerEditor(){const u=current();if(!u)return;const n=u.config.partitions+1;const counts=u.config.bayDrawers?.length===n?u.config.bayDrawers:Array(n).fill(0);$('drawerEditor').innerHTML=counts.map((v,i)=>`<label>Bay ${i+1}<input type="number" min="0" max="12" step="1" data-drawer="${i}" value="${v}"></label>`).join('');$('drawerEditor').querySelectorAll('[data-drawer]').forEach(el=>el.onchange=()=>{const copy=[...counts];copy[Number(el.dataset.drawer)]=Number(el.value);try{const cfg={...u.config,bayDrawers:copy};updateConfig(u,cfg,true)}catch(err){$('warning').textContent=err.message;el.value=counts[Number(el.dataset.drawer)]}})}
 function refreshModelWarnings(model){
- const notes=[...model.warnings.map(w=>w.message),...model.accessories.map(a=>a.kind==='drawerSlide'?`Bay ${a.bay+1} drawer ${a.slot+1}: slide ${a.length} mm (verify with supplier)`:`Bay ${a.bay+1}: hanging rail ${a.length} mm at ${a.level} mm`)];
+ const notes=[...model.warnings.map(w=>w.message),...model.accessories.filter(a=>a.kind==='drawerSlide'||a.kind==='hangingRail').map(a=>a.kind==='drawerSlide'?`Bay ${a.bay+1} drawer ${a.slot+1}: slide ${a.length} mm (verify with supplier)`:`Bay ${a.bay+1}: hanging rail ${a.length} mm at ${a.level} mm`)];
  $('modelWarnings').innerHTML=`<b>${esc(model.rules.version)}</b> · ${esc(model.rules.status)}`+notes.map(n=>`<br>• ${esc(n)}`).join('');
 }
 // Shelf levels and rails are stored per bay; levels also fix that bay's shelf count.
@@ -196,7 +244,7 @@ function refreshLevelEditors(){
  });
 }
 function selectPart(id){selectedPart=id;renderScene();refreshOutput();refreshPartEditor()}
-function refreshPartEditor(){const u=current();if(!u)return;const part=cabinet(u.config,u.id).parts.find(p=>p.id===selectedPart);$('partLabel').textContent=part?`${part.id} · ${part.kind} · ${part.length} × ${part.width} × ${part.thickness} mm`:'Select a panel in the 3D scene or cutting list';$('partEditor').querySelectorAll('[data-edge]').forEach(el=>{el.disabled=!part;el.checked=!!part?.edges[Number(el.dataset.edge)]});$('resetPartEdges').disabled=!part}
+function refreshPartEditor(){const u=current();if(!u)return;extras?.refresh();const part=cabinet(u.config,u.id).parts.find(p=>p.id===selectedPart);$('partLabel').textContent=part?`${part.id} · ${part.kind} · ${part.length} × ${part.width} × ${part.thickness} mm`:'Select a panel in the 3D scene or cutting list';$('partEditor').querySelectorAll('[data-edge]').forEach(el=>{el.disabled=!part;el.checked=!!part?.edges[Number(el.dataset.edge)]});$('resetPartEdges').disabled=!part}
 $('partEditor').querySelectorAll('[data-edge]').forEach(el=>el.onchange=()=>{const u=current(),part=cabinet(u.config,u.id).parts.find(p=>p.id===selectedPart);if(!part)return;const edges=[...part.edges];edges[Number(el.dataset.edge)]=el.checked?1:0;const cfg={...u.config,partOverrides:{...u.config.partOverrides,[part.overrideKey]:{edges}}};try{cabinet(cfg,u.id);u.config=cfg;renderScene();refreshOutput();refreshPartEditor()}catch(err){$('warning').textContent=err.message;refreshPartEditor()}});
 $('resetPartEdges').onclick=()=>{const u=current(),part=cabinet(u.config,u.id).parts.find(p=>p.id===selectedPart);if(!part)return;const overrides={...u.config.partOverrides};delete overrides[part.overrideKey];u.config={...u.config,partOverrides:overrides};renderScene();refreshOutput();refreshPartEditor()};
 function drillSelection(){const u=current();if(!u||!selectedPart)throw Error('Select a panel in the model or cut list first');const part=cabinet(u.config,u.id).parts.find(p=>p.id===selectedPart);if(!part)throw Error('Selected panel is unavailable');const settings={pitch:Number($('drillPitch').value),offset:Number($('drillOffset').value),margin:Number($('drillMargin').value),diameter:Number($('drillDiameter').value),depth:Number($('drillDepth').value)};return drillingPreview(part,settings)}
@@ -211,10 +259,11 @@ $('mfgCsv').onclick=()=>{try{download(`${projectId}-R${designRevision}-manufactu
 $('partLabels').onclick=()=>{try{download(`${projectId}-R${designRevision}-part-labels.html`,labelsHtml(snapshot()),'text/html;charset=utf-8')}catch(e){$('warning').textContent=e.message}};
 $('assemblyPrint').onclick=()=>{const u=current(),model=cabinet(u.config,u.id);const w=window.open('','_blank');if(!w){$('warning').textContent='Allow popups to print assembly report';return}const rows=model.parts.map(p=>`<tr data-part="${esc(p.id)}" class="${p.id===selectedPart?'part-selected':''}"><td>${esc(p.id)}</td><td>${esc(p.kind)}</td><td>${p.length} × ${p.width} × ${p.thickness}</td><td>${esc(p.material)}</td><td>${p.edges.join(' / ')}</td></tr>`).join('');w.document.write(`<!doctype html><html><head><title>Assembly · ${esc(u.id)}</title><style>body{font:14px Arial;margin:32px;color:#233}table{width:100%;border-collapse:collapse}td,th{padding:7px;border:1px solid #abb}h1{font-size:22px}small{color:#a43}</style></head><body><h1>ROKADEX · ASSEMBLY COMPONENT SCHEDULE</h1><p>${esc(u.id)} — ${esc(u.name)} | ${u.config.width} × ${u.config.height} × ${u.config.depth} mm</p><small>PRELIMINARY ONLY. VERIFY JOINERY, HARDWARE, BACK PANEL AND MACHINING BEFORE FABRICATION.</small><table><thead><tr><th>Part ID</th><th>Type</th><th>Dimensions (mm)</th><th>Material</th><th>Edge flags</th></tr></thead><tbody>${rows}</tbody></table></body></html>`);w.document.close();w.focus();setTimeout(()=>w.print(),300)};
 function addUnit(name,overrides={},finish='oak'){if(units.length>=100){$('warning').textContent='Maximum 100 units per project';return}const id=`CAB-${String(nextUnitNumber()).padStart(3,'0')}`;units.push({id,name,type:'cabinet',x:(units.length%4)*1250,z:Math.floor(units.length/4)*900,finish,config:{...newConfig(),...overrides}});choose(id)}
+function addRecord(unit){if(units.length>=100){$('warning').textContent='Maximum 100 units per project';return}units.push(unit);choose(unit.id);checkpoint()}
 $('addCab').onclick=()=>addUnit('Cabinet Unit');$('addTall').onclick=()=>addUnit('Tall Wardrobe',{width:1600,height:2400,depth:600,partitions:2,shelves:4});$('addDoor').onclick=()=>addUnit('Two-door Cabinet',{width:1000,height:2100,depth:550,partitions:1,shelves:3,doors:2});$('addBase').onclick=()=>addUnit('Base Kitchen Unit',{width:800,height:850,depth:580,partitions:0,shelves:1});$('delete').onclick=()=>{if(units.length===1){$('warning').textContent='Keep at least one unit in the project';return}units=units.filter(u=>u.id!==selected);choose(units[0].id)};
 function setMode(next){
  mode=next;needsRender=true;document.querySelectorAll('.mode').forEach(button=>{button.classList.toggle('active',button.dataset.mode===next);button.setAttribute('aria-pressed',String(button.dataset.mode===next))});
- for(const [panel,value] of Object.entries({drawingsPanel:'drawings',manufacturingPanel:'manufacturing',renderPanel:'render',planPanel:'plan',costingPanel:'costing',reviewPanel:'review'}))$(panel).classList.toggle('hidden',next!==value);
+ for(const [panel,value] of Object.entries({drawingsPanel:'drawings',manufacturingPanel:'manufacturing',renderPanel:'render',planPanel:'plan',costingPanel:'costing',reviewPanel:'review',materialsPanel:'materials'}))$(panel).classList.toggle('hidden',next!==value);
  $('viewTag').textContent=!renderer&&next==='design'?'2D DESIGN VIEW':next.toUpperCase()+' VIEW';refreshOutput();workspace?.refresh();applyLanguage(getLanguage());
 }document.querySelectorAll('.mode').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
 function drawingSvg(){return shopDrawingSvg(current(),{company,project:projectMeta(),lang:getLanguage(),sheetNumber:units.indexOf(current())+1,sheetCount:units.length})}
@@ -241,7 +290,7 @@ const raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2();let pointerStart
 function screenshot(){if(!renderer)return;renderer.render(scene,camera);renderer.domElement.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='rokadex-preview.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)})}$('screenshot').onclick=screenshot;
 function openPresentation(){if(!renderer)return;$('presentation').classList.remove('hidden');$('presentationCanvas').appendChild(renderer.domElement);resize();showroom.enter();applyLanguage(getLanguage())}
 $('present').onclick=openPresentation;$('openShowroom').onclick=openPresentation;
-$('closePresentation').onclick=()=>{if(!renderer)return;$('presentation').classList.add('hidden');$('viewport').appendChild(renderer.domElement);showroom.leave();resize()};$('lang').onclick=()=>{applyLanguage(getLanguage()==='ar'?'en':'ar');try{localStorage.setItem('rokadex.language',getLanguage())}catch{}};
+$('closePresentation').onclick=()=>{if(!renderer)return;$('presentation').classList.add('hidden');$('viewport').appendChild(renderer.domElement);showroom.leave();resize()};$('lang').onclick=()=>{applyLanguage(getLanguage()==='ar'?'en':'ar');extras?.refresh();applyLanguage(getLanguage());try{localStorage.setItem('rokadex.language',getLanguage())}catch{}};
 function resize(){if(!renderer)return;const el=renderer.domElement.parentElement;const w=el.clientWidth,h=el.clientHeight;if(w>0&&h>0){camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false);needsRender=true}}window.addEventListener('resize',resize);new ResizeObserver(resize).observe($('viewport'));new ResizeObserver(resize).observe($('presentationCanvas'));// Render on demand: only after a scene change, camera motion, a flight or an opening animation.
 function tick(now){if(!renderer)return;requestAnimationFrame(tick);const flying=showroom.flying;showroom.update(now??performance.now());animateOpen();const moved=controls.update();if((moved||flying||needsRender)&&!document.hidden&&(['design','render'].includes(mode)||!$('presentation').classList.contains('hidden'))){renderer.render(scene,camera);needsRender=false}}for(const k of ['width','depth','height']){const field=$('room'+k[0].toUpperCase()+k.slice(1));field.addEventListener('change',()=>{const next={...room,[k]:Number(field.value)};try{validateRoom(next);room=next;refreshRoomControls()}catch(e){$('warning').textContent=e.message;field.value=room[k]}})}
 $('snapWall').onclick=()=>{try{const pos=snapUnitToWall(room,current(),$('wallSide').value);current().x=pos.x;current().z=pos.z;choose(selected)}catch(e){$('warning').textContent=e.message}};
@@ -317,14 +366,14 @@ document.getElementById('projectSheetCsv').onclick=()=>{try{download('rokadex-pr
 showProjectSheets();
 
 // Project history stores validated, detached model snapshots; view-only changes are excluded.
-function snapshot(){return {format:'rokadex-standalone',version:3,projectId,designRevision,lengthUnit:'mm',...(migratedFrom?{migratedFrom}:{}),...(projectName?{projectName}:{}),...(clientName?{clientName}:{}),units,room,costing}}
+function snapshot(){return {format:'rokadex-standalone',version:3,projectId,designRevision,lengthUnit:'mm',...(migratedFrom?{migratedFrom}:{}),...(projectName?{projectName}:{}),...(clientName?{clientName}:{}),...(materials.length?{materials}:{}),units,room,costing}}
 const projectMeta=()=>({id:projectId,name:projectName,client:clientName,revision:designRevision});
 function refreshIdentity(){$('projectIdLabel').textContent=projectId;$('designRevision').value=designRevision}
 $('designRevision').addEventListener('change',()=>{const v=Number($('designRevision').value);if(!Number.isInteger(v)||v<1||v>9999){$('designRevision').value=designRevision;$('projectStatus').textContent='Design revision must be a whole number 1–9999';return}designRevision=v;checkpoint()});
 function nextUnitNumber(){let number=1;while(units.some(unit=>unit.id===`CAB-${String(number).padStart(3,'0')}`))number++;return number}
 function applyProject(project){
  units=project.units;room=project.room;costing=project.costing??structuredClone(DEFAULT_COSTING);selectedPart=null;
- projectId=project.projectId??newProjectId();designRevision=project.designRevision??1;migratedFrom=project.migratedFrom??null;projectName=project.projectName??'';clientName=project.clientName??'';refreshIdentity();
+ projectId=project.projectId??newProjectId();designRevision=project.designRevision??1;migratedFrom=project.migratedFrom??null;projectName=project.projectName??'';clientName=project.clientName??'';materials=project.materials??[];refreshIdentity();
  refreshRoomControls();choose(units.some(unit=>unit.id===selected)?selected:units[0].id);
  showReview();showProjectSheets();workspace?.refresh();applyLanguage(getLanguage());
 }
@@ -377,6 +426,24 @@ workspace=initWorkspace({
  onError:message=>{$('projectStatus').textContent=message}
 });
 
+// 1.6 editors and the view-only lighting panel.
+var extras=null;
+extras=initExtras({current,getUnits:()=>units,getRoom:()=>room,setRoom:next=>{room=next;refreshRoomControls();renderScene()},getMaterials:()=>materials,setMaterials:next=>{materials=next},
+ update:updateConfig,commit:checkpoint,choose,render:renderScene,addRecord,nextId:()=>`CAB-${String(nextUnitNumber()).padStart(3,'0')}`,selectedPart:()=>selectedPart,
+ warn:message=>{$('warning').textContent=message},download,company:()=>company,projectMeta,captureRoom:()=>showroom.captureRoom()});
+function applyLighting(){
+ const q=QUALITY[lighting.quality];
+ if(renderer){renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,q.pixelRatio,window.innerWidth<=740?1.5:3));resize()}
+ const size=window.innerWidth<=740?Math.min(1024,q.shadowMap):q.shadowMap;
+ if(sun.shadow.mapSize.x!==size){sun.shadow.mapSize.set(size,size);sun.shadow.map?.dispose();sun.shadow.map=null}
+ sun.shadow.radius=q.shadowRadius;
+ for(const [id,key] of [['renderQuality','quality'],['sunAzimuth','sunAzimuth'],['sunElevation','sunElevation'],['sunStrength','sunStrength'],['ambientStrength','ambientStrength'],['exposure','exposure']])$(id).value=lighting[key];
+ $('ledsOn').checked=lighting.ledsOn;applyStage();renderScene();
+}
+for(const [id,key] of [['renderQuality','quality'],['sunAzimuth','sunAzimuth'],['sunElevation','sunElevation'],['sunStrength','sunStrength'],['ambientStrength','ambientStrength'],['exposure','exposure'],['ledsOn','ledsOn']])$(id).addEventListener('input',()=>{lighting=saveLighting(localStorage,{...lighting,[key]:id==='ledsOn'?$(id).checked:id==='renderQuality'?$(id).value:Number($(id).value)});applyLighting()});
+$('lightingReset').onclick=()=>{lighting=saveLighting(localStorage,DEFAULT_LIGHTING);applyLighting()};
+$('insideSizes').onclick=()=>{showSizes=!showSizes;$('insideSizes').setAttribute('aria-pressed',String(showSizes));renderScene()};
+applyLighting();
 const catalog=initReferenceLibrary({getProject:snapshot,addUnit,commit:project=>{applyProject(parseProject(project));checkpoint()},onError:message=>{$('projectStatus').textContent=message}});
 const finishNames=new Map([...document.querySelectorAll('#finish option')].map(option=>[option.value,option.textContent]));
 for(const group of catalog?.finishes??[])for(const entry of group.finishes)if(entry.wood)woodFinishes.add(entry.color);

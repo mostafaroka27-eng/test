@@ -151,3 +151,37 @@ tr.part-selected td { background: var(--teal-bg); }
 }
 .show-card .show-switches { grid-column: 1 / -1; display: flex; gap: 16px; padding-top: 6px; border-top: 1px solid #22384b; margin-top: 4px; }
 .show-card .switch { grid-column: auto; margin: 0; }
+
+/* ---------- 1.6: grouped properties, quick actions, lighting, spaces, kitchen, materials ---------- */
+.inspector details.group{border:1px solid var(--line,#E2E8EE);border-radius:10px;margin:10px 0;background:#fff;overflow:hidden}
+.inspector details.group>summary{cursor:pointer;list-style:none;padding:11px 14px;font-weight:600;color:#172B3A;background:#F6F8FA;display:flex;align-items:center;gap:8px;font-size:13px}
+.inspector details.group>summary::-webkit-details-marker{display:none}
+.inspector details.group>summary::after{content:'▾';margin-inline-start:auto;color:#0F8B8D;transition:transform .15s}
+.inspector details.group:not([open])>summary::after{transform:rotate(-90deg)}
+.inspector details.group[open]>summary{border-bottom:1px solid #E2E8EE}
+.inspector details.group>*:not(summary){margin-inline:12px}
+.inspector details.group>*:last-child{margin-bottom:12px}
+.context-card{border:1px dashed #9fd3d3;background:#F2FAFA;border-radius:10px;padding:10px 12px;margin:10px 0}
+.context-card .note{margin:0}
+.context-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.context-actions:empty{display:none}
+.chip-row{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}.chip-row button{font-size:12px;padding:6px 9px}
+.light-editor{display:grid;gap:8px;margin-bottom:6px}
+.light-bay{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.light-bay b{font-size:12px;color:#172B3A;min-width:60px}
+.light-chip{display:inline-flex!important;align-items:center;gap:5px;border:1px solid #D2DAE2;border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer;background:#fff;margin:0!important}
+.light-chip input{width:auto!important;margin:0}.light-chip.on{background:#FFF4DE;border-color:#E6A23C;color:#7a5410}
+.space-table table{width:100%;border-collapse:collapse;font-size:11.5px}.space-table th,.space-table td{padding:5px 4px;border-bottom:1px solid #EDF1F4;text-align:start;vertical-align:top}.space-table th{color:#6B7785;font-weight:500}
+.accessory-add{display:grid;grid-template-columns:1fr 1.4fr;gap:6px;margin:8px 0}.accessory-add button{grid-column:1/-1}
+.accessory-list,.opening-list{display:grid;gap:4px;margin:6px 0}
+.accessory-row{display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:12px;border:1px solid #E2E8EE;border-radius:8px;padding:5px 8px;background:#fff}
+.accessory-row.bad{border-color:#e7a3a0;background:#fdf1f0}.accessory-row button{padding:2px 7px;font-size:11px}
+.sidebar .opening-list .accessory-row{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.14);color:#dfe7ee}
+.kitchen-group small{display:block;color:#8fa3b3;font-size:11px;margin:8px 2px 4px;letter-spacing:.06em;text-transform:uppercase}
+.side-check{display:flex;gap:6px;align-items:center;color:#c9d6df;font-size:12px;margin:8px 2px}.side-check input{width:auto}
+.opening-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.opening-form label{display:grid;gap:3px;min-width:0;font-size:11px;color:#c9d6df}.opening-form input,.opening-form select{width:100%;min-width:0;box-sizing:border-box}
+.room-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}.room-stats div{background:#F6F8FA;border-radius:8px;padding:8px}.room-stats small{display:block;color:#6B7785}.room-stats b{color:#172B3A}
+.material-list{display:grid;gap:8px;margin-top:10px}
+.material-card{display:grid;grid-template-columns:56px 1fr auto;gap:10px;align-items:center;border:1px solid #E2E8EE;border-radius:10px;padding:8px;background:#fff}
+.material-card small{display:block;color:#6B7785;font-size:11.5px}.material-swatch{width:56px;height:56px;border-radius:8px;border:1px solid #D2DAE2}
+.material-actions{display:flex;gap:6px}
+.check-label{display:flex!important;align-items:center;gap:6px}.check-label input{width:auto}
+#insideSizes[aria-pressed="true"]{background:#0F8B8D;color:#fff;border-color:#0F8B8D}

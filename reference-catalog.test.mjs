@@ -41,7 +41,7 @@ test('template interiors produce the expected parts and accessories',()=>{
 
 test('finishes come from both sources, de-duplicated, and are valid project finishes',()=>{
  const groups=referenceFinishes(ncd,planner);
- assert.deepEqual(groups.map(g=>g.label),['NCD finishes','NCD colours','Room planner colours']);
+ assert.deepEqual(groups.map(g=>g.label),['Finishes','Colours','Room colours']);
  const colours=groups.flatMap(g=>g.finishes.map(f=>f.color));
  assert.equal(new Set(colours).size,colours.length);
  for(const c of colours)assert.ok(isFinish(c));

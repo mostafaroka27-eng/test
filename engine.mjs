@@ -1,23 +1,31 @@
 // Rokadex Studio prototype engineering core — dimensions in millimetres.
+import {ACCESSORIES} from './accessories.mjs';
 // Legacy-preserving defaults: a missing field keeps the Alpha 1.3.2 geometry. New units opt into MODERN_RULES.
 export const DEFAULTS = Object.freeze({width:900,height:2200,depth:580,thickness:18,backThickness:6,backInset:0,backConstruction:'legacy',partitions:1,shelves:3,material:'MDF 18 mm',backMaterial:'HDF 6 mm',edgeThickness:1,edgeType:'PVC',sheetWidth:1220,sheetHeight:2440,kerf:3.2,trim:10,construction:'between',grain:'vertical',stockGrainAxis:'legacy',doors:0,doorGap:3,doorOverlay:0,drawerSideClearance:13,drawerBoxHeight:130,drawerGap:3,drawerBottomThickness:6,
  rulesVersion:'legacy',bayMode:'shared',plinthHeight:0,plinthSetback:50,backGrooveDepth:8,backGrooveAllowance:2,
  shelfMode:'fixed',shelfSideClearance:1,shelfFrontSetback:0,railShelfClearance:40,
  drawerLayout:'legacy',drawerStyle:'external',drawerFrontHeight:180,internalDrawerSetback:20,drawerSlideMode:'legacy',drawerSlideLength:450,drawerSlideRearClearance:10,drawerBoxHeightClearance:30,drawerBoxThickness:0,
  doorType:'panel',doorThickness:0,doorEdgeThickness:0,glassThickness:5,glassMaterial:'Glass 5 mm',
- doorMaterial:'inherit',drawerBoxMaterial:'inherit',drawerBottomMaterial:'inherit',edgeDeduction:'off'});
+ doorMaterial:'inherit',drawerBoxMaterial:'inherit',drawerBottomMaterial:'inherit',edgeDeduction:'off',
+ // 1.6 details: zero means "not fitted", so files without these fields keep their geometry.
+ coverLeft:0,coverRight:0,coverFront:0,topFiller:0,topFillerSetback:0,worktopThickness:0,worktopOverhang:20,worktopMaterial:'Worktop',
+ glassType:'clear',glassColor:'#a9d6e5',handleType:'bar',handleLength:0,handleFinish:'black',lightKelvin:3000,lightLevel:70});
 /** Rules applied to newly created units. Every value is an editable software convention, not a workshop standard. */
 export const CABINET_RULES_VERSION='cab-2.0';
 export const MODERN_RULES=Object.freeze({rulesVersion:CABINET_RULES_VERSION,stockGrainAxis:'y',backConstruction:'inset',drawerLayout:'bottom',drawerSlideMode:'auto',edgeDeduction:'on',shelfMode:'adjustable',shelfFrontSetback:20});
 /** Slide lengths observed in the supplied NCD reference (analysis/ncd-data.json). Unverified catalogue values. */
 export const DRAWER_SLIDE_LENGTHS=Object.freeze([600,550,500,450,400,350,300,250]);
-const ENUMS={rulesVersion:['legacy',CABINET_RULES_VERSION],bayMode:['shared','separate'],shelfMode:['fixed','adjustable'],drawerLayout:['legacy','bottom'],drawerStyle:['external','internal'],drawerSlideMode:['legacy','auto','fixed'],doorType:['panel','glass'],edgeDeduction:['off','on']};
+export const GLASS_TYPES=Object.freeze(['clear','frosted','tinted','reflective','fluted']);
+export const HANDLE_TYPES=Object.freeze(['bar','knob','profile','none']);
+export const HANDLE_FINISHES=Object.freeze(['black','steel','gold','white']);
+const ENUMS={glassType:GLASS_TYPES,handleType:HANDLE_TYPES,handleFinish:HANDLE_FINISHES,rulesVersion:['legacy',CABINET_RULES_VERSION],bayMode:['shared','separate'],shelfMode:['fixed','adjustable'],drawerLayout:['legacy','bottom'],drawerStyle:['external','internal'],drawerSlideMode:['legacy','auto','fixed'],doorType:['panel','glass'],edgeDeduction:['off','on']};
 const finite=(x,k,min=0)=>{if(typeof x!=='number'||!Number.isFinite(x)||x<min)throw Error(`${k} must be a number >= ${min}`);return x};
 const round=n=>Math.round(n*100)/100;
 const drawerKeys=['drawerSideClearance','drawerBoxHeight','drawerGap','drawerBottomThickness'];
 function withDrawerDefaults(c){return {...c,...Object.fromEntries(drawerKeys.map(k=>[k,c[k]??DEFAULTS[k]]))}}
 // Fields introduced after 1.3.2 fall back to their legacy-preserving default when absent.
-const RULE_KEYS=['rulesVersion','bayMode','plinthHeight','plinthSetback','backGrooveDepth','backGrooveAllowance','shelfMode','shelfSideClearance','shelfFrontSetback','railShelfClearance','drawerLayout','drawerStyle','drawerFrontHeight','internalDrawerSetback','drawerSlideMode','drawerSlideLength','drawerSlideRearClearance','drawerBoxHeightClearance','drawerBoxThickness','doorType','doorThickness','doorEdgeThickness','glassThickness','glassMaterial','doorMaterial','drawerBoxMaterial','drawerBottomMaterial','edgeDeduction'];
+const RULE_KEYS=['rulesVersion','bayMode','plinthHeight','plinthSetback','backGrooveDepth','backGrooveAllowance','shelfMode','shelfSideClearance','shelfFrontSetback','railShelfClearance','drawerLayout','drawerStyle','drawerFrontHeight','internalDrawerSetback','drawerSlideMode','drawerSlideLength','drawerSlideRearClearance','drawerBoxHeightClearance','drawerBoxThickness','doorType','doorThickness','doorEdgeThickness','glassThickness','glassMaterial','doorMaterial','drawerBoxMaterial','drawerBottomMaterial','edgeDeduction',
+ 'coverLeft','coverRight','coverFront','topFiller','topFillerSetback','worktopThickness','worktopOverhang','worktopMaterial','glassType','glassColor','handleType','handleLength','handleFinish','lightKelvin','lightLevel'];
 function withRuleDefaults(c){const next=withDrawerDefaults(c);for(const k of RULE_KEYS)if(next[k]===undefined)next[k]=DEFAULTS[k];return next}
 const resolveMaterial=(value,fallback)=>value&&value!=='inherit'?value:fallback;
 
@@ -72,7 +80,31 @@ function bayLayout(c,b,frame,floorY,ceilY,usableDepth){
  }
  return layout;
 }
-export function validate(c){c=withRuleDefaults(c);for(const k of ['material','backMaterial','glassMaterial','doorMaterial','drawerBoxMaterial','drawerBottomMaterial'])if(typeof c[k]!=='string'||!c[k].trim()||c[k].length>200)throw Error(`${k} must be a nonempty material name (at most 200 characters)`);for(const [k,values] of Object.entries(ENUMS))if(!values.includes(c[k]))throw Error(`Invalid ${k}`);for(const k of ['width','height','depth','thickness','backThickness','sheetWidth','sheetHeight','glassThickness','drawerFrontHeight','drawerSlideLength'])finite(c[k],k,0.01);for(const k of ['backInset','edgeThickness','kerf','trim','doorGap','doorOverlay','plinthHeight','plinthSetback','backGrooveDepth','backGrooveAllowance','shelfSideClearance','shelfFrontSetback','railShelfClearance','internalDrawerSetback','drawerSlideRearClearance','drawerBoxHeightClearance','drawerBoxThickness','doorThickness','doorEdgeThickness'])finite(c[k],k);for(const k of ['shelves','partitions','doors']){finite(c[k],k);if(!Number.isInteger(c[k])||c[k]>30)throw Error(`${k} must be an integer between 0 and 30`)}if(c.backConstruction!==undefined&&!['legacy','inset','overlay','groove'].includes(c.backConstruction))throw Error('Invalid back construction');if(c.backConstruction==='overlay'&&c.backInset!==0)throw Error('Overlay back construction requires zero back inset');if(c.backConstruction==='groove'&&c.backGrooveDepth>=c.thickness)throw Error('Back groove depth must be less than panel thickness');if(c.backConstruction==='groove'&&2*c.backGrooveDepth<=c.backGrooveAllowance)throw Error('Back groove allowance exceeds groove engagement');if(!['between','over'].includes(c.construction))throw Error('Unsupported construction');if(c.plinthHeight>0&&c.construction==='over')throw Error('Plinth with top/bottom over sides is not modeled; use top & bottom between sides');if(c.plinthHeight>0&&c.plinthSetback+c.thickness>c.depth)throw Error('Plinth setback exceeds cabinet depth');if(!['vertical','horizontal','none'].includes(c.grain))throw Error('Invalid grain');if(c.stockGrainAxis!==undefined&&!['legacy','x','y'].includes(c.stockGrainAxis))throw Error('Invalid stock grain axis');if(c.bayShelves!==undefined){if(!Array.isArray(c.bayShelves)||c.bayShelves.length!==c.partitions+1||c.bayShelves.some(v=>!Number.isInteger(v)||v<0||v>30))throw Error('bayShelves must match bay count with 0–30 shelves per bay')}if(c.bayDrawers!==undefined){if(!Array.isArray(c.bayDrawers)||c.bayDrawers.length!==c.partitions+1||c.bayDrawers.some(v=>!Number.isInteger(v)||v<0||v>12))throw Error('bayDrawers must match bays (0–12 drawers)')}if(c.bayShelfLevels!==undefined){if(!Array.isArray(c.bayShelfLevels)||c.bayShelfLevels.length!==c.partitions+1||c.bayShelfLevels.some(v=>v!==null&&(!Array.isArray(v)||v.length>30||v.some(n=>typeof n!=='number'||!Number.isFinite(n)||n<=0||n>10000))))throw Error('bayShelfLevels must match bays: null or up to 30 positive heights in mm')}if(c.bayRails!==undefined){if(!Array.isArray(c.bayRails)||c.bayRails.length!==c.partitions+1||c.bayRails.some(v=>typeof v!=='number'||!Number.isFinite(v)||v<0||v>10000))throw Error('bayRails must match bays: 0 (none) or a height in mm')}for(const k of ['drawerSideClearance','drawerBoxHeight','drawerGap','drawerBottomThickness'])finite(c[k]??DEFAULTS[k],k,k==='drawerSideClearance'||k==='drawerGap'?0:1);if(c.width<=2*c.thickness+c.partitions*c.thickness)throw Error('Width too small for sides and partitions');if(c.bayMode==='separate'&&c.width/(c.partitions+1)<=2*c.thickness)throw Error('Width too small for separate boxes');if(c.height-c.plinthHeight<=2*c.thickness)throw Error('Height too small for top, bottom and plinth');if(c.bayDrawers?.some(n=>n>0)){const narrow=Math.min(...bayFrames(c).map(f=>f.innerWidth)),box=c.drawerBoxThickness||c.thickness;if(narrow-2*c.drawerSideClearance-2*box<=0)throw Error('Insufficient drawer width / slide clearance');if(c.drawerLayout==='legacy'){const bay=narrow;if(c.depth-c.backThickness-c.backInset-35-2*c.thickness<=0)throw Error('Insufficient drawer bottom depth');if(bay-2*c.drawerGap<=0||c.bayDrawers.some(n=>n>0&&(c.height-2*c.thickness-(n+1)*c.drawerGap)/n<=0))throw Error('Insufficient drawer front dimensions');if(c.bayDrawers.some(n=>n*(c.drawerBoxHeight+c.drawerGap)>c.height-2*c.thickness))throw Error('Drawer bank exceeds available height')}else{if(c.drawerStyle==='external'&&c.doors>0)throw Error('External drawer fronts overlap full-height doors; use internal drawers or remove doors');if(narrow-2*c.drawerGap<=0)throw Error('Insufficient drawer front dimensions')}}if(c.partOverrides!==undefined){if(typeof c.partOverrides!=='object'||!c.partOverrides||Array.isArray(c.partOverrides))throw Error('Invalid part overrides');for(const [key,v] of Object.entries(c.partOverrides)){if(!/^([a-zA-Z]+):(\d+)$/.test(key)||!v||!Array.isArray(v.edges)||v.edges.length!==4||v.edges.some(x=>x!==0&&x!==1))throw Error('Invalid edge override')}}if(c.doors>4)throw Error('Maximum 4 doors in this prototype');if(c.doors>0 && (c.width-2*c.doorGap)/c.doors<=0)throw Error('Door width too small');if(c.depth<=c.backInset+c.backThickness)throw Error('Depth too small for back construction');if(c.sheetWidth<=2*c.trim||c.sheetHeight<=2*c.trim)throw Error('Trim exceeds sheet dimensions');return c}
+function validateDetails(c){
+ for(const k of ['coverLeft','coverRight'])if(finite(c[k],k)>100)throw Error(`${k} must be 0–100 mm`);
+ if(finite(c.coverFront,'coverFront')>200)throw Error('coverFront must be 0–200 mm');
+ for(const k of ['topFiller','topFillerSetback'])if(finite(c[k],k)>1500)throw Error(`${k} must be 0–1500 mm`);
+ if(finite(c.worktopThickness,'worktopThickness')>200)throw Error('worktopThickness must be 0–200 mm');
+ if(finite(c.worktopOverhang,'worktopOverhang')>300)throw Error('worktopOverhang must be 0–300 mm');
+ if(finite(c.handleLength,'handleLength')>2000)throw Error('handleLength must be 0–2000 mm');
+ if(finite(c.lightKelvin,'lightKelvin')<2000||c.lightKelvin>7000)throw Error('lightKelvin must be 2000–7000 K');
+ if(finite(c.lightLevel,'lightLevel')>100)throw Error('lightLevel must be 0–100 %');
+ if(typeof c.glassColor!=='string'||!/^#[0-9a-fA-F]{6}$/.test(c.glassColor))throw Error('glassColor must be a #rrggbb colour');
+ if(typeof c.worktopMaterial!=='string'||!c.worktopMaterial.trim()||c.worktopMaterial.length>200)throw Error('worktopMaterial must be a nonempty name');
+ const bays=c.partitions+1;
+ if(c.lightPositions!==undefined){if(!Array.isArray(c.lightPositions)||c.lightPositions.length>200||c.lightPositions.some(v=>typeof v!=='string'||!/^\d{1,2}:(top|\d{1,2})$/.test(v)))throw Error('lightPositions must be up to 200 entries like "0:top" or "1:2"')}
+ if(c.bayAccessories!==undefined){
+  if(!Array.isArray(c.bayAccessories)||c.bayAccessories.length!==bays)throw Error('bayAccessories must have one list per bay');
+  for(const list of c.bayAccessories){
+   if(!Array.isArray(list)||list.length>12)throw Error('Each bay takes at most 12 accessories');
+   for(const item of list){
+    if(!item||typeof item!=='object'||!Object.hasOwn(ACCESSORIES,item.type))throw Error('Unknown accessory type');
+    if(item.level!==undefined&&(typeof item.level!=='number'||!Number.isFinite(item.level)||item.level<0||item.level>10000))throw Error('Accessory level must be 0–10000 mm');
+   }
+  }
+ }
+}
+export function validate(c){c=withRuleDefaults(c);validateDetails(c);for(const k of ['material','backMaterial','glassMaterial','doorMaterial','drawerBoxMaterial','drawerBottomMaterial'])if(typeof c[k]!=='string'||!c[k].trim()||c[k].length>200)throw Error(`${k} must be a nonempty material name (at most 200 characters)`);for(const [k,values] of Object.entries(ENUMS))if(!values.includes(c[k]))throw Error(`Invalid ${k}`);for(const k of ['width','height','depth','thickness','backThickness','sheetWidth','sheetHeight','glassThickness','drawerFrontHeight','drawerSlideLength'])finite(c[k],k,0.01);for(const k of ['backInset','edgeThickness','kerf','trim','doorGap','doorOverlay','plinthHeight','plinthSetback','backGrooveDepth','backGrooveAllowance','shelfSideClearance','shelfFrontSetback','railShelfClearance','internalDrawerSetback','drawerSlideRearClearance','drawerBoxHeightClearance','drawerBoxThickness','doorThickness','doorEdgeThickness'])finite(c[k],k);for(const k of ['shelves','partitions','doors']){finite(c[k],k);if(!Number.isInteger(c[k])||c[k]>30)throw Error(`${k} must be an integer between 0 and 30`)}if(c.backConstruction!==undefined&&!['legacy','inset','overlay','groove'].includes(c.backConstruction))throw Error('Invalid back construction');if(c.backConstruction==='overlay'&&c.backInset!==0)throw Error('Overlay back construction requires zero back inset');if(c.backConstruction==='groove'&&c.backGrooveDepth>=c.thickness)throw Error('Back groove depth must be less than panel thickness');if(c.backConstruction==='groove'&&2*c.backGrooveDepth<=c.backGrooveAllowance)throw Error('Back groove allowance exceeds groove engagement');if(!['between','over'].includes(c.construction))throw Error('Unsupported construction');if(c.plinthHeight>0&&c.construction==='over')throw Error('Plinth with top/bottom over sides is not modeled; use top & bottom between sides');if(c.plinthHeight>0&&c.plinthSetback+c.thickness>c.depth)throw Error('Plinth setback exceeds cabinet depth');if(!['vertical','horizontal','none'].includes(c.grain))throw Error('Invalid grain');if(c.stockGrainAxis!==undefined&&!['legacy','x','y'].includes(c.stockGrainAxis))throw Error('Invalid stock grain axis');if(c.bayShelves!==undefined){if(!Array.isArray(c.bayShelves)||c.bayShelves.length!==c.partitions+1||c.bayShelves.some(v=>!Number.isInteger(v)||v<0||v>30))throw Error('bayShelves must match bay count with 0–30 shelves per bay')}if(c.bayDrawers!==undefined){if(!Array.isArray(c.bayDrawers)||c.bayDrawers.length!==c.partitions+1||c.bayDrawers.some(v=>!Number.isInteger(v)||v<0||v>12))throw Error('bayDrawers must match bays (0–12 drawers)')}if(c.bayShelfLevels!==undefined){if(!Array.isArray(c.bayShelfLevels)||c.bayShelfLevels.length!==c.partitions+1||c.bayShelfLevels.some(v=>v!==null&&(!Array.isArray(v)||v.length>30||v.some(n=>typeof n!=='number'||!Number.isFinite(n)||n<=0||n>10000))))throw Error('bayShelfLevels must match bays: null or up to 30 positive heights in mm')}if(c.bayRails!==undefined){if(!Array.isArray(c.bayRails)||c.bayRails.length!==c.partitions+1||c.bayRails.some(v=>typeof v!=='number'||!Number.isFinite(v)||v<0||v>10000))throw Error('bayRails must match bays: 0 (none) or a height in mm')}for(const k of ['drawerSideClearance','drawerBoxHeight','drawerGap','drawerBottomThickness'])finite(c[k]??DEFAULTS[k],k,k==='drawerSideClearance'||k==='drawerGap'?0:1);if(c.width<=2*c.thickness+c.partitions*c.thickness)throw Error('Width too small for sides and partitions');if(c.bayMode==='separate'&&c.width/(c.partitions+1)<=2*c.thickness)throw Error('Width too small for separate boxes');if(c.height-c.plinthHeight<=2*c.thickness)throw Error('Height too small for top, bottom and plinth');if(c.bayDrawers?.some(n=>n>0)){const narrow=Math.min(...bayFrames(c).map(f=>f.innerWidth)),box=c.drawerBoxThickness||c.thickness;if(narrow-2*c.drawerSideClearance-2*box<=0)throw Error('Insufficient drawer width / slide clearance');if(c.drawerLayout==='legacy'){const bay=narrow;if(c.depth-c.backThickness-c.backInset-35-2*c.thickness<=0)throw Error('Insufficient drawer bottom depth');if(bay-2*c.drawerGap<=0||c.bayDrawers.some(n=>n>0&&(c.height-2*c.thickness-(n+1)*c.drawerGap)/n<=0))throw Error('Insufficient drawer front dimensions');if(c.bayDrawers.some(n=>n*(c.drawerBoxHeight+c.drawerGap)>c.height-2*c.thickness))throw Error('Drawer bank exceeds available height')}else{if(c.drawerStyle==='external'&&c.doors>0)throw Error('External drawer fronts overlap full-height doors; use internal drawers or remove doors');if(narrow-2*c.drawerGap<=0)throw Error('Insufficient drawer front dimensions')}}if(c.partOverrides!==undefined){if(typeof c.partOverrides!=='object'||!c.partOverrides||Array.isArray(c.partOverrides))throw Error('Invalid part overrides');for(const [key,v] of Object.entries(c.partOverrides)){if(!/^([a-zA-Z]+):(\d+)$/.test(key)||!v||!Array.isArray(v.edges)||v.edges.length!==4||v.edges.some(x=>x!==0&&x!==1))throw Error('Invalid edge override')}}if(c.doors>4)throw Error('Maximum 4 doors in this prototype');if(c.doors>0 && (c.width-2*c.doorGap)/c.doors<=0)throw Error('Door width too small');if(c.depth<=c.backInset+c.backThickness)throw Error('Depth too small for back construction');if(c.sheetWidth<=2*c.trim||c.sheetHeight<=2*c.trim)throw Error('Trim exceeds sheet dimensions');return c}
 export function cabinet(c,id='CAB-001'){
  c=withRuleDefaults(c);validate(c);
  const t=c.thickness,P=c.plinthHeight,iw=c.width-2*t,ih=c.height-P-2*t,usableDepth=c.depth-c.backInset-c.backThickness;
@@ -135,7 +167,71 @@ export function cabinet(c,id='CAB-001'){
   const [bl,bw]=backConstruction==='groove'?[ih+2*c.backGrooveDepth-c.backGrooveAllowance,inner+2*c.backGrooveDepth-c.backGrooveAllowance]:backConstruction==='inset'?[ih,inner]:[c.height-P,box.outer];
   add('back',bl,bw,1,{thickness:c.backThickness,material:c.backMaterial,grain:'none',position:{x:box.x,y:backConstruction==='inset'||backConstruction==='groove'?P+t+ih/2:P+(c.height-P)/2,z:backZ},...at(box,0)});
  }
- return {id,parts,accessories,warnings,dimensions:{width:c.width,height:c.height,depth:c.depth},internal:{width:iw,height:ih,bayWidth:round(frames[0].innerWidth),bayWidths:frames.map(f=>round(f.innerWidth)),floorY,ceilY},bays:frames.map((f,b)=>({...f,innerWidth:round(f.innerWidth),drawers:layouts[b].drawers,divider:layouts[b].divider,shelfLevels:layouts[b].shelves.map(s=>s.level),rail:layouts[b].rail?.level??null})),rules:{version:ruleSource,bayMode:c.bayMode,backConstruction,edgeDeduction:c.edgeDeduction,status:'software convention — not workshop or supplier approved'},totalAreaM2:round(parts.reduce((s,p)=>s+p.length*p.width/1e6,0)),edgeLengthM:round(parts.reduce((s,p)=>s+p.bandLength/1000,0)),status:'PRELIMINARY — ENGINEERING REVIEW REQUIRED'};
+ // 1.6 details are appended after the carcass, so every existing part ID and key stays where it was.
+ const coverL=c.coverLeft,coverR=c.coverRight,frontT=c.doors>0?doorT:parts.some(p=>p.kind==='drawerFront')?(c.doorThickness||t):0,wt=c.worktopThickness,overallW=c.width+coverL+coverR,shiftX=(coverR-coverL)/2;
+ for(const [ct,sign] of [[coverL,-1],[coverR,1]])if(ct>0)add('endPanel',c.height+c.topFiller,c.depth+c.coverFront,1,{thickness:ct,edges:[1,1,0,0],position:{x:sign*(c.width/2+ct/2),y:(c.height+c.topFiller)/2,z:c.coverFront/2}});
+ if(c.topFiller>0)add('topFiller',overallW,c.topFiller,1,{edges:[1,0,0,0],position:{x:shiftX,y:c.height+c.topFiller/2,z:c.depth/2+frontT-t/2-c.topFillerSetback}});
+ if(wt>0)add('worktop',overallW,c.depth+frontT+c.worktopOverhang,1,{thickness:wt,material:c.worktopMaterial,grain:'none',sheetGood:false,position:{x:shiftX,y:c.height+c.topFiller+wt/2,z:(frontT+c.worktopOverhang)/2}});
+ // Interior clear spaces: between the drawer zone/floor, shelves and the top; drawers report their box interior.
+ const spaces=[],boxSide=c.drawerBoxThickness||t;
+ for(const [b,layout] of layouts.entries()){
+  const f=frames[b];let floor=layout.zoneStart,index=0;
+  const limits=[...layout.shelves.map(s=>({bottom:s.y-t/2,top:s.y+t/2,below:String(s.slot)})).sort((x,y)=>x.bottom-y.bottom),{bottom:ceilY,top:ceilY,below:'top'}];
+  for(const limit of limits){
+   const clear=limit.bottom-floor;
+   if(clear>0.5)spaces.push({bay:b,index:index++,kind:'space',bottom:round(floor-floorY),top:round(limit.bottom-floorY),clearHeight:round(clear),width:round(f.innerWidth),depth:round(usableDepth-c.shelfFrontSetback),rail:!!(layout.rail&&layout.rail.y>floor&&layout.rail.y<limit.bottom),under:limit.below});
+   floor=limit.top;
+  }
+  if(layout.drawers.length&&c.drawerLayout==='bottom'){
+   const boxD=slideFor(c,usableDepth-c.drawerSlideRearClearance-(c.drawerStyle==='internal'?c.internalDrawerSetback:0));
+   for(const d of layout.drawers)spaces.push({bay:b,index:index++,kind:'drawer',slot:d.slot,bottom:round(d.bottom-floorY),top:round(d.top-floorY),clearHeight:round(c.drawerBoxHeight-c.drawerBottomThickness),width:round(f.innerWidth-2*c.drawerSideClearance-2*boxSide),depth:round(boxD-2*boxSide),rail:false});
+  }
+ }
+ // LED strips under the top or under a shelf, per bay. Missing positions warn instead of failing an opened file.
+ for(const key of [...new Set(c.lightPositions||[])].sort()){
+  const [bs,at]=key.split(':'),b=Number(bs),f=frames[b];
+  if(!f){warnings.push({code:'LIGHT_POSITION_MISSING',message:`Light ${key}: bay ${b+1} does not exist`});continue}
+  let y=ceilY;
+  if(at!=='top'){const shelf=layouts[b].shelves.find(s=>s.slot===Number(at));if(!shelf){warnings.push({code:'LIGHT_POSITION_MISSING',bay:b,message:`Bay ${b+1}: light under shelf ${Number(at)+1} has no shelf`});continue}y=shelf.y-t/2}
+  accessories.push({uid:`${id}/ledStrip:${b}:${at}`,kind:'ledStrip',bay:b,at,length:round(Math.max(0,f.innerWidth-20)),kelvin:c.lightKelvin,level:c.lightLevel,position:{x:f.x,y:y-5,z:interiorZ+usableDepth/2-c.shelfFrontSetback-40},quantity:1,unit:'pcs',verification:'unverified-supplier'});
+ }
+ if(c.bayAccessories)for(const [b,list] of c.bayAccessories.entries()){
+  const f=frames[b],layout=layouts[b],bayDepth=usableDepth-c.shelfFrontSetback;
+  for(const [i,item] of list.entries()){
+   const spec=ACCESSORIES[item.type],problems=[];let level=null,y,size,z=interiorZ;
+   if(f.innerWidth<spec.minWidth)problems.push(`needs at least ${spec.minWidth} mm inner width`);
+   if(spec.maxWidth&&f.innerWidth>spec.maxWidth)problems.push(`suits at most ${spec.maxWidth} mm inner width`);
+   if(spec.place==='worktop'){
+    if(!(wt>0))problems.push('needs a worktop');
+    size=[Math.min(spec.minWidth,f.innerWidth-40),spec.height,Math.min(spec.minDepth,c.depth-80)];y=c.height+c.topFiller+wt-spec.height/2;z=(frontT+c.worktopOverhang)/2;
+   }else if(spec.place==='drawer'){
+    const top=layout.drawers.at(-1);if(!top)problems.push('needs a drawer in this bay');
+    level=top?round(top.bottom-floorY):0;size=[Math.max(50,f.innerWidth-2*c.drawerSideClearance-2*boxSide-10),spec.height,Math.max(50,Math.min(bayDepth-80,450))];y=(top?top.bottom:floorY)+c.drawerBottomThickness+spec.height/2+4;
+   }else{
+    if(bayDepth<spec.minDepth)problems.push(`needs ${spec.minDepth} mm interior depth`);
+    const bayZone=ceilY-layout.zoneStart;
+    if(spec.place==='bay'){
+     if(spec.minHeight&&bayZone<spec.minHeight)problems.push(`needs ${spec.minHeight} mm free height`);
+     level=item.level??round(layout.zoneStart-floorY);
+    }else{
+     const own=spaces.filter(s=>s.bay===b&&s.kind==='space');
+     const space=item.level!==undefined?own.find(s=>item.level>=s.bottom&&item.level<s.top):own.find(s=>s.clearHeight>=spec.height);
+     if(!space)problems.push(item.level!==undefined?`level ${item.level} mm is not inside a free space`:`needs ${spec.height} mm clear height`);
+     else if(space.top-(item.level??space.bottom)<spec.height)problems.push(`needs ${spec.height} mm clear height above ${item.level??space.bottom} mm`);
+     level=item.level??space?.bottom??0;
+    }
+    size=[Math.max(50,f.innerWidth-30),spec.height,Math.max(50,Math.min(bayDepth-40,560))];y=floorY+level+spec.height/2;
+   }
+   accessories.push({uid:`${id}/${item.type}:${b}:${i}`,kind:'fitting',type:item.type,group:spec.group,place:spec.place,bay:b,index:i,level,fits:!problems.length,size:size.map(round),position:{x:f.x,y:round(y),z:round(z)},quantity:1,unit:'pcs',verification:'unverified-supplier'});
+   if(spec.place==='space'||spec.place==='bay'){
+    const clash=accessories.find(a=>a.kind==='fitting'&&a.bay===b&&a.uid!==`${id}/${item.type}:${b}:${i}`&&['space','bay'].includes(a.place)&&a.level<level+spec.height&&level<a.level+a.size[1]);
+    if(clash)problems.push(`overlaps ${ACCESSORIES[clash.type].en.toLowerCase()} at ${clash.level} mm`);
+   }
+   if(problems.length)warnings.push({code:'ACCESSORY_FIT',bay:b,message:`Bay ${b+1}: ${spec.en} ${problems.join('; ')}`});
+   if(problems.length)accessories.at(-1).fits=false;
+  }
+ }
+ return {id,parts,accessories,warnings,dimensions:{width:c.width,height:c.height,depth:c.depth},spaces,overall:{width:round(overallW),height:round(c.height+c.topFiller+wt),depth:round(Math.max(c.depth+frontT,c.depth+c.coverFront,c.depth+frontT+(wt>0?c.worktopOverhang:0)))},internal:{width:iw,height:ih,bayWidth:round(frames[0].innerWidth),bayWidths:frames.map(f=>round(f.innerWidth)),floorY,ceilY},bays:frames.map((f,b)=>({...f,innerWidth:round(f.innerWidth),drawers:layouts[b].drawers,divider:layouts[b].divider,shelfLevels:layouts[b].shelves.map(s=>s.level),rail:layouts[b].rail?.level??null})),rules:{version:ruleSource,bayMode:c.bayMode,backConstruction,edgeDeduction:c.edgeDeduction,status:'software convention — not workshop or supplier approved'},totalAreaM2:round(parts.reduce((s,p)=>s+p.length*p.width/1e6,0)),edgeLengthM:round(parts.reduce((s,p)=>s+p.bandLength/1000,0)),status:'PRELIMINARY — ENGINEERING REVIEW REQUIRED'};
 }
 // Deterministic first-fit shelf layout. Preview only: not guillotine/CNC instructions.
 export function layoutSheets(parts,c){

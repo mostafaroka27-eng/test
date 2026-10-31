@@ -81,7 +81,7 @@ test('semantic panel edge edits survive another bay gaining a shelf',async({page
  await page.locator('[data-bay="0"]').fill('1');await page.locator('[data-bay="0"]').press('Tab');
  await page.locator('[data-bay="1"]').fill('2');await page.locator('[data-bay="1"]').press('Tab');
  await page.locator('#parts tr').filter({has:page.locator('td',{hasText:/^shelf$/})}).nth(1).click();
- await page.locator('[data-edge="1"]').check();
+ await page.locator('[data-edge="0"]').evaluate(n=>{n.closest('details').open=true});await page.locator('[data-edge="1"]').check();
  await page.locator('[data-bay="0"]').fill('2');await page.locator('[data-bay="0"]').press('Tab');
  await page.locator('#parts tr').filter({has:page.locator('td',{hasText:/^shelf$/})}).nth(2).click();
  await expect(page.locator('[data-edge="1"]')).toBeChecked();

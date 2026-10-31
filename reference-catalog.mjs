@@ -65,9 +65,9 @@ export function ncdTemplates(ncd){
 export function referenceFinishes(ncd,planner){
  const g=declarations(ncd),groups=[],seen=new Set(Object.values(LEGACY_FINISHES).map(c=>c.toLowerCase()));
  const take=(label,entries)=>{const list=[];for(const [name,color,wood] of entries){if(!HEX.test(color||'')||typeof name!=='string')continue;const key=color.toLowerCase();if(seen.has(key))continue;seen.add(key);list.push({name,color:key,wood:Boolean(wood)})}if(list.length)groups.push({label,finishes:list})};
- take('NCD finishes',Object.entries(g.PRESETS||{}).filter(([key])=>key!=='custom').map(([,v])=>[v.n,v.c,v.wood]));
- take('NCD colours',(g.COLORS||[]).map(v=>[v.n,v.c,v.wood]));
- take('Room planner colours',(planner?.tables?.COLORS?.value||[]).map(([color,name])=>[name,color]));
+ take('Finishes',Object.entries(g.PRESETS||{}).filter(([key])=>key!=='custom').map(([,v])=>[v.n,v.c,v.wood]));
+ take('Colours',(g.COLORS||[]).map(v=>[v.n,v.c,v.wood]));
+ take('Room colours',(planner?.tables?.COLORS?.value||[]).map(([color,name])=>[name,color]));
  return groups;
 }
 

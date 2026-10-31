@@ -4,6 +4,7 @@ import {readFile} from 'node:fs/promises';
 const rows = (page, kind) => page.locator('#parts tr').filter({has: page.locator('td', {hasText: new RegExp(`^${kind}$`)})});
 async function set(page, id, value) {
   const el = page.locator('#' + id);
+  await el.evaluate(node => { const group = node.closest('details'); if (group) group.open = true; });
   if (await el.evaluate(node => node.tagName) === 'SELECT') await el.selectOption(value);
   else { await el.fill(String(value)); await el.press('Tab'); }
 }
@@ -101,7 +102,7 @@ test('new engineering controls are translated in Arabic', async ({page}) => {
   await page.goto('/');
   await page.locator('#lang').click();
   await expect(page.locator('#properties')).toContainText('تركيب الحجرات');
-  await expect(page.locator('#properties')).toContainText('ارتفاع القاعدة');
+  await expect(page.locator('#properties')).toContainText('ارتفاع السكرتنج السفلي');
   await expect(page.locator('#properties')).toContainText('مناسيب الرفوف');
   await expect(page.locator('.bottom-head')).toContainText('ملصقات القطع');
   await expect(page.locator('#width')).toHaveValue('900');

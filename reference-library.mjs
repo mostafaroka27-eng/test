@@ -20,7 +20,7 @@ export function initReferenceLibrary({getProject,addUnit,commit,onError}){
   return button;
  }));
  $('referenceSkipped').dataset.i18nSkip='';
- const GROUP_AR={'NCD finishes':'تشطيبات NCD','NCD colours':'ألوان NCD','Room planner colours':'ألوان مخطط الغرف'};
+ const GROUP_AR={'Finishes':'تشطيبات','Colours':'ألوان','Room colours':'ألوان الغرف'};
  const finish=$('finish');
  for(const group of catalog.finishes){
   const node=document.createElement('optgroup');node.label=group.label;node.dataset.en=group.label;

@@ -1,3 +1,15 @@
+# Known limitations — Alpha 1.6.0 additions
+
+- Corner units are not modelled. The "corner carousel" accessory sits in a normal 900 base; blind-corner geometry is not drawn.
+- One worktop piece per unit; joints, cut-outs for sink/hob and continuous worktops along a run are not drawn (sink and hob are listed and shown as stand-ins only).
+- Shop drawings do not yet draw cover panels, top fillers, worktops, glass type, handle type or accessories; they appear in the parts list and accessories list. Shop-drawing layout options come in 1.7.
+- Accessory sizes, fit rules and hardware rules (hinges per door height, 4 pins per adjustable shelf, 2 brackets per wall unit, one driver per lit unit) are RokaDex starting values, not supplier data. Fasteners are not calculated.
+- Interior "what fits" text is general guidance, not a check against the client's real items.
+- Material photos are stored inside the project file (≤ 350 KB each, max 60 materials); large libraries make project files larger. The photo is a visual texture only; it does not change cut sizes.
+- Door/window checks are rectangular (swing zone and window rectangle). Openings are not drawn on shop drawings.
+- Lighting quality "very high" may be slow on phones; it has not been tested on a real GPU, Safari or iPhone.
+- Wall-unit stacking with "Place next to the selected unit" only places directly above a base unit when that space is free; otherwise it continues the run sideways.
+
 # Known limitations — Alpha 1.5.0 additions
 
 - Shop drawings are drawn at a true scale only when printed at 100 % on A3 landscape. Browser print dialogs may scale "to fit"; check the 1:n bar before measuring. Drawings remain preliminary: no drilling, tolerances or approval.

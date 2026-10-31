@@ -1,8 +1,9 @@
 import {isFinish} from './reference-catalog.mjs';
 /** Project-file boundary and local edit history. Dimensions are millimetres. */
 import {DEFAULTS,cabinet,validate} from './engine.mjs';
-import {DEFAULT_ROOM,validateRoom} from './room.mjs';
+import {DEFAULT_ROOM,validateRoom,normalRoom} from './room.mjs';
 import {validateCosting} from './costing.mjs';
+import {validateMaterials,MATERIAL_LINKS} from './materials.mjs';
 
 export const MAX_PROJECT_BYTES=5*1024*1024;
 export const BACKUP_KEY='rokadex-standalone.autosave.v2';
@@ -30,6 +31,8 @@ export function parseProject(input){
  if(!Array.isArray(data.units)||data.units.length<1||data.units.length>100)throw Error('Project must have 1–100 units');
  const room=data.version===1?{...DEFAULT_ROOM}:data.room;
  validateRoom(room);
+ const materials=Object.hasOwn(data,'materials')?validateMaterials(data.materials):[];
+ const materialIds=new Set(materials.map(m=>m.id));
  const ids=new Set();let totalParts=0;
  const units=data.units.map(unit=>{
   if(!isRecord(unit)||typeof unit.id!=='string'||! /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/.test(unit.id)||ids.has(unit.id))throw Error('Invalid or duplicate component ID');
@@ -49,6 +52,14 @@ export function parseProject(input){
   for(const key of ['bayShelfLevels','bayRails'])if(Object.hasOwn(unit.config,key)){
    if(!Array.isArray(unit.config[key]))throw Error(`Invalid ${key}`);
    config[key]=unit.config[key].map(v=>Array.isArray(v)?[...v]:v);
+  }
+  if(Object.hasOwn(unit.config,'lightPositions')){
+   if(!Array.isArray(unit.config.lightPositions))throw Error('Invalid lightPositions');
+   config.lightPositions=[...unit.config.lightPositions];
+  }
+  if(Object.hasOwn(unit.config,'bayAccessories')){
+   if(!Array.isArray(unit.config.bayAccessories)||unit.config.bayAccessories.some(list=>!Array.isArray(list)))throw Error('Invalid bayAccessories');
+   config.bayAccessories=unit.config.bayAccessories.map(list=>list.map(item=>{if(!isRecord(item))throw Error('Invalid accessory');return {type:item.type,...(item.level!==undefined?{level:item.level}:{})}}));
   }
   for(const key of ['bayShelves','bayDrawers'])if(Object.hasOwn(unit.config,key)){
    if(!Array.isArray(unit.config[key]))throw Error(`Invalid ${key}`);
@@ -70,10 +81,15 @@ export function parseProject(input){
   if(partCount>2000||totalParts>5000)throw Error('Project exceeds preview limits: 2000 parts per unit / 5000 parts per project');
   if(model.parts.some(part=>![part.length,part.width,part.thickness].every(n=>Number.isFinite(n)&&n>0&&n<=10000)))throw Error('Invalid generated panel dimensions');
   if(Object.hasOwn(unit,'rotation')&&![0,90,180,270].includes(unit.rotation))throw Error('Invalid component rotation');
-  return {id:unit.id,name,type,x,z,finish:unit.finish,config,...(Object.hasOwn(unit,'rotation')?{rotation:unit.rotation}:{})};
+  const extra={};
+  // Mounting height for wall units; absent means standing on the floor.
+  if(Object.hasOwn(unit,'elevation')&&unit.elevation!==0){bounded(unit.elevation,'mounting height',5000);if(unit.elevation<0)throw Error('Invalid mounting height');extra.elevation=unit.elevation}
+  for(const key of MATERIAL_LINKS)if(Object.hasOwn(unit,key)&&unit[key]!==''){if(!materialIds.has(unit[key]))throw Error(`Unknown material ${String(unit[key]).slice(0,40)}`);extra[key]=unit[key]}
+  return {id:unit.id,name,type,x,z,finish:unit.finish,config,...(Object.hasOwn(unit,'rotation')?{rotation:unit.rotation}:{}),...extra};
  });
  // v1/v2 files are migrated explicitly: geometry fields they lack keep legacy defaults, never modern rules.
- const project={format:'rokadex-standalone',version:PROJECT_VERSION,projectId:data.version===3?data.projectId:stableId(source),designRevision:data.version===3?data.designRevision:1,lengthUnit:'mm',room:{width:room.width,depth:room.depth,height:room.height},units};
+ const project={format:'rokadex-standalone',version:PROJECT_VERSION,projectId:data.version===3?data.projectId:stableId(source),designRevision:data.version===3?data.designRevision:1,lengthUnit:'mm',room:normalRoom(room),units};
+ if(materials.length)project.materials=materials;
  if(data.version<3)project.migratedFrom=data.version;
  else if(Object.hasOwn(data,'migratedFrom')&&[1,2].includes(data.migratedFrom))project.migratedFrom=data.migratedFrom;
  // Optional presentation identity (v3): free text shown on drawings and client presentations, never used by geometry.

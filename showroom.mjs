@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {roomSection,ROOM_CSS,ROOM_LABELS} from './room-sheet.mjs';
 import {cabinet} from './engine.mjs';
 import {companyName,companyContact,hasCompany} from './company.mjs';
 import {finishColor} from './reference-catalog.mjs';
@@ -23,7 +24,8 @@ export function unitSummary(unit){
  const model=cabinet(unit.config,unit.id),count=kind=>model.parts.filter(p=>p.kind===kind).length;
  const doors=model.parts.filter(p=>p.kind==='door'),glass=doors.filter(p=>p.sheetGood===false).length;
  const drawers=new Set(model.parts.filter(p=>p.kind==='drawerFace'||p.kind==='drawerFront').map(p=>`${p.bay}:${p.slot}`)).size;
- return {width:model.dimensions.width,height:model.dimensions.height,depth:model.dimensions.depth,bays:(model.bays??[]).length||unit.config.partitions+1,
+ const size=model.overall??model.dimensions;
+ return {width:size.width,height:size.height,depth:size.depth,bays:(model.bays??[]).length||unit.config.partitions+1,
   doors:doors.length-glass,glassDoors:glass,drawers,shelves:count('shelf')+count('fixedShelf'),rails:model.accessories.filter(a=>a.kind==='hangingRail').length};
 }
 export function featureText(summary,lang='en'){
@@ -32,11 +34,12 @@ export function featureText(summary,lang='en'){
 }
 
 /** Printable A4 landscape proposal; images are data URLs captured from the 3D view. */
-export function proposalHtml({company={},project={},units=[],images={},finishName=()=>'',lang='en',date=new Date().toISOString().slice(0,10)}){
+export function proposalHtml({company={},project={},units=[],images={},finishName=()=>'',lang='en',date=new Date().toISOString().slice(0,10),room=null}){
  const t=L[lang]||L.en,dir=lang==='ar'?'rtl':'ltr',name=companyName(company,lang),contact=companyContact(company);
  const brand=`<div class="brand">${company.logo?`<img src="${esc(company.logo)}" alt="">`:''}<div><b>${esc(name)}</b>${company.tagline?`<small>${esc(company.tagline)}</small>`:''}${contact?`<small>${esc(contact)}</small>`:''}</div></div>`;
  const meta=`<dl><div><dt>${t.project}</dt><dd>${esc(project.name||project.id||'—')}</dd></div><div><dt>${t.client}</dt><dd>${esc(project.client||'—')}</dd></div><div><dt>${t.date}</dt><dd>${esc(date)}</dd></div><div><dt>${t.revision}</dt><dd>${esc(project.revision??1)}</dd></div></dl>`;
  const cover=`<section class="page cover">${brand}<h1>${t.proposal}</h1><p class="sub">${esc(project.name||'')}${project.client?` — ${esc(project.client)}`:''}</p>${images.overview?`<img class="hero" src="${images.overview}" alt="${esc(t.overviewTitle)}">`:''}${meta}<footer>${t.preliminary} · ${t.illustrative}${company.address?` · ${esc(company.address)}`:''}</footer></section>`;
+ const roomPage=room?`<section class="page room"><header>${brand}<span>${esc(ROOM_LABELS[lang]?.title??ROOM_LABELS.en.title)}</span></header>${roomSection({room,units,images,lang})}<footer>${t.illustrative}</footer></section>`:'';
  const pages=units.map(unit=>{const s=unitSummary(unit),color=finishColor(unit.finish);
   return `<section class="page unit"><header>${brand}<span>${esc(project.name||'')}</span></header><div class="grid">${images[unit.id]?`<img src="${images[unit.id]}" alt="${esc(unit.name)}">`:'<div></div>'}<div class="facts"><small>${esc(unit.id)}</small><h2>${esc(unit.name)}</h2>
   <table><tr><th>${t.size}</th><td>${s.width} × ${s.height} × ${s.depth} ${t.mm}</td></tr><tr><th>${t.finish}</th><td><span class="sw" style="background:${color}"></span>${esc(finishName(unit.finish))}</td></tr><tr><th>${t.features}</th><td>${esc(featureText(s,lang))}</td></tr></table>${images[unit.id+':open']?`<img class="open" src="${images[unit.id+':open']}" alt="">`:''}</div></div><footer>${t.illustrative}</footer></section>`}).join('');
@@ -51,7 +54,7 @@ footer{position:absolute;bottom:8mm;inset-inline:16mm;font-size:7.5pt;color:#8F9
 .grid{display:grid;grid-template-columns:1.5fr 1fr;gap:8mm;margin-top:6mm}.grid>img{width:100%;height:140mm;object-fit:cover;border-radius:3mm;background:#eef1f4}
 .facts h2{margin:1mm 0 5mm;font-size:20pt;color:#172B3A}.facts small{color:#0B7375;font-weight:600}table{border-collapse:collapse;width:100%;font-size:10pt}th{text-align:start;color:#6B7785;font-weight:500;padding:2.4mm 0;width:38%;vertical-align:top}td{padding:2.4mm 0;border-bottom:1px solid #E2E8EE}
 .sw{display:inline-block;width:5mm;height:5mm;border-radius:1mm;border:1px solid #D2DAE2;vertical-align:-1mm;margin-inline-end:2mm}.open{width:100%;height:58mm;object-fit:cover;border-radius:3mm;margin-top:6mm}
-@media print{body{background:#fff}.page{margin:0}}</style></head><body>${cover}${pages}</body></html>`;
+${ROOM_CSS}@media print{body{background:#fff}.page{margin:0}}</style></head><body>${cover}${roomPage}${pages}</body></html>`;
 }
 
 export function initShowroom(ctx){
@@ -122,6 +125,7 @@ export function initShowroom(ctx){
   const images={};
   try{
    place(...overviewPose());images.overview=shot();
+   {const {w,d}=roomBox();place(new THREE.Vector3(0,Math.max(w,d)*1.35,1),new THREE.Vector3(0,0,0));images.top=shot()}
    for(const unit of getUnits()){
     ctx.setWalls(false);place(...unitPose(unit));
     display.open.delete(unit.id);ctx.setOpenAmount(unit.id,0);images[unit.id]=shot();
@@ -137,9 +141,24 @@ export function initShowroom(ctx){
   const w=window.open('','_blank');if(!w){onError('Allow pop-ups to open the client proposal / اسمح بالنوافذ المنبثقة لفتح ملف العميل');return}
   try{
    const images=await capture();
-   w.document.open();w.document.write(proposalHtml({company:getCompany(),project:getProject(),units:getUnits(),images,finishName,lang:lang()}));w.document.close();
+   w.document.open();w.document.write(proposalHtml({company:getCompany(),project:getProject(),units:getUnits(),images,finishName,lang:lang(),room:ctx.getRoom()}));w.document.close();
    setTimeout(()=>{try{w.focus();w.print()}catch{}},600);
   }catch(error){w.close();onError(error.message)}
  };
- return {enter,leave,refresh(){if(!root.classList.contains('hidden')){brand();cards()}},update(now){flight?.update(now)},get flying(){return Boolean(flight)}};
+ /** Room renders for the room sheet: switches to the client stage for the shots, then restores the view. */
+ async function captureRoom(){
+  const wasStage=display.stage;
+  if(wasStage!=='studio'){display.stage='studio';applyStage();renderScene()}
+  try{const renderer=getRenderer();if(!renderer)return {};const images=await captureViews();return images}
+  finally{if(wasStage!=='studio'){display.stage=wasStage;applyStage();renderScene()}}
+ }
+ async function captureViews(){
+  const renderer=getRenderer(),savedP=camera.position.clone(),savedT=controls.target.clone(),savedAspect=camera.aspect,canvas=renderer.domElement;
+  const size=new THREE.Vector2();renderer.getSize(size);renderer.setSize(1600,1000,false);camera.aspect=1.6;camera.updateProjectionMatrix();
+  const shot=()=>{renderer.render(scene,camera);return canvas.toDataURL('image/jpeg',0.86)};
+  const place=(p,tgt)=>{camera.position.copy(p);controls.target.copy(tgt);camera.lookAt(tgt);controls.update()};
+  try{const images={};place(...overviewPose());images.overview=shot();const {w,d}=roomBox();place(new THREE.Vector3(0,Math.max(w,d)*1.35,1),new THREE.Vector3(0,0,0));images.top=shot();return images}
+  finally{renderer.setSize(size.x,size.y,false);camera.aspect=savedAspect;camera.updateProjectionMatrix();place(savedP,savedT)}
+ }
+ return {captureRoom,enter,leave,refresh(){if(!root.classList.contains('hidden')){brand();cards()}},update(now){flight?.update(now)},get flying(){return Boolean(flight)}};
 }

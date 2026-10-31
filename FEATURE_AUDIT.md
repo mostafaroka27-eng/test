@@ -1,4 +1,21 @@
-# Feature audit — Alpha 1.3 (updated for 1.5.0)
+# Feature audit — Alpha 1.3 (updated for 1.6.0)
+
+## Alpha 1.6.0 additions — 2026-10-31
+
+| Capability | Status | Evidence |
+| --- | --- | --- |
+| Cover panels, top filler, plinth, worktop | Implemented and tested | Part sizes and positions in `details.test.mjs`; legacy projects unchanged (fixture comparison still passes); browser workflow |
+| LED per shelf / under top, colour and strength | Implemented and tested | Strip length = inner bay width − 20; missing shelf warns; 3D strips checked in Chromium screenshot |
+| Lighting & render quality controls | Implemented, checked in Chromium (software GL) | Values clamped in tests; not checked on a real GPU or phone |
+| Glass type/colour, handle type/length/finish | Implemented and tested | Model fields validated; hardware list counts knobs/profiles; 3D visual only |
+| Interior spaces table and accessories with fit check | Implemented and tested | Clear sizes, width/depth/height/worktop/drawer/overlap checks |
+| Accessories list with quantities (CSV/print) | Implemented and tested | Hinges by door height, slide pairs, pins, rails, LEDs, brackets, worktops; fasteners "not calculated" |
+| Kitchen units (11) and run placement | Implemented and tested | Each template builds; wall units stack above base units in browser workflow |
+| Material library with photo | Implemented and tested | Validation limits, project round-trip, apply to carcass/fronts/worktop/glass, reload |
+| Doors & windows, room areas, room sheet | Implemented and tested | Door-swing and window conflicts; floor/footprint/free; A4 sheet and client PDF room page |
+| Shop drawings for covers/fillers/worktop/accessories | Not implemented | Planned with 1.7 layout options |
+| Corner units, continuous worktops, sink/hob cut-outs | Not implemented | See KNOWN_LIMITATIONS |
+| NCD name in the interface | Removed | Internal data file name unchanged |
 
 ## Alpha 1.5.0 additions — 2026-10-30
 
