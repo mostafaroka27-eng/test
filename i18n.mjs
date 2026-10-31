@@ -245,6 +245,9 @@ const labels = {
   'Allow popups to print assembly report':'اسمح بالنوافذ المنبثقة لطباعة تقرير التجميع',
   'Library exceeds 1 MB':'حجم المكتبة يتجاوز 1 ميغابايت',
  // 1.6
+ "Print cut list · PDF":"اطبع قائمة التقطيع · PDF",
+ "Grouped cut list with finished and cut sizes, edges and grain · print or save as PDF":"قائمة تقطيع مجمّعة بالمقاس النهائي ومقاس القص والشريط والعرق · اطبعها أو احفظها PDF",
+ // 1.6
  "Edit room":"تعديل الغرفة",
  "ROOM FURNITURE":"أثاث وأجهزة الغرفة",
  "Add to room":"ضيفها للغرفة",
