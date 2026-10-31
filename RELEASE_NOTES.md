@@ -1,3 +1,13 @@
+# Alpha 1.8.2 edit the room and add furniture in 3D — 2026-10-31
+
+- **Edit room** button in the 3D toolbar. While it is on: drag a wall (or the floor edge in the workshop view) to make the room wider/deeper, in 10 mm steps, with the size shown live; units and furniture keep their place against the opposite wall and doors/windows stay where they are on the wall. Drag a door or window to slide it along its wall (kept inside the wall). A room under 500 mm, or one that would cut through a door/window, is refused with a message. One undo step per drag.
+- **Room furniture** (sidebar, under Doors & windows): 16 generic display models — fridge, freestanding cooker, dishwasher, washing machine, 3-seat sofa, armchair, coffee table, TV on stand, double and single bed, dining table, chair, desk, plant, rug, floor lamp. Add places it on a free floor spot; drag it (snaps to walls, units and other items; Alt = free), R rotates 90°, arrows nudge 10/100 mm, Delete removes, Esc deselects. Sizes are common starting values, not a product's datasheet.
+- Furniture is saved in the project file as optional `items` (not written when empty) and never enters the cutting list, costing, drawings or manufacturing files (tested).
+
+Local validation: 220 Node checks, 26 Chromium workflows; wall, window and furniture dragging checked in Chromium with the mouse. Not tried on a touch screen.
+
+---
+
 # Path tracing preview (branch preview/pathtracer, not released) — 2026-10-31
 
 - three.js upgraded 0.166.1 → 0.187.0 (PCFSoftShadowMap was removed upstream; shadows now use PCFShadowMap). All existing checks pass unchanged.
