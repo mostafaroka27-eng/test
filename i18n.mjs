@@ -245,6 +245,16 @@ const labels = {
   'Allow popups to print assembly report':'اسمح بالنوافذ المنبثقة لطباعة تقرير التجميع',
   'Library exceeds 1 MB':'حجم المكتبة يتجاوز 1 ميغابايت',
  // 1.6
+ "Scene":"المشهد",
+ "Workshop grid":"شبكة الورشة",
+ "Realistic room":"غرفة واقعية",
+ "Floor":"الأرضية",
+ "Oak parquet":"باركيه بلوط",
+ "Walnut parquet":"باركيه جوز",
+ "Porcelain tiles 60 × 60":"بورسلين 60 × 60",
+ "Polished concrete":"خرسانة مصقولة",
+ "Wall colour":"لون الحيطان",
+ // 1.6
  "Camera views":"زوايا الكاميرا",
  "Eye level":"مستوى النظر",
  "View name":"اسم الزاوية",

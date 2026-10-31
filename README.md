@@ -1,4 +1,6 @@
-# Rokadex Studio — Alpha 1.7.0
+# Rokadex Studio — Alpha 1.8.0
+
+> الجديد في 1.8.0: زوايا كاميرا محفوظة، تصدير صور عالية الدقة (حتى 4K، PNG/JPEG/WebP، خلفية شفافة، ظلال تلامس)، ومشهد "غرفة واقعية" بحيطان وأرضية وشباك وباب حقيقيين من مخطط الغرفة. مش path tracing.
 
 > **ابدأ بـ [START-HERE-AR.md](START-HERE-AR.md)** للتشغيل على Windows والنشر والتوافق، و[HANDOFF.md](HANDOFF.md) لحالة العمل والخطوة التالية، و[النموذج الهندسي](docs/ENGINEERING-MODEL.md).
 >

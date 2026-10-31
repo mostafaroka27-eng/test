@@ -7,6 +7,7 @@ import {wallLength} from './room.mjs';
 import {drawingSheets,drawingSetHtml,normalLayout} from './shop-drawing.mjs';
 import {initDrawingUi} from './drawing-ui.mjs';
 import {initRenderExport} from './render-ui.mjs';
+import {buildInteriorRoom,updateCutaway} from './room-look.mjs';
 import {initAssembly} from './assembly-ui.mjs';
 import {loadCompany,saveCompany,validateCompany,validateLogo,MAX_LOGO_BYTES} from './company.mjs';
 import {initShowroom} from './showroom.mjs';
@@ -78,17 +79,21 @@ if(renderer){
   $('presentation').classList.add('hidden');display.stage='workshop';display.open.clear();display.led.clear();activate2D();renderScene();setMode('design');
  });
 }else activate2D();
-const hemi=new THREE.HemisphereLight('#f4f8ff','#526879',1.2);scene.add(hemi);const sun=new THREE.DirectionalLight('#fff0dd',2.4);sun.position.set(-1800,4200,2200);sun.castShadow=true;sun.shadow.radius=5;sun.shadow.bias=-0.0002;sun.shadow.normalBias=6;sun.shadow.camera.near=100;sun.shadow.camera.far=16000;sun.shadow.mapSize.set(window.innerWidth<=740?1024:2048,window.innerWidth<=740?1024:2048);sun.shadow.camera.left=-6000;sun.shadow.camera.right=6000;sun.shadow.camera.top=6000;sun.shadow.camera.bottom=-6000;scene.add(sun);const floor=new THREE.Mesh(new THREE.PlaneGeometry(12000,12000),new THREE.MeshStandardMaterial({color:'#273746',roughness:.94}));floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;floor.position.y=-8;scene.add(floor);const grid=new THREE.GridHelper(12000,80,'#466073','#304459');grid.position.y=-6;scene.add(grid);const objects=new THREE.Group();scene.add(objects);const roomWalls=new THREE.Group();scene.add(roomWalls);
+const hemi=new THREE.HemisphereLight('#f4f8ff','#526879',1.2);scene.add(hemi);const sun=new THREE.DirectionalLight('#fff0dd',2.4);sun.position.set(-1800,4200,2200);sun.castShadow=true;sun.shadow.radius=5;sun.shadow.bias=-0.0002;sun.shadow.normalBias=6;sun.shadow.camera.near=100;sun.shadow.camera.far=16000;sun.shadow.mapSize.set(window.innerWidth<=740?1024:2048,window.innerWidth<=740?1024:2048);sun.shadow.camera.left=-6000;sun.shadow.camera.right=6000;sun.shadow.camera.top=6000;sun.shadow.camera.bottom=-6000;scene.add(sun);const floor=new THREE.Mesh(new THREE.PlaneGeometry(12000,12000),new THREE.MeshStandardMaterial({color:'#273746',roughness:.94}));floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;floor.position.y=-8;scene.add(floor);const grid=new THREE.GridHelper(12000,80,'#466073','#304459');grid.position.y=-6;scene.add(grid);const objects=new THREE.Group();
+scene.onBeforeRender=(_renderer,_scene,cam)=>{for(const g of roomWalls?.children??[])if(g.userData.room)updateCutaway(g,cam)};scene.add(objects);const roomWalls=new THREE.Group();scene.add(roomWalls);
 // Presentation-only display state: never saved in the project or used by any output.
 const display={stage:'workshop',night:false,open:new Set(),led:new Set(),openAmount:new Map()};let openables=[],woodFinishes=new Set(['oak','walnut']),needsRender=true;
+// The workshop stage becomes the realistic room when that look is chosen in the Presentation panel.
+const stageName=()=>display.stage==='workshop'&&lighting.roomLook==='room'?'room':display.stage;
 function applyStage(){
- const stage=STAGES[display.stage],night=display.night&&display.stage==='studio';
- scene.background=new THREE.Color(night?'#0d1620':stage.background);floor.material.color.set(night?'#1b2733':stage.floor);grid.visible=stage.grid;floor.visible=display.stage!=='studio';
+ const stage=STAGES[stageName()],night=display.night&&display.stage==='studio';
+ scene.background=new THREE.Color(night?'#0d1620':stage.background);floor.material.color.set(night?'#1b2733':stage.floor);grid.visible=stage.grid;floor.visible=!['studio','room'].includes(stageName());
  hemi.intensity=night?0.12:lighting.ambientStrength;sun.intensity=night?0.15:lighting.sunStrength;if(renderer)renderer.toneMappingExposure=night?1.15:stage.exposure*lighting.exposure/DEFAULT_LIGHTING.exposure;
  sun.position.set(...sunPosition(lighting));
  scene.environmentIntensity=night?0.08:display.stage==='studio'?0.6:1;renderRoom();needsRender=true;
 }
 function renderRoom(){if(!renderer)return;clearGroup(roomWalls);needsRender=true;const w=room.width,d=room.depth,h=room.height;
+ if(stageName()==='room'){roomWalls.add(buildInteriorRoom(room,{floor:lighting.floorLook,wallColor:lighting.wallColor}));return}
  if(display.stage==='studio'){
   // Dollhouse cut-away: solid floor slab and walls cut at 1.2 m so the room reads from above.
   const night=display.night,cut=Math.min(1200,h),thick=100;
@@ -453,10 +458,10 @@ function applyLighting(){
  const size=window.innerWidth<=740?Math.min(1024,q.shadowMap):q.shadowMap;
  if(sun.shadow.mapSize.x!==size){sun.shadow.mapSize.set(size,size);sun.shadow.map?.dispose();sun.shadow.map=null}
  sun.shadow.radius=q.shadowRadius;
- for(const [id,key] of [['renderQuality','quality'],['sunAzimuth','sunAzimuth'],['sunElevation','sunElevation'],['sunStrength','sunStrength'],['ambientStrength','ambientStrength'],['exposure','exposure']])$(id).value=lighting[key];
+ for(const [id,key] of [['renderQuality','quality'],['sunAzimuth','sunAzimuth'],['sunElevation','sunElevation'],['sunStrength','sunStrength'],['ambientStrength','ambientStrength'],['exposure','exposure'],['roomLook','roomLook'],['floorLook','floorLook'],['wallColor','wallColor']])$(id).value=lighting[key];
  $('ledsOn').checked=lighting.ledsOn;applyStage();renderScene();
 }
-for(const [id,key] of [['renderQuality','quality'],['sunAzimuth','sunAzimuth'],['sunElevation','sunElevation'],['sunStrength','sunStrength'],['ambientStrength','ambientStrength'],['exposure','exposure'],['ledsOn','ledsOn']])$(id).addEventListener('input',()=>{lighting=saveLighting(localStorage,{...lighting,[key]:id==='ledsOn'?$(id).checked:id==='renderQuality'?$(id).value:Number($(id).value)});applyLighting()});
+for(const [id,key] of [['renderQuality','quality'],['sunAzimuth','sunAzimuth'],['sunElevation','sunElevation'],['sunStrength','sunStrength'],['ambientStrength','ambientStrength'],['exposure','exposure'],['ledsOn','ledsOn'],['roomLook','roomLook'],['floorLook','floorLook'],['wallColor','wallColor']])$(id).addEventListener('input',()=>{lighting=saveLighting(localStorage,{...lighting,[key]:id==='ledsOn'?$(id).checked:['renderQuality','roomLook','floorLook','wallColor'].includes(id)?$(id).value:Number($(id).value)});applyLighting()});
 $('lightingReset').onclick=()=>{lighting=saveLighting(localStorage,DEFAULT_LIGHTING);applyLighting()};
 $('insideSizes').onclick=()=>{showSizes=!showSizes;$('insideSizes').setAttribute('aria-pressed',String(showSizes));renderScene()};
 applyLighting();

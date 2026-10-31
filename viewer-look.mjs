@@ -98,4 +98,6 @@ export function photoMaterial(material,size,{onLoad}={}){
 export const STAGES={
  workshop:{background:'#142130',floor:'#273746',grid:true,walls:true,exposure:1.05},
  studio:{background:'#dfe5ea',floor:'#e8ebee',grid:false,walls:false,exposure:0.85},
+ // Realistic room: solid walls, floor and ceiling from the room plan (room-look.mjs).
+ room:{background:'#d6dee5',floor:'#cfc9bf',grid:false,walls:false,exposure:1},
 };

@@ -6,6 +6,9 @@ test('render PoC: camera presets, saved views in the project and high-resolution
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
   await page.locator('[data-mode="render"]').click();
+  await page.locator('#roomLook').selectOption('room');
+  await page.locator('#floorLook').selectOption('walnut');
+  await page.locator('[data-cam="eye"]').click();
   await page.locator('[data-cam="iso"]').click();
   await page.locator('#viewName').fill('Overview');
   await page.locator('#saveView').click();
@@ -24,5 +27,6 @@ test('render PoC: camera presets, saved views in the project and high-resolution
   await page.reload();
   await page.locator('[data-mode="render"]').click();
   await expect(page.locator('#viewList [data-view-go]')).toHaveText('Overview');
+  await expect(page.locator('#roomLook')).toHaveValue('room');
   expect(errors).toEqual([]);
 });

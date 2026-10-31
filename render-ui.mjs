@@ -64,8 +64,8 @@ export function initRenderExport(ctx){
     target=new THREE.WebGLRenderTarget(w,h,{type:THREE.HalfFloatType,samples:4});
     composer=new EffectComposer(r,target);composer.setPixelRatio(1);composer.setSize(w,h);
     composer.addPass(new RenderPass(ctx.scene,c));
-    // Scene units are millimetres: a ~15 cm radius gives contact shading in corners and under shelves.
-    const ao=new GTAOPass(ctx.scene,c,w,h,undefined,{radius:150,distanceExponent:1,thickness:60,scale:1,samples:16});ao.blendIntensity=0.85;composer.addPass(ao);
+    // Scene units are millimetres: a ~30 cm radius gives contact shading in corners and under shelves.
+    const ao=new GTAOPass(ctx.scene,c,w,h,undefined,{radius:320,distanceExponent:1.5,thickness:140,scale:1.6,samples:16});ao.blendIntensity=1;composer.addPass(ao);
     composer.addPass(new OutputPass());
    }
    // Everything from here to the restore is synchronous, so the resized canvas is never shown.

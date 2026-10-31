@@ -53,3 +53,25 @@ test('saved views are validated and survive a project save; empty lists are not 
  // Presentation data never reaches manufacturing outputs.
  assert.equal(manufacturingCsv(withViews),csv);assert.equal(JSON.stringify(partRecords(withViews)),parts);
 });
+
+import {wallPieces,buildInteriorRoom,updateCutaway} from './room-look.mjs';
+import {validateLighting,DEFAULT_LIGHTING} from './lighting.mjs';
+test('realistic room: walls are cut around doors and windows, camera-side walls hide, settings validated',()=>{
+ assert.deepEqual(wallPieces(4000,2700,[]),[[0,4000,0,2700]]);
+ // window 1200 wide at 1000 from the start, sill 900, 1200 high
+ assert.deepEqual(wallPieces(4000,2700,[{offset:1000,width:1200,sill:900,height:1200,type:'window'}]),[[0,1000,0,2700],[1000,2200,0,900],[1000,2200,2100,2700],[2200,4000,0,2700]]);
+ // a door ignores its sill and opens down to the floor
+ assert.deepEqual(wallPieces(3000,2700,[{offset:0,width:900,sill:500,height:2100,type:'door'}]),[[0,900,2100,2700],[900,3000,0,2700]]);
+ const group=buildInteriorRoom({width:4000,depth:3000,height:2700,openings:[{wall:'back',offset:1000,width:1200,sill:900,height:1200,type:'window'}]});
+ assert.deepEqual(group.userData.room,{w:4000,d:3000,h:2700});
+ const visible=side=>group.children.filter(m=>m.userData.side===side).every(m=>m.visible);
+ updateCutaway(group,{position:{x:0,y:2000,z:6000}});
+ assert.equal(visible('front'),false);assert.equal(visible('back'),true);assert.equal(visible('ceiling'),false);
+ updateCutaway(group,{position:{x:0,y:1600,z:0}});
+ assert.equal(visible('front'),true);assert.equal(visible('ceiling'),true);
+ assert.equal(DEFAULT_LIGHTING.roomLook,'grid');
+ const v=validateLighting({roomLook:'room',floorLook:'tile',wallColor:'#AABBCC'});
+ assert.equal(v.roomLook,'room');assert.equal(v.floorLook,'tile');assert.equal(v.wallColor,'#aabbcc');
+ const bad=validateLighting({roomLook:'castle',floorLook:'gold',wallColor:'red;'});
+ assert.equal(bad.roomLook,'grid');assert.equal(bad.floorLook,'oak');assert.equal(bad.wallColor,DEFAULT_LIGHTING.wallColor);
+});

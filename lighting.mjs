@@ -5,7 +5,7 @@ export const QUALITY=Object.freeze({
  high:{pixelRatio:2,shadowMap:2048,shadowRadius:5,maxLights:12},
  ultra:{pixelRatio:3,shadowMap:4096,shadowRadius:8,maxLights:24},
 });
-export const DEFAULT_LIGHTING=Object.freeze({quality:'high',sunAzimuth:-40,sunElevation:55,sunStrength:2.4,ambientStrength:1.2,exposure:1.05,ledsOn:false});
+export const DEFAULT_LIGHTING=Object.freeze({quality:'high',sunAzimuth:-40,sunElevation:55,sunStrength:2.4,ambientStrength:1.2,exposure:1.05,ledsOn:false,roomLook:'grid',floorLook:'oak',wallColor:'#ece8e1'});
 const RANGES={sunAzimuth:[-180,180],sunElevation:[10,85],sunStrength:[0,5],ambientStrength:[0,3],exposure:[0.4,2]};
 export function validateLighting(input){
  const out={...DEFAULT_LIGHTING};
@@ -13,6 +13,9 @@ export function validateLighting(input){
  if(Object.hasOwn(QUALITY,input.quality))out.quality=input.quality;
  for(const [key,[min,max]] of Object.entries(RANGES))if(typeof input[key]==='number'&&Number.isFinite(input[key]))out[key]=Math.min(max,Math.max(min,input[key]));
  if(typeof input.ledsOn==='boolean')out.ledsOn=input.ledsOn;
+ if(['grid','room'].includes(input.roomLook))out.roomLook=input.roomLook;
+ if(['oak','walnut','tile','concrete'].includes(input.floorLook))out.floorLook=input.floorLook;
+ if(typeof input.wallColor==='string'&&/^#[0-9a-f]{6}$/i.test(input.wallColor))out.wallColor=input.wallColor.toLowerCase();
  return out;
 }
 export function loadLighting(storage){try{return validateLighting(JSON.parse(storage?.getItem(LIGHTING_KEY)??'null'))}catch{return {...DEFAULT_LIGHTING}}}
