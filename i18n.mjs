@@ -253,6 +253,11 @@ const labels = {
  "256 · good":"256 · كويس",
  "1024 · final, least grain":"1024 · نهائي، أقل حبيبات",
  "Real-time uses the same engine as the 3D view. Path tracing (three-gpu-pathtracer, WebGL) follows light as it bounces between walls, units and floor; it is slower and grainier at low samples. The scene is read when you press Export: changes made while it runs are not in the image.":"الفوري بيستخدم نفس محرك عرض الـ3D. الـ Path tracing (three-gpu-pathtracer، WebGL) بيتتبع الضوء وهو بيرتد بين الحيطان والوحدات والأرضية؛ أبطأ، وفيه حبيبات لو العينات قليلة. المشهد بيتقري لحظة ما تدوس تصدير: أي تعديل أثناء التصوير مش هيظهر في الصورة.",
+ "Approve & issue":"اعتماد وإصدار",
+ "Issue note":"ملاحظة الإصدار",
+ "e.g. Approved by client":"مثلاً: اعتمدها العميل",
+ "Issuing freezes the current design as a numbered revision (R1, R2 …) inside the project file, with its cut list and manufacturing CSV. An issued revision cannot be edited; the next change starts the next number as a draft. Stored in this browser and in the exported project file only — not in the cloud.":"الإصدار بيقفل التصميم الحالي كنسخة مرقّمة (R1، R2 …) جوه ملف المشروع، ومعاها قائمة التقطيع وCSV التصنيع. النسخة المعتمدة ما تتعدلش؛ وأول تعديل بعدها يبدأ الرقم اللي بعده كمسودة. محفوظة في المتصفح ده وفي ملف المشروع اللي بتصدّره بس — مش على السحابة.",
+ // 1.6
  "Print cut list · PDF":"اطبع قائمة التقطيع · PDF",
  "Grouped cut list with finished and cut sizes, edges and grain · print or save as PDF":"قائمة تقطيع مجمّعة بالمقاس النهائي ومقاس القص والشريط والعرق · اطبعها أو احفظها PDF",
  // 1.6

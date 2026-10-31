@@ -1,5 +1,6 @@
 import {validateViews} from './render-export.mjs';
 import {validateItems} from './room-items.mjs';
+import {validateReleases} from './releases.mjs';
 import {isFinish} from './reference-catalog.mjs';
 /** Project-file boundary and local edit history. Dimensions are millimetres. */
 import {DEFAULTS,cabinet,validate} from './engine.mjs';
@@ -105,6 +106,8 @@ export function parseProject(input){
  if(Object.hasOwn(data,'views')){const views=validateViews(data.views);if(views.length)project.views=views}
  // Optional furniture/appliances placed in the room for presentation; never in cutting, costing or drawings.
  if(Object.hasOwn(data,'items')){const items=validateItems(data.items);if(items.length)project.items=items}
+ // Optional issued revisions: frozen copies checked against their stored hash (see releases.mjs).
+ if(Object.hasOwn(data,'releases')){const releases=validateReleases(data.releases,{projectId:project.projectId,designRevision:project.designRevision,parse:parseProject});if(releases.length)project.releases=releases}
  return project;
 }
 

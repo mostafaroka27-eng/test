@@ -1,3 +1,14 @@
+# Alpha 1.10.0 approve & issue numbered revisions — 2026-10-31
+
+- **Approve & issue** (Engineering review tab): freezes the current design as revision R<n> inside the project file, with an optional note (e.g. "Approved by client"). The design part (units, room, materials, costing, drawing layout, views, furniture, names) is copied with a content fingerprint; opening a file whose issued copy was edited by hand is refused with "R<n> was changed after it was issued".
+- **Draft vs issued.** A badge next to the version shows "Draft R1 · not issued", "Issued R1", or "Draft R2 · changed since R1". The first change after an issue moves the design revision to the next number automatically; the same design cannot be issued twice and an issued number cannot be reused. Undo/redo never removes an issue.
+- **Each issued revision** can be re-printed as a cut-list PDF, downloaded as its manufacturing CSV and as its own project file, or restored as the working draft (with confirmation; undo available). These always use the frozen copy, not the current draft.
+- Stored in the project file and this browser's autosave only — not in the cloud. At most 30 issued revisions per file; each issue copies the design, so files with many photos grow (5 MB file limit).
+
+Local validation: 227 Node checks (issue/reopen, R1 keeps its cut sizes after R2 edits, refusals, tampering, ordering, unknown data, stable fingerprint), 27 Chromium workflows including the full issue → edit → undo/redo → download R1 → reload flow.
+
+---
+
 # Alpha 1.9.0 printable cut list (PDF) — 2026-10-31
 
 - **Print cut list · PDF** (next to Manufacturing CSV): one A4-landscape document from the same part records as the manufacturing CSV and labels. Identical parts of a unit are grouped with a quantity and every part ID is listed. Columns: unit, part, qty, thickness, finished L × W, cut L × W, edges L1 W1 L2 W2 with band thickness, grain, notes (groove, may rotate, not from sheet stock), part IDs. Grouped by material and thickness, with total cut area and edge-band length per material. Header: project, client, revision, manufacturing-rules version, date, company name/logo if set; marked preliminary, not a CNC program. English and Arabic (RTL). Save as PDF from the print dialog.
