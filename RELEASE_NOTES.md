@@ -2,6 +2,7 @@
 
 - **Drag to move.** Select a unit, then drag it in the 3D view (3D design and Presentation tabs). It slides on the floor in 10 mm steps and snaps flush to a room wall or to a neighbouring unit's side (backs lined up) within 60 mm; a wall unit over a base unit lines up with its sides. Hold Alt to move freely. Dragging anything else still orbits the camera. One undo step per drag.
 - **Keyboard.** Arrow keys move the selected unit 10 mm (Shift: 100 mm); R rotates 90°; Delete or Backspace removes it (the last unit cannot be removed); Ctrl+Z undoes. Keys are ignored while typing in a field and in the workers' view.
+- **Mouse wheel zooms toward the cursor** (point at a unit and scroll to zoom into it).
 
 Local validation: 213 Node checks, 26 Chromium workflows. Mouse dragging not tried on a touch screen.
 

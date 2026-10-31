@@ -73,7 +73,7 @@ if(renderer){
  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,window.innerWidth<=740?1.5:2));renderer.shadowMap.enabled=true;
  renderer.outputColorSpace=THREE.SRGBColorSpace;setupLook(renderer,scene);
  $('viewport').appendChild(renderer.domElement);controls=new OrbitControls(camera,renderer.domElement);
- controls.target.set(0,900,0);controls.enableDamping=true;controls.maxDistance=14000;controls.minDistance=250;
+ controls.target.set(0,900,0);controls.enableDamping=true;controls.zoomToCursor=true;controls.maxDistance=14000;controls.minDistance=250;
  renderer.domElement.addEventListener('webglcontextlost',event=>{
   event.preventDefault();const previous=renderer;renderer=null;controls?.dispose();controls=null;
   previous.domElement.remove();previous.dispose();
