@@ -6,6 +6,7 @@ import {loadLighting,saveLighting,DEFAULT_LIGHTING,QUALITY,sunPosition} from './
 import {wallLength} from './room.mjs';
 import {drawingSheets,drawingSetHtml,normalLayout} from './shop-drawing.mjs';
 import {initDrawingUi} from './drawing-ui.mjs';
+import {initRenderExport} from './render-ui.mjs';
 import {initAssembly} from './assembly-ui.mjs';
 import {loadCompany,saveCompany,validateCompany,validateLogo,MAX_LOGO_BYTES} from './company.mjs';
 import {initShowroom} from './showroom.mjs';
@@ -27,11 +28,11 @@ import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 // New units use the versioned cab-2.0 rules; opened files keep whatever rules they were saved with.
 const newConfig=()=>({...DEFAULTS,...MODERN_RULES});
 const newProjectId=()=>'PRJ-'+(globalThis.crypto?.randomUUID?.().slice(0,8)??Date.now().toString(16)).toUpperCase();
-let projectId=newProjectId(),designRevision=1,migratedFrom=null,projectName='',clientName='',company=loadCompany(globalThis.localStorage),materials=[],drawingLayout=normalLayout(),lighting=loadLighting(globalThis.localStorage),showSizes=false;
+let projectId=newProjectId(),designRevision=1,migratedFrom=null,projectName='',clientName='',company=loadCompany(globalThis.localStorage),materials=[],drawingLayout=normalLayout(),views=[],lighting=loadLighting(globalThis.localStorage),showSizes=false;
 let workspace=null,costing=structuredClone(DEFAULT_COSTING);
 const $=id=>document.getElementById(id);let units=[{id:'CAB-001',name:'Cabinet Unit',type:'cabinet',x:0,z:0,finish:'oak',config:newConfig()}],selected='CAB-001',selectedPart=null,room={...DEFAULT_ROOM},mode='design',wire=false,exploded=false;
 let backupError='';
-try{const backup=loadBackup(localStorage);if(backup){units=backup.units;room=backup.room;selected=units[0].id;costing=backup.costing??structuredClone(DEFAULT_COSTING);projectId=backup.projectId;designRevision=backup.designRevision;migratedFrom=backup.migratedFrom??null;projectName=backup.projectName??'';clientName=backup.clientName??'';materials=backup.materials??[];drawingLayout=normalLayout(backup.drawingLayout??{})}}catch(error){backupError='Local backup unavailable: '+error.message}
+try{const backup=loadBackup(localStorage);if(backup){units=backup.units;room=backup.room;selected=units[0].id;costing=backup.costing??structuredClone(DEFAULT_COSTING);projectId=backup.projectId;designRevision=backup.designRevision;migratedFrom=backup.migratedFrom??null;projectName=backup.projectName??'';clientName=backup.clientName??'';materials=backup.materials??[];drawingLayout=normalLayout(backup.drawingLayout??{});views=backup.views??[]}}catch(error){backupError='Local backup unavailable: '+error.message}
 const inputKeys=['width','height','depth','thickness','partitions','shelves','backThickness','backInset','material','construction','grain','edgeThickness','kerf','sheetWidth','sheetHeight','trim','doors','doorGap','doorOverlay','finish','stockGrainAxis','backConstruction',
  'bayMode','plinthHeight','plinthSetback','backGrooveDepth','backGrooveAllowance','shelfMode','shelfSideClearance','shelfFrontSetback','edgeDeduction',
  'drawerLayout','drawerStyle','drawerFrontHeight','drawerBoxHeight','drawerSlideMode','drawerSlideLength','drawerSlideRearClearance','doorType','doorThickness','doorEdgeThickness','glassThickness','drawerBoxThickness',
@@ -375,14 +376,14 @@ document.getElementById('projectSheetCsv').onclick=()=>{try{download('rokadex-pr
 showProjectSheets();
 
 // Project history stores validated, detached model snapshots; view-only changes are excluded.
-function snapshot(){return {format:'rokadex-standalone',version:3,projectId,designRevision,lengthUnit:'mm',...(migratedFrom?{migratedFrom}:{}),...(projectName?{projectName}:{}),...(clientName?{clientName}:{}),...(materials.length?{materials}:{}),drawingLayout,units,room,costing}}
+function snapshot(){return {format:'rokadex-standalone',version:3,projectId,designRevision,lengthUnit:'mm',...(migratedFrom?{migratedFrom}:{}),...(projectName?{projectName}:{}),...(clientName?{clientName}:{}),...(materials.length?{materials}:{}),drawingLayout,...(views.length?{views}:{}),units,room,costing}}
 const projectMeta=()=>({id:projectId,name:projectName,client:clientName,revision:designRevision});
 function refreshIdentity(){$('projectIdLabel').textContent=projectId;$('designRevision').value=designRevision}
 $('designRevision').addEventListener('change',()=>{const v=Number($('designRevision').value);if(!Number.isInteger(v)||v<1||v>9999){$('designRevision').value=designRevision;$('projectStatus').textContent='Design revision must be a whole number 1–9999';return}designRevision=v;checkpoint()});
 function nextUnitNumber(){let number=1;while(units.some(unit=>unit.id===`CAB-${String(number).padStart(3,'0')}`))number++;return number}
 function applyProject(project){
  units=project.units;room=project.room;costing=project.costing??structuredClone(DEFAULT_COSTING);selectedPart=null;
- projectId=project.projectId??newProjectId();designRevision=project.designRevision??1;migratedFrom=project.migratedFrom??null;projectName=project.projectName??'';clientName=project.clientName??'';materials=project.materials??[];drawingLayout=normalLayout(project.drawingLayout??{});refreshIdentity();drawingUi?.refresh();
+ projectId=project.projectId??newProjectId();designRevision=project.designRevision??1;migratedFrom=project.migratedFrom??null;projectName=project.projectName??'';clientName=project.clientName??'';materials=project.materials??[];drawingLayout=normalLayout(project.drawingLayout??{});views=project.views??[];renderExport?.refresh();refreshIdentity();drawingUi?.refresh();
  refreshRoomControls();choose(units.some(unit=>unit.id===selected)?selected:units[0].id);
  showReview();showProjectSheets();workspace?.refresh();applyLanguage(getLanguage());
 }
@@ -444,6 +445,7 @@ extras=initExtras({current,getUnits:()=>units,getRoom:()=>room,setRoom:next=>{ro
 function focusUnit(u){if(!u||!renderer)return;const H=u.config.height,W=u.config.width,el=u.elevation??0,a=THREE.MathUtils.degToRad(u.rotation??0),dist=Math.max(W,H)*1.7+600;controls.target.set(u.x,el+H/2,u.z);camera.position.set(u.x+Math.sin(a)*dist+Math.cos(a)*dist*0.45,el+H*0.75,u.z+Math.cos(a)*dist-Math.sin(a)*dist*0.45);controls.update();needsRender=true}
 var asm=initAssembly({getUnits:()=>units,current,active:()=>mode==='assembly',render:renderScene,focusUnit,setMode,resize,projectId:()=>projectId,projectMeta,warn:message=>{$('warning').textContent=message},
  capture:async u=>{if(!renderer)return null;renderScene();focusUnit(u);renderer.render(scene,camera);return renderer.domElement.toDataURL('image/jpeg',0.82)}});
+var renderExport=initRenderExport({getRenderer:()=>renderer,scene,camera,getControls:()=>controls,objects,hideWhenTransparent:()=>[floor,grid,roomWalls],getViews:()=>views,setViews:next=>{views=next},commit:checkpoint,projectId:()=>projectId,render:()=>{needsRender=true},warn:message=>{$('warning').textContent=message}});
 var drawingUi=initDrawingUi({current,getLayout:()=>drawingLayout,setLayout:next=>{drawingLayout=next},commit:checkpoint,redraw:()=>{if(mode==='drawings')drawShop()},warn:message=>{$('warning').textContent=message}});
 function applyLighting(){
  const q=QUALITY[lighting.quality];

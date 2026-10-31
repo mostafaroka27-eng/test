@@ -1,3 +1,4 @@
+import {validateViews} from './render-export.mjs';
 import {isFinish} from './reference-catalog.mjs';
 /** Project-file boundary and local edit history. Dimensions are millimetres. */
 import {DEFAULTS,cabinet,validate} from './engine.mjs';
@@ -99,6 +100,8 @@ export function parseProject(input){
  if(Object.hasOwn(data,'costing'))project.costing=validateCosting(data.costing);
  // Optional shop-drawing layout; the default layout is not written.
  if(Object.hasOwn(data,'drawingLayout')){const layout=normalLayout(data.drawingLayout);if(!isDefaultLayout(layout))project.drawingLayout=layout}
+ // Optional saved camera views for presentations; never used by geometry or outputs.
+ if(Object.hasOwn(data,'views')){const views=validateViews(data.views);if(views.length)project.views=views}
  return project;
 }
 
