@@ -34,6 +34,11 @@ test('select a unit, drag it on the floor, nudge with arrows, rotate with R, del
   await expect(page.locator('#posZ')).toHaveValue(String(z + 10));
   await page.keyboard.press('r');
   await expect(page.locator('#rotation')).toHaveValue('90');
+  await page.locator('#openFronts').click();
+  await expect(page.locator('#openFronts')).toHaveAttribute('aria-pressed', 'true');
+  await page.locator('#openFronts').click();
+  await expect(page.locator('#openFronts')).toHaveAttribute('aria-pressed', 'false');
+  await page.locator('#tree button').first().click();
   await page.keyboard.press('Delete');
   await expect(page.locator('#tree button')).toHaveCount(1);
   await page.keyboard.press('Control+z');

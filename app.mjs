@@ -9,6 +9,7 @@ import {initDrawingUi} from './drawing-ui.mjs';
 import {initRenderExport} from './render-ui.mjs';
 import {buildInteriorRoom,updateCutaway} from './room-look.mjs';
 import {dragPosition,otherFootprints,nudge} from './unit-drag.mjs';
+import {accessoryModel,MODEL_TYPES} from './accessory-models.mjs';
 import {initAssembly} from './assembly-ui.mjs';
 import {loadCompany,saveCompany,validateCompany,validateLogo,MAX_LOGO_BYTES} from './company.mjs';
 import {initShowroom} from './showroom.mjs';
@@ -137,7 +138,8 @@ function addPanel(group,u,p){const dims=partSize(p);
 const handleStyle=u=>({type:u.config.handleType??'bar',length:u.config.handleLength??0,finish:u.config.handleFinish??'black'});
 const fittingLook={kitchen:'#c8ced3',wardrobe:'#a7b0b6'};
 function fittingMesh(u,a){
- // Simple stand-in for an accessory: translucent box, red when it does not fit.
+ // Procedural model of the accessory filling its size box (red when it does not fit).
+ if(MODEL_TYPES.includes(a.type)){const model=accessoryModel(a.type,a.size,{fits:a.fits});model.position.set(a.position.x,a.position.y,a.position.z);model.traverse(o=>{o.userData.unit=u.id;o.userData.visualOnly=true});return model}
  const color=!a.fits?'#d9534f':a.type==='sink'?'#9aa3a9':a.type==='hob'?'#1d1f22':fittingLook[a.group];
  const mesh=new THREE.Mesh(new THREE.BoxGeometry(...a.size),new THREE.MeshStandardMaterial({color,metalness:a.type==='hob'?0.2:0.7,roughness:.35,transparent:a.place!=='worktop',opacity:a.place==='worktop'?1:0.55}));
  mesh.position.set(a.position.x,a.position.y,a.position.z);mesh.userData={unit:u.id,visualOnly:true};return mesh;
@@ -301,7 +303,7 @@ $('file').onchange=async event=>{
  finally{event.target.value=''}
 };
 
-$('wire').onclick=()=>{wire=!wire;renderScene()};$('explode').onclick=()=>{exploded=!exploded;renderScene()};$('reset').onclick=()=>{camera.position.set(2200,1800,2800);controls?.target.set(0,900,0);controls?.update()};$('front').onclick=()=>{camera.position.set(0,1200,4000);controls?.target.set(0,1100,0)};$('top').onclick=()=>{camera.position.set(0,4500,0);controls?.target.set(0,0,0)};$('iso').onclick=$('reset').onclick;
+$('wire').onclick=()=>{wire=!wire;renderScene()};$('openFronts').onclick=()=>{const all=units.length&&units.every(u=>display.open.has(u.id));display.open.clear();if(!all)for(const u of units)display.open.add(u.id);$('openFronts').setAttribute('aria-pressed',String(!all));needsRender=true};$('explode').onclick=()=>{exploded=!exploded;renderScene()};$('reset').onclick=()=>{camera.position.set(2200,1800,2800);controls?.target.set(0,900,0);controls?.update()};$('front').onclick=()=>{camera.position.set(0,1200,4000);controls?.target.set(0,1100,0)};$('top').onclick=()=>{camera.position.set(0,4500,0);controls?.target.set(0,0,0)};$('iso').onclick=$('reset').onclick;
 const raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2();let pointerStart=null;if(renderer){renderer.domElement.addEventListener('pointerdown',event=>{pointerStart={x:event.clientX,y:event.clientY,id:event.pointerId}});renderer.domElement.addEventListener('pointercancel',()=>{pointerStart=null});renderer.domElement.addEventListener('pointerup',e=>{const start=pointerStart;pointerStart=null;if(!start||start.id!==e.pointerId||Math.hypot(e.clientX-start.x,e.clientY-start.y)>4)return;const r=renderer.domElement.getBoundingClientRect();mouse.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);raycaster.setFromCamera(mouse,camera);const hits=raycaster.intersectObjects(objects.children,true);if(hits.length&&hits[0].object.userData.unit){choose(hits[0].object.userData.unit);selectPart(hits[0].object.userData.part)}});}
 // Move the selected unit by dragging it on the floor (design and presentation tabs). Alt = no snapping.
 const canMoveUnits=()=>['design','render'].includes(mode)&&!document.body.classList.contains('worker-mode')&&$('presentation').classList.contains('hidden');

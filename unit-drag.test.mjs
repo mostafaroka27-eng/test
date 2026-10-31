@@ -41,3 +41,14 @@ test('drag: butts against a neighbour and lines up the backs; stacked units line
 test('arrow nudge: 10 mm, 100 mm with Shift, other keys ignored',()=>{
  assert.deepEqual(nudge('ArrowLeft',false),[-10,0]);assert.deepEqual(nudge('ArrowDown',true),[0,100]);assert.equal(nudge('a',false),null);
 });
+
+import {accessoryModel,MODEL_TYPES} from './accessory-models.mjs';
+import {ACCESSORY_KEYS} from './accessories.mjs';
+test('every accessory type has a 3D model marked display-only',()=>{
+ assert.deepEqual([...MODEL_TYPES].sort(),[...ACCESSORY_KEYS].sort());
+ for(const type of MODEL_TYPES){
+  const g=accessoryModel(type,[600,400,500]);g.updateMatrixWorld(true);
+  let meshes=0;g.traverse(o=>{if(o.isMesh)meshes++});assert.ok(meshes>0,type);
+  assert.equal(g.userData.visualOnly,true);
+ }
+});

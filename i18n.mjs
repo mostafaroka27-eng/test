@@ -245,6 +245,8 @@ const labels = {
   'Allow popups to print assembly report':'اسمح بالنوافذ المنبثقة لطباعة تقرير التجميع',
   'Library exceeds 1 MB':'حجم المكتبة يتجاوز 1 ميغابايت',
  // 1.6
+ "Open fronts":"افتح الضلف",
+ // 1.6
  "Scene":"المشهد",
  "Workshop grid":"شبكة الورشة",
  "Realistic room":"غرفة واقعية",
