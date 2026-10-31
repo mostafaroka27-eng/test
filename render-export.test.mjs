@@ -75,3 +75,9 @@ test('realistic room: walls are cut around doors and windows, camera-side walls 
  const bad=validateLighting({roomLook:'castle',floorLook:'gold',wallColor:'red;'});
  assert.equal(bad.roomLook,'grid');assert.equal(bad.floorLook,'oak');assert.equal(bad.wallColor,DEFAULT_LIGHTING.wallColor);
 });
+
+import {ptTiles,PT_SAMPLES} from './pathtrace.mjs';
+test('path tracing: sample presets and tiling grows with the image size',()=>{
+ assert.deepEqual([...PT_SAMPLES],[64,256,1024]);
+ assert.equal(ptTiles(1280,720),2);assert.equal(ptTiles(1920,1080),3);assert.equal(ptTiles(2560,1440),3);assert.equal(ptTiles(3840,2160),4);
+});

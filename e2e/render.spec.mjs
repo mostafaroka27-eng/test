@@ -30,3 +30,30 @@ test('render PoC: camera presets, saved views in the project and high-resolution
   await expect(page.locator('#roomLook')).toHaveValue('room');
   expect(errors).toEqual([]);
 });
+
+test('path-traced image of the realistic room can be exported and cancelled', async ({page}) => {
+  test.setTimeout(300000);
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto('/');
+  await page.locator('[data-kitchen="base600"]').click();
+  await page.locator('[data-mode="render"]').click();
+  await page.locator('#roomLook').selectOption('room');
+  await page.locator('[data-cam="iso"]').click();
+  await page.locator('#imgEngine').selectOption('path');
+  await expect(page.locator('#imgAo')).toBeDisabled();
+  // Software rendering in CI is slow: 2 samples prove the pipeline, not the quality.
+  await page.evaluate(() => { const s = document.getElementById('ptSamples'); s.add(new Option('2', '2')); s.value = '2'; });
+  await page.locator('#imgSize').selectOption('screen');
+  const [download] = await Promise.all([page.waitForEvent('download', {timeout: 280000}), page.locator('#exportImage').click()]);
+  expect(download.suggestedFilename()).toMatch(/-iso-screen\.png$/);
+  await expect(page.locator('#imgStatus')).toContainText('Path traced');
+  await expect(page.locator('#ptCancel')).toBeHidden();
+  await page.evaluate(() => { document.getElementById('ptSamples').value = '1024'; });
+  await page.locator('#exportImage').click();
+  await expect(page.locator('#ptCancel')).toBeVisible();
+  await page.locator('#ptCancel').click();
+  await expect(page.locator('#imgStatus')).toHaveText('Path tracing cancelled', {timeout: 200000});
+  await expect(page.locator('#exportImage')).toBeEnabled();
+  expect(errors).toEqual([]);
+});

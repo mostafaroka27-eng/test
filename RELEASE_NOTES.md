@@ -1,3 +1,14 @@
+# Path tracing preview (branch preview/pathtracer, not released) — 2026-10-31
+
+- three.js upgraded 0.166.1 → 0.187.0 (PCFSoftShadowMap was removed upstream; shadows now use PCFShadowMap). All existing checks pass unchanged.
+- **Path-traced image (beta)**: Presentation → High-resolution image → Render engine "Path tracing". Uses three-gpu-pathtracer 0.0.27 (MIT) `WebGLPathTracer` on its own off-screen canvas, so it runs on WebGL (no WebGPU needed) and the live view keeps working. Samples 64 / 256 / 1024, 5 bounces, progress with time left, Cancel. Same sizes, formats and transparency as the real-time export. Lazy-loaded (≈ 200 KB) only when used.
+- The tracer gets its own soft sky light (white above, warm grey below) because the live view's environment cannot be read by it. Hemisphere light is not traced; sun and LED point lights are.
+- `WebGLPathTracer` is marked deprecated upstream in favour of `WebGPUPathTracer`; the versions are pinned. A WebGPU mode is a later step.
+
+Local validation: 210 Node checks, 26 Chromium workflows (path tracing at 2 samples in software rendering, plus cancel). Quality and speed on a real GPU not measured yet.
+
+---
+
 # Alpha 1.8.0 camera views, high-resolution images and realistic room — 2026-10-31
 
 - **Realistic room scene** (Presentation → Lighting: Scene "Realistic room"): solid 120 mm walls built from the room plan and cut around its doors and windows, skirting, window glass, frame and sill, a closed door leaf and frame, ceiling, and a floor of oak or walnut parquet, 60 × 60 porcelain tiles or polished concrete; wall colour is selectable. Walls between the camera and the room are hidden (dollhouse view); from inside the room all walls and the ceiling show. Exports use the same scene. Display only: kept in this browser, never in the project file or any output.
