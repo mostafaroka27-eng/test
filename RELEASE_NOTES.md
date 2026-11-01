@@ -1,3 +1,17 @@
+# Alpha 1.11.0 CNC router G-code and beam saw exports — 2026-11-01
+
+All in the Engineering review tab, under the project sheet layout. **Unverified on any machine — nothing here is "CNC ready".**
+
+- **CNC router G-code** (`cnc.mjs`): one file per sheet from a router layout that keeps tool Ø + gap between parts. Outside profile of each part with the tool radius added (no G41/G42), equal depth passes down to board thickness + overcut into the spoilboard, smallest parts first, optional 2 or 4 holding tabs, back grooves (backConstruction "groove") machined first with the grooved face up. Linear G0/G1 only, absolute mm. Machine settings: controller (Generic ISO / Mach3-4 / GRBL), tool Ø, feed, plunge, spindle, step down, overcut, Z zero (board top or table), safe Z, tabs, direction (climb/conventional), sheet turned 90°, editable start/end code (ASCII only). Kept in this browser only.
+- **Built-in check**: the generated code is read back and refused for download if any move leaves the sheet, a rapid move goes below the board top, or a cut goes deeper than board + overcut. Shows cut length and an estimated time (no acceleration).
+- **Toolpath preview** (SVG): parts, profiles with cutting order and start points, tabs, grooves, origin (front-left X0 Y0).
+- **Not included**: drilling (no verified hardware pattern yet), ramps/lead-ins, arcs, tool changes, nesting optimization. Needs the shop's own controller details and a sample file to confirm the dialect.
+- **Beam / panel saw** (`beamsaw.mjs`): optimizer parts list CSV (comma, or semicolon with decimal comma for Arabic/European Excel; UTF-8 BOM) — one row per identical part, Length along the grain, cut sizes, edge band per side, finished sizes, part IDs, grooved flag. Plus a straight-through (guillotine) cutting plan from the sheet layout: trim, rip strips, cross-cut pieces, trim narrower pieces, offcuts — printable (PDF, EN/AR) and as CSV, with a check that it rebuilds exactly the planned pieces. The layout is not optimized.
+
+Local validation: 234 Node checks (part spacing ≥ tool Ø + gap, every sheet's code passes the checker in two machine set-ups, D/2 offset and 4 × 4.575 mm passes on an 18 mm side, tab height, groove centre 3 mm from the rear edge, unsafe code is caught; optimizer list = every sheet part once with grain-swapped edges; saw sequence rebuilds every sheet). 28 Chromium workflows, including a new one on the kitchen sample: preview, G-code, settings kept after reload, semicolon CSV, cut sequence CSV, saw plan PDF.
+
+---
+
 # Alpha 1.10.0 approve & issue numbered revisions — 2026-10-31
 
 - **Approve & issue** (Engineering review tab): freezes the current design as revision R<n> inside the project file, with an optional note (e.g. "Approved by client"). The design part (units, room, materials, costing, drawing layout, views, furniture, names) is copied with a content fingerprint; opening a file whose issued copy was edited by hand is refused with "R<n> was changed after it was issued".

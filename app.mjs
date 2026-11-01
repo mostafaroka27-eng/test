@@ -28,6 +28,7 @@ import {DEFAULT_ROOM,validateRoom,inspectLayout,snapUnitToWall,roomPlanSvg} from
 import {DEFAULTS,MODERN_RULES,cabinet,layoutSheets,csv,applyMethod,METHODS,hardwareSchedule,dxfPanels} from './engine.mjs';
 import {manufacturingCsv,labelsHtml} from './manufacturing.mjs';
 import {cutListHtml} from './cutlist-doc.mjs';
+import {initCncUi} from './cnc-ui.mjs';
 import {issueRelease,releaseState,revisionAfterEdit,releasedProject} from './releases.mjs';
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
@@ -351,7 +352,7 @@ function tr2(en,ar){return document.documentElement.lang==='ar'?ar:en}
 function screenshot(){if(!renderer)return;renderer.render(scene,camera);renderer.domElement.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='rokadex-preview.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)})}$('screenshot').onclick=screenshot;
 function openPresentation(){if(!renderer)return;$('presentation').classList.remove('hidden');$('presentationCanvas').appendChild(renderer.domElement);resize();showroom.enter();applyLanguage(getLanguage())}
 $('present').onclick=openPresentation;$('openShowroom').onclick=openPresentation;
-$('closePresentation').onclick=()=>{if(!renderer)return;$('presentation').classList.add('hidden');$('viewport').appendChild(renderer.domElement);showroom.leave();resize()};$('lang').onclick=()=>{applyLanguage(getLanguage()==='ar'?'en':'ar');extras?.refresh();refreshReleases();roomTools?.refresh();applyLanguage(getLanguage());try{localStorage.setItem('rokadex.language',getLanguage())}catch{}};
+$('closePresentation').onclick=()=>{if(!renderer)return;$('presentation').classList.add('hidden');$('viewport').appendChild(renderer.domElement);showroom.leave();resize()};$('lang').onclick=()=>{applyLanguage(getLanguage()==='ar'?'en':'ar');extras?.refresh();refreshReleases();roomTools?.refresh();cncUi?.refresh();applyLanguage(getLanguage());try{localStorage.setItem('rokadex.language',getLanguage())}catch{}};
 function resize(){if(!renderer)return;const el=renderer.domElement.parentElement;const w=el.clientWidth,h=el.clientHeight;if(w>0&&h>0){camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false);needsRender=true}}window.addEventListener('resize',resize);new ResizeObserver(resize).observe($('viewport'));new ResizeObserver(resize).observe($('presentationCanvas'));// Render on demand: only after a scene change, camera motion, a flight or an opening animation.
 function tick(now){if(!renderer)return;requestAnimationFrame(tick);const flying=showroom.flying;showroom.update(now??performance.now());animateOpen();const moved=controls.update();if((moved||flying||needsRender)&&!document.hidden&&(['design','render','assembly'].includes(mode)||!$('presentation').classList.contains('hidden'))){renderer.render(scene,camera);needsRender=false}}for(const k of ['width','depth','height']){const field=$('room'+k[0].toUpperCase()+k.slice(1));field.addEventListener('change',()=>{const next={...room,[k]:Number(field.value)};try{validateRoom(next);room=next;refreshRoomControls()}catch(e){$('warning').textContent=e.message;field.value=room[k]}})}
 $('snapWall').onclick=()=>{try{const pos=snapUnitToWall(room,current(),$('wallSide').value);current().x=pos.x;current().z=pos.z;choose(selected)}catch(e){$('warning').textContent=e.message}};
@@ -459,6 +460,8 @@ function travel(direction){const project=history[direction]();if(project){
  applyProject(project);persist()}refreshHistory()}
 // ---------- Approve & issue (numbered, frozen revisions in the project file) ----------
 function cutListWindow(project){const w=window.open('','_blank');if(!w){$('warning').textContent=tr2('Allow pop-ups to print the cut list','اسمح بالنوافذ المنبثقة لطباعة قائمة التقطيع');return}try{w.document.open();w.document.write(cutListHtml(project,{lang:getLanguage(),company}));w.document.close();setTimeout(()=>{try{w.focus();w.print()}catch{}},500)}catch(e){w.close();$('warning').textContent=e.message}}
+function printHtml(html){const w=window.open('','_blank');if(!w){$('warning').textContent=tr2('Allow pop-ups to print','اسمح بالنوافذ المنبثقة للطباعة');return}try{w.document.open();w.document.write(html);w.document.close();setTimeout(()=>{try{w.focus();w.print()}catch{}},500)}catch(e){w.close();$('warning').textContent=e.message}}
+var cncUi=initCncUi({getProject:()=>parseProject(snapshot()),download,printHtml,tr2,lang:getLanguage});
 function refreshReleases(){
  const list=$('releaseList'),badge=$('releaseBadge');if(!list||!badge)return;
  let state;try{state=releases.length?releaseState(parseProject(snapshot())):{status:'never',revision:designRevision,latest:null}}catch{state={status:'never',revision:designRevision,latest:releases.at(-1)??null}}
