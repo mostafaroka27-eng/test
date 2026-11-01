@@ -5,7 +5,7 @@ test('cnc & beam saw: kitchen sample → toolpath preview passes the check, G-co
  page.on('dialog',d=>d.accept());
  await page.goto('/');
  await page.setInputFiles('#file','samples/kitchen-concept.json');
- await page.locator('text=Engineering review').first().click();
+ await page.click('[data-mode="cnc"]');
  await page.selectOption('#cnc_tabs','2');
  await page.click('#cncPreviewBtn');
  await expect(page.locator('#cncStatus')).toContainText('no move leaves the sheet');
@@ -17,7 +17,7 @@ test('cnc & beam saw: kitchen sample → toolpath preview passes the check, G-co
  expect(text).toContain('(RokaDex Studio - UNVERIFIED');expect(text).toContain('M3 S18000');expect(text.trimEnd().endsWith('M30')).toBe(true);
  // Machine settings persist in this browser.
  await page.fill('#cnc_toolDiameter','8');await page.click('#cncPreviewBtn');
- await page.reload();await page.locator('text=Engineering review').first().click();
+ await page.reload();await page.click('[data-mode="cnc"]');
  await expect(page.locator('#cnc_toolDiameter')).toHaveValue('8');
  const c=page.waitForEvent('download');await page.click('#sawCsvSemi');
  const csv=await readFile(await (await c).path(),'utf8');expect(csv).toMatch(/^﻿Row;Material;Thickness;Length/);
