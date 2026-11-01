@@ -223,3 +223,12 @@ tr.part-selected td { background: var(--teal-bg); }
 .release-badge[data-state="issued"]{background:#e3f4ef;color:#0b6b52;border-color:#8fd0bb}
 .release-list{display:grid;gap:6px;margin-top:8px}.release-row{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;border:1px solid #E2E8EE;border-radius:8px;padding:6px 8px;background:#fff}
 .release-actions{display:flex;flex-wrap:wrap;gap:4px}.release-actions button{font-size:11px;padding:3px 8px}
+/* CNC / beam saw exports */
+.cnc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px 10px;margin:6px 0}
+.cnc-grid label{display:flex;flex-direction:column;gap:2px;font-size:12px}
+.cnc-grid label.wide{grid-column:1/-1}
+.cnc-grid label.check{flex-direction:row;align-items:center;gap:6px}
+.cnc-grid textarea{font-family:ui-monospace,monospace;font-size:12px}
+#cncStatus[data-bad="1"]{color:#b42318}
+.cnc-preview{overflow:auto;max-height:520px;background:#fff;border-radius:8px;margin:8px 0}
+.cnc-preview svg{width:100%;height:auto;max-height:510px}
