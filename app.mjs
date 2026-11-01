@@ -47,6 +47,8 @@ const inputKeys=['width','height','depth','thickness','partitions','shelves','ba
  'coverLeft','coverRight','coverFront','topFiller','topFillerSetback','worktopThickness','worktopOverhang','worktopMaterial','glassType','glassColor','handleType','handleLength','handleFinish','lightKelvin','lightLevel'];
 const textKeys=['material','construction','grain','stockGrainAxis','backConstruction','bayMode','shelfMode','edgeDeduction','drawerLayout','drawerStyle','drawerSlideMode','doorType','doorMaterial','glassMaterial','drawerBoxMaterial','drawerBottomMaterial','backMaterial','worktopMaterial','glassType','glassColor','handleType','handleFinish'];
 const topologyKeys=['shelves','partitions','bayMode','drawerLayout','drawerStyle','plinthHeight'];
+// 3D accents follow the page look chosen at load (Industrial = Rokadex management colours).
+const SKIN3D=document.documentElement.dataset.skin==='industrial';
 const scene=new THREE.Scene();scene.background=new THREE.Color('#142130');
 const camera=new THREE.PerspectiveCamera(42,1,10,40000);camera.position.set(2200,1800,2800);
 // A graphics failure must not prevent project editing, preservation or 2D outputs.
@@ -85,7 +87,7 @@ if(renderer){
   $('presentation').classList.add('hidden');display.stage='workshop';display.open.clear();display.led.clear();activate2D();renderScene();setMode('design');
  });
 }else activate2D();
-const hemi=new THREE.HemisphereLight('#f4f8ff','#526879',1.2);scene.add(hemi);const sun=new THREE.DirectionalLight('#fff0dd',2.4);sun.position.set(-1800,4200,2200);sun.castShadow=true;sun.shadow.radius=5;sun.shadow.bias=-0.0002;sun.shadow.normalBias=6;sun.shadow.camera.near=100;sun.shadow.camera.far=16000;sun.shadow.mapSize.set(window.innerWidth<=740?1024:2048,window.innerWidth<=740?1024:2048);sun.shadow.camera.left=-6000;sun.shadow.camera.right=6000;sun.shadow.camera.top=6000;sun.shadow.camera.bottom=-6000;scene.add(sun);const floor=new THREE.Mesh(new THREE.PlaneGeometry(12000,12000),new THREE.MeshStandardMaterial({color:'#273746',roughness:.94}));floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;floor.position.y=-8;scene.add(floor);const grid=new THREE.GridHelper(12000,80,'#466073','#304459');grid.position.y=-6;scene.add(grid);const objects=new THREE.Group();
+const hemi=new THREE.HemisphereLight('#f4f8ff','#526879',1.2);scene.add(hemi);const sun=new THREE.DirectionalLight('#fff0dd',2.4);sun.position.set(-1800,4200,2200);sun.castShadow=true;sun.shadow.radius=5;sun.shadow.bias=-0.0002;sun.shadow.normalBias=6;sun.shadow.camera.near=100;sun.shadow.camera.far=16000;sun.shadow.mapSize.set(window.innerWidth<=740?1024:2048,window.innerWidth<=740?1024:2048);sun.shadow.camera.left=-6000;sun.shadow.camera.right=6000;sun.shadow.camera.top=6000;sun.shadow.camera.bottom=-6000;scene.add(sun);const floor=new THREE.Mesh(new THREE.PlaneGeometry(12000,12000),new THREE.MeshStandardMaterial({color:'#273746',roughness:.94}));floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;floor.position.y=-8;scene.add(floor);const grid=new THREE.GridHelper(12000,80,SKIN3D?'#4A4D55':'#466073',SKIN3D?'#2C2E34':'#304459');grid.position.y=-6;scene.add(grid);const objects=new THREE.Group();
 scene.onBeforeRender=(_renderer,_scene,cam)=>{for(const g of roomWalls?.children??[])if(g.userData.room)updateCutaway(g,cam)};scene.add(objects);const roomWalls=new THREE.Group();scene.add(roomWalls);
 // Presentation-only display state: never saved in the project or used by any output.
 const display={stage:'workshop',night:false,open:new Set(),led:new Set(),openAmount:new Map()};let openables=[],woodFinishes=new Set(['oak','walnut']),needsRender=true;
@@ -93,7 +95,7 @@ const display={stage:'workshop',night:false,open:new Set(),led:new Set(),openAmo
 const stageName=()=>display.stage==='workshop'&&lighting.roomLook==='room'?'room':display.stage;
 function applyStage(){
  const stage=STAGES[stageName()],night=display.night&&display.stage==='studio';
- scene.background=new THREE.Color(night?'#0d1620':stage.background);floor.material.color.set(night?'#1b2733':stage.floor);grid.visible=stage.grid;floor.visible=!['studio','room'].includes(stageName());
+ const charcoal=document.documentElement.dataset.skin==='industrial'&&stageName()==='workshop';scene.background=new THREE.Color(night?'#0d1620':charcoal?'#141518':stage.background);floor.material.color.set(night?'#1b2733':charcoal?'#25282E':stage.floor);grid.visible=stage.grid;floor.visible=!['studio','room'].includes(stageName());
  hemi.intensity=night?0.12:lighting.ambientStrength;sun.intensity=night?0.15:lighting.sunStrength;if(renderer)renderer.toneMappingExposure=night?1.15:stage.exposure*lighting.exposure/DEFAULT_LIGHTING.exposure;
  sun.position.set(...sunPosition(lighting));
  scene.environmentIntensity=night?0.08:display.stage==='studio'?0.6:1;renderRoom();needsRender=true;
@@ -120,7 +122,7 @@ function renderRoom(){if(!renderer)return;clearGroup(roomWalls);needsRender=true
  }
  const wallMat=new THREE.MeshStandardMaterial({color:'#5f8c9b',transparent:true,opacity:.12,side:THREE.DoubleSide,depthWrite:false});
  // Doors and windows drawn as outlines on the transparent walls.
- for(const o of room.openings??[]){const along=o.wall==='back'||o.wall==='front',x0=-w/2+o.offset,z0=-d/2+o.offset,pts=along?[[x0,o.sill],[x0+o.width,o.sill],[x0+o.width,o.sill+o.height],[x0,o.sill+o.height]]:[[z0,o.sill],[z0+o.width,o.sill],[z0+o.width,o.sill+o.height],[z0,o.sill+o.height]];const fixed={back:-d/2+2,front:d/2-2,left:-w/2+2,right:w/2-2}[o.wall];const geo=new THREE.BufferGeometry().setFromPoints(pts.map(([a,y])=>along?new THREE.Vector3(a,y,fixed):new THREE.Vector3(fixed,y,a)));const line=new THREE.LineLoop(geo,new THREE.LineBasicMaterial({color:o.type==='door'?'#c9a45c':'#7fc4ef'}));roomWalls.add(line)}for(const [pw,ph,x,y,z,ry] of [[w,h,0,h/2,-d/2,0],[d,h,-w/2,h/2,0,Math.PI/2],[d,h,w/2,h/2,0,Math.PI/2]]){const mesh=new THREE.Mesh(new THREE.PlaneGeometry(pw,ph),wallMat);mesh.position.set(x,y,z);mesh.rotation.y=ry;roomWalls.add(mesh)}const outline=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(w,h,d)),new THREE.LineBasicMaterial({color:'#3f8e9b',transparent:true,opacity:.45}));outline.position.y=h/2;roomWalls.add(outline)}
+ for(const o of room.openings??[]){const along=o.wall==='back'||o.wall==='front',x0=-w/2+o.offset,z0=-d/2+o.offset,pts=along?[[x0,o.sill],[x0+o.width,o.sill],[x0+o.width,o.sill+o.height],[x0,o.sill+o.height]]:[[z0,o.sill],[z0+o.width,o.sill],[z0+o.width,o.sill+o.height],[z0,o.sill+o.height]];const fixed={back:-d/2+2,front:d/2-2,left:-w/2+2,right:w/2-2}[o.wall];const geo=new THREE.BufferGeometry().setFromPoints(pts.map(([a,y])=>along?new THREE.Vector3(a,y,fixed):new THREE.Vector3(fixed,y,a)));const line=new THREE.LineLoop(geo,new THREE.LineBasicMaterial({color:o.type==='door'?'#c9a45c':'#7fc4ef'}));roomWalls.add(line)}for(const [pw,ph,x,y,z,ry] of [[w,h,0,h/2,-d/2,0],[d,h,-w/2,h/2,0,Math.PI/2],[d,h,w/2,h/2,0,Math.PI/2]]){const mesh=new THREE.Mesh(new THREE.PlaneGeometry(pw,ph),wallMat);mesh.position.set(x,y,z);mesh.rotation.y=ry;roomWalls.add(mesh)}const outline=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(w,h,d)),new THREE.LineBasicMaterial({color:SKIN3D?'#C85A1E':'#3f8e9b',transparent:true,opacity:.45}));outline.position.y=h/2;roomWalls.add(outline)}
 function refreshRoomWarnings(){const issues=inspectLayout(room,units);$('roomWarnings').textContent=issues.length?issues.map(i=>'⚠ '+i.message).join(' · '):'✓ No rectangular footprint conflicts detected';$('roomWarnings').classList.toggle('has-issues',!!issues.length)}
 function refreshRoomControls(){for(const k of ['width','depth','height'])$('room'+k[0].toUpperCase()+k.slice(1)).value=room[k];renderRoom();refreshRoomWarnings()}
 
@@ -137,7 +139,7 @@ function surfaceFor(u,p,size){
 }
 function addPanel(group,u,p){const dims=partSize(p);
  const pos=[p.position.x,p.position.y,p.position.z];
- const mesh=new THREE.Mesh(new THREE.BoxGeometry(...dims),surfaceFor(u,p,dims));mesh.position.set(pos[0]+(exploded?pos[0]*.18:0),pos[1]+(exploded?(p.kind==='top'?180:p.kind==='bottom'?-90:0):0),pos[2]+(exploded?(p.kind==='back'?-160:0):0));if(p.id===selectedPart&&u.id===selected){mesh.material.emissive=new THREE.Color('#20a18a');mesh.material.emissiveIntensity=.5}mesh.castShadow=true;mesh.receiveShadow=true;mesh.userData={unit:u.id,part:p.id};group.add(mesh);const edges=new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry),new THREE.LineBasicMaterial({color:'#2c3d4c',transparent:true,opacity:display.stage==='studio'?.18:.45}));mesh.add(edges);if(wire)mesh.material.wireframe=true;return mesh;
+ const mesh=new THREE.Mesh(new THREE.BoxGeometry(...dims),surfaceFor(u,p,dims));mesh.position.set(pos[0]+(exploded?pos[0]*.18:0),pos[1]+(exploded?(p.kind==='top'?180:p.kind==='bottom'?-90:0):0),pos[2]+(exploded?(p.kind==='back'?-160:0):0));if(p.id===selectedPart&&u.id===selected){mesh.material.emissive=new THREE.Color(SKIN3D?'#C85A1E':'#20a18a');mesh.material.emissiveIntensity=.5}mesh.castShadow=true;mesh.receiveShadow=true;mesh.userData={unit:u.id,part:p.id};group.add(mesh);const edges=new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry),new THREE.LineBasicMaterial({color:'#2c3d4c',transparent:true,opacity:display.stage==='studio'?.18:.45}));mesh.add(edges);if(wire)mesh.material.wireframe=true;return mesh;
 }
 const handleStyle=u=>({type:u.config.handleType??'bar',length:u.config.handleLength??0,finish:u.config.handleFinish??'black'});
 const fittingLook={kitchen:'#c8ced3',wardrobe:'#a7b0b6'};
@@ -165,7 +167,7 @@ function renderScene(){
   for(const p of model.parts){
    if(vis?.show&&!vis.show.has(p.id))continue;
    const mesh=addPanel(g,u,p),size=partSize(p);
-   if(vis&&(vis.current.has(p.id)||vis.focus===p.id)){mesh.material=mesh.material.clone();mesh.material.emissive=new THREE.Color(vis.focus===p.id?'#ff7a1a':'#20a18a');mesh.material.emissiveIntensity=vis.focus===p.id?.8:.45}
+   if(vis&&(vis.current.has(p.id)||vis.focus===p.id)){mesh.material=mesh.material.clone();mesh.material.emissive=new THREE.Color(vis.focus===p.id?'#ff7a1a':SKIN3D?'#C85A1E':'#20a18a');mesh.material.emissiveIntensity=vis.focus===p.id?.8:.45}
    if(p.kind==='door'){
     // Doors hang on a pivot at the hinge edge so presentations can open them; handles follow the door.
     const index=doors.indexOf(p),hingeLeft=doors.length===1||index<doors.length/2,pivot=new THREE.Group();
@@ -461,6 +463,7 @@ function travel(direction){const project=history[direction]();if(project){
 // ---------- Approve & issue (numbered, frozen revisions in the project file) ----------
 function cutListWindow(project){const w=window.open('','_blank');if(!w){$('warning').textContent=tr2('Allow pop-ups to print the cut list','اسمح بالنوافذ المنبثقة لطباعة قائمة التقطيع');return}try{w.document.open();w.document.write(cutListHtml(project,{lang:getLanguage(),company}));w.document.close();setTimeout(()=>{try{w.focus();w.print()}catch{}},500)}catch(e){w.close();$('warning').textContent=e.message}}
 function printHtml(html){const w=window.open('','_blank');if(!w){$('warning').textContent=tr2('Allow pop-ups to print','اسمح بالنوافذ المنبثقة للطباعة');return}try{w.document.open();w.document.write(html);w.document.close();setTimeout(()=>{try{w.focus();w.print()}catch{}},500)}catch(e){w.close();$('warning').textContent=e.message}}
+{const look=$('studioLook');if(look){look.value=document.documentElement.dataset.skin==='industrial'?'industrial':'light';look.onchange=()=>{const v=look.value==='light'?'light':'industrial';try{localStorage.setItem('rokadex.studio.look',v)}catch{}if(v==='industrial')document.documentElement.dataset.skin='industrial';else delete document.documentElement.dataset.skin;applyStage();needsRender=true}}}
 var cncUi=initCncUi({getProject:()=>parseProject(snapshot()),download,printHtml,tr2,lang:getLanguage});
 function refreshReleases(){
  const list=$('releaseList'),badge=$('releaseBadge');if(!list||!badge)return;

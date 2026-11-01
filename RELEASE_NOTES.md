@@ -1,3 +1,13 @@
+# Alpha 1.12.0 Rokadex management look — 2026-11-01
+
+- **Industrial look by default**, the same colours as the Rokadex management app (direction B, read from its themes.js, build 6d15bf29f1): charcoal surfaces #141518 / #1D1F24 / #25282E, lines #33363D, text #EFE9E4, amber accent #B34A12 with glow #FF8036. Applied to every tab, the library, properties, tables, form controls, dialogs and the 3D workshop stage (charcoal floor, neutral grid, amber selection). Drawings, PDFs, labels, sheet previews and the client presentation stay on white paper.
+- `industrial-skin.css` is generated from the light stylesheets by `scripts/gen-industrial-skin.py` (each colour mapped by role: surface, line, text, accent, status). Re-run it after editing `style.css` or `rokadex-theme.css`.
+- **Settings → Appearance → Look**: Industrial or Light, kept in this browser. Page colours switch at once; 3D grid/highlight colours on the next open.
+
+Local validation: 234 Node checks, 28 Chromium workflows; every tab checked by screenshot in English and Arabic.
+
+---
+
 # Alpha 1.11.0 CNC router G-code and beam saw exports — 2026-11-01
 
 All in the new **CNC & saw** tab (same cards, collapsible groups and fields as the Properties inspector; machine / tool & feeds / holding & grooves / start-end code on the left, G-code preview and saw outputs on the right; one column on tablets). **Unverified on any machine — nothing here is "CNC ready".**

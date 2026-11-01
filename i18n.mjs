@@ -245,6 +245,14 @@ const labels = {
   'Allow popups to print assembly report':'اسمح بالنوافذ المنبثقة لطباعة تقرير التجميع',
   'Library exceeds 1 MB':'حجم المكتبة يتجاوز 1 ميغابايت',
  // 1.6
+ "Kept in this browser. Page colours change at once; 3D grid and highlight colours on the next open. Drawings, PDFs and labels stay on white paper.":"محفوظ في المتصفح ده. ألوان الصفحة بتتغير فورًا، وألوان الشبكة والتحديد في 3D من أول فتح جاي. الرسومات وملفات PDF والملصقات بتفضل على ورق أبيض.",
+ // 1.6
+ "Appearance":"الشكل",
+ "Look":"المظهر",
+ "Industrial (same as Rokadex management)":"صناعي (زي برنامج إدارة Rokadex)",
+ "Light":"فاتح",
+ "Applies at once and is kept in this browser. Drawings, PDFs and labels stay on white paper.":"بيتطبق فورًا ومحفوظ في المتصفح ده. الرسومات وملفات PDF والملصقات بتفضل على ورق أبيض.",
+ // 1.6
  "CNC &amp; saw":"CNC والمنشار",
  "CNC & saw":"CNC والمنشار",
  "CNC ROUTER & BEAM SAW":"راوتر CNC ومنشار Beam saw",

@@ -1,0 +1,209 @@
+/*
+ * Generates industrial-skin.css: the Rokadex management app's "Industrial" look (direction B) applied to Studio.
+ * Colours are the management app's tokens (themes.js SKIN + industrial preset, build 6d15bf29f1). Every rule in style.css and
+ * rokadex-theme.css that sets a colour is repeated under :root[data-skin="industrial"] with the colour mapped by role
+ * (surface / line / text / accent / status). Paper outputs (drawings, PDFs, SVG sheets) keep their own white colours.
+ * Run: python3 scripts/gen-industrial-skin.py  (re-run after editing the light CSS).
+ */
+:root[data-skin="industrial"]{--navy:#101114;--navy-2:#1A1B1F;--navy-ink:#CFC6BE;--navy-mute:#8E847C;--teal:#B34A12;--teal-2:#C85A1E;--teal-bg:#3A2418;--bg:#141518;--panel:#1D1F24;--panel-2:#25282E;--line:#33363D;--line-2:#41454D;--fg:#EFE9E4;--muted:#B3A79E;--faint:#8E847C;--ok:#5FD98A;--warn:#F2B134;--err:#FF8273;--info:#9FB1FF;--accent:#B34A12;--surface:#25282E;--surface-raised:#1D1F24;--x-rgb:255, 128, 54;--x-glow:#FF8036;--x-hi:#FFB38A;--x-acc:#C85A1E;color-scheme:dark}
+/* ---- from style.css ---- */
+:root[data-skin="industrial"]{color:#EFE9E4;background:#25282E}
+:root[data-skin="industrial"] button{border:1px solid #33363D;color:#EFE9E4;background:#1D1F24}
+:root[data-skin="industrial"] button:hover{background:#25282E;border-color:#41454D}
+:root[data-skin="industrial"] button:active:not(:disabled){background:#25282E}
+:root[data-skin="industrial"] button.primary{color:#EFE9E4}
+:root[data-skin="industrial"] button.primary:hover{background:#101114}
+:root[data-skin="industrial"] button:focus-visible,:root[data-skin="industrial"] input:focus-visible,:root[data-skin="industrial"] select:focus-visible,:root[data-skin="industrial"] a:focus-visible,:root[data-skin="industrial"] [tabindex]:focus-visible{outline:3px solid #B34A12}
+:root[data-skin="industrial"] a{color:#FF8036}
+:root[data-skin="industrial"] a:hover{color:#EFE9E4}
+:root[data-skin="industrial"] input,:root[data-skin="industrial"] select{border:1px solid #33363D;color:#EFE9E4;background:#1D1F24}
+:root[data-skin="industrial"] input:hover,:root[data-skin="industrial"] select:hover{border-color:#41454D}
+:root[data-skin="industrial"] input::placeholder{color:#B3A79E}
+:root[data-skin="industrial"] .skip-link{background:#1D1F24}
+:root[data-skin="industrial"] .top{background:#1D1F24}
+:root[data-skin="industrial"] .brand .logo{background:#101114;color:#EFE9E4}
+:root[data-skin="industrial"] .brand strong{color:#EFE9E4}
+:root[data-skin="industrial"] .brand small{color:#B3A79E}
+:root[data-skin="industrial"] .project-name{color:#B3A79E}
+:root[data-skin="industrial"] .green-dot{background:#B34A12}
+:root[data-skin="industrial"] #save{border-color:#41454D;color:#EFE9E4}
+:root[data-skin="industrial"] .project-status{color:#B3A79E;background:#25282E}
+:root[data-skin="industrial"] .modes{background:#1D1F24}
+:root[data-skin="industrial"] .mode{color:#B3A79E}
+:root[data-skin="industrial"] .mode:hover{background:#1D1F24}
+:root[data-skin="industrial"] .mode.active{color:#B3A79E;background:#25282E}
+:root[data-skin="industrial"] .mode-hint{color:#B3A79E}
+:root[data-skin="industrial"] .mode-hint b{color:#FF8036}
+:root[data-skin="industrial"] .side-title{color:#EFE9E4}
+:root[data-skin="industrial"] .side-title span{color:#B3A79E}
+:root[data-skin="industrial"] .side-section{color:#B3A79E}
+:root[data-skin="industrial"] .library-item.active{background:#25282E;border-color:#33363D}
+:root[data-skin="industrial"] .library-item b{color:#EFE9E4}
+:root[data-skin="industrial"] .library-item small{color:#B3A79E}
+:root[data-skin="industrial"] .library-item > span:last-child{color:#B3A79E}
+:root[data-skin="industrial"] .item-icon{background:#25282E;color:#B3A79E}
+:root[data-skin="industrial"] #tree button{color:#B3A79E}
+:root[data-skin="industrial"] #tree button.active{background:#25282E;border-color:#33363D;color:#FF8036}
+:root[data-skin="industrial"] .sidebar-bottom{color:#B3A79E}
+:root[data-skin="industrial"] .sidebar-bottom span{color:#B3A79E}
+:root[data-skin="industrial"] .sidebar-bottom small{color:#F2B134}
+:root[data-skin="industrial"] .workspace{background:#101114}
+:root[data-skin="industrial"] .viewport-toolbar{border-bottom:1px solid #41454D;background:#101114}
+:root[data-skin="industrial"] .viewport-toolbar button{color:#8E847C;border-color:#41454D}
+:root[data-skin="industrial"] .viewport-toolbar button:hover,:root[data-skin="industrial"] .viewport-toolbar button[aria-pressed="true"]{background:#101114;border-color:#41454D}
+:root[data-skin="industrial"] .view-tag{color:#FF8036}
+:root[data-skin="industrial"] .viewport-label{color:#8E847C}
+:root[data-skin="industrial"] .bottom{background:#1D1F24}
+:root[data-skin="industrial"] .bottom-head span{color:#B3A79E}
+:root[data-skin="industrial"] th{color:#B3A79E;background:#25282E;border-bottom:1px solid #33363D}
+:root[data-skin="industrial"] td{border-top:1px solid #33363D;color:#EFE9E4}
+:root[data-skin="industrial"] tbody tr:nth-child(even){background:#1D1F24}
+:root[data-skin="industrial"] tr:hover td{background:#25282E}
+:root[data-skin="industrial"] #parts tr.part-selected td{background:#25282E;color:#EFE9E4}
+:root[data-skin="industrial"] .inspector{background:#1D1F24}
+:root[data-skin="industrial"] .inspector-head b{color:#B3A79E}
+:root[data-skin="industrial"] .preview-card{background:#25282E}
+:root[data-skin="industrial"] .preview-card span{color:#B3A79E}
+:root[data-skin="industrial"] .preview-card strong{color:#EFE9E4}
+:root[data-skin="industrial"] .preview-card small{color:#B3A79E}
+:root[data-skin="industrial"] .section-heading{color:#B3A79E}
+:root[data-skin="industrial"] .section-heading small{color:#B3A79E}
+:root[data-skin="industrial"] .inspector label,:root[data-skin="industrial"] .tool-grid label,:root[data-skin="industrial"] .cost-grid label,:root[data-skin="industrial"] .layout-settings label{color:#B3A79E}
+:root[data-skin="industrial"] .danger{color:#FF8273;border-color:#33363D;background:#44231F}
+:root[data-skin="industrial"] #warning,:root[data-skin="industrial"] .cost-warning{color:#F2B134}
+:root[data-skin="industrial"] .overlay-panel{background:#1D1F24}
+:root[data-skin="industrial"] .panel-head b{color:#EFE9E4}
+:root[data-skin="industrial"] .panel-head span,:root[data-skin="industrial"] .note{color:#F2B134}
+:root[data-skin="industrial"] #sheetInfo{color:#B3A79E}
+:root[data-skin="industrial"] .bay-editor label{color:#B3A79E}
+:root[data-skin="industrial"] .edge-editor label{color:#B3A79E}
+:root[data-skin="industrial"] .room-fields label,:root[data-skin="industrial"] .room-snap{color:#B3A79E}
+:root[data-skin="industrial"] #roomWarnings{color:#B3A79E}
+:root[data-skin="industrial"] #roomWarnings.has-issues{color:#F2B134}
+:root[data-skin="industrial"] .review-head{color:#EFE9E4}
+:root[data-skin="industrial"] .review-head span{color:#F2B134}
+:root[data-skin="industrial"] .review-output h4{color:#B3A79E}
+:root[data-skin="industrial"] .plan-drawing{background:#262C45}
+:root[data-skin="industrial"] .plan-drawing [data-unit]:focus-visible{outline:3px solid #B34A12}
+:root[data-skin="industrial"] .workspace-status{color:#B3A79E}
+:root[data-skin="industrial"] .form-section h3{color:#EFE9E4}
+:root[data-skin="industrial"] .cost-totals{border:1px solid #33363D}
+:root[data-skin="industrial"] .cost-totals > *{border-bottom:1px solid #33363D;background:#25282E}
+:root[data-skin="industrial"] .cost-totals strong,:root[data-skin="industrial"] .cost-totals b{color:#B3A79E}
+:root[data-skin="industrial"] .cost-totals dt{color:#B3A79E}
+:root[data-skin="industrial"] .cost-totals dd{color:#B3A79E}
+:root[data-skin="industrial"] .cost-totals small{color:#B3A79E}
+:root[data-skin="industrial"] .cost-warning{background:#3A2E17}
+:root[data-skin="industrial"] .presentation{background:#101114}
+:root[data-skin="industrial"] .presentation-caption small{color:#8E847C}
+:root[data-skin="industrial"] .presentation-caption h1{color:#EFE9E4}
+:root[data-skin="industrial"] .presentation-caption p{color:#FF8036}
+@media (max-width: 740px){:root[data-skin="industrial"] .mobile-panel-links a{color:#8E847C}}
+:root[data-skin="industrial"] .app-version{color:#FF8036}
+:root[data-skin="industrial"] .render-status{color:#EFE9E4;background:#25282E}
+:root[data-skin="industrial"] #viewport:has(.fallback-drawing:not(.hidden)){background:#1D1F24}
+:root[data-skin="industrial"] .startup-error{color:#8E847C}
+:root[data-skin="industrial"] .startup-error pre{background:#101114}
+/* ---- from rokadex-theme.css ---- */
+:root[data-skin="industrial"] button:active:not(:disabled){background:#3A2418}
+:root[data-skin="industrial"] button.primary{color:#EFE9E4}
+:root[data-skin="industrial"] .sidebar .side-title{color:#EFE9E4}
+:root[data-skin="industrial"] .sidebar .library-item b{color:#EFE9E4}
+:root[data-skin="industrial"] .sidebar .library-item > span:last-child,:root[data-skin="industrial"] .sidebar .item-icon{color:#FF8036}
+:root[data-skin="industrial"] .sidebar input,:root[data-skin="industrial"] .sidebar select{border-color:#41454D;color:#EFE9E4}
+:root[data-skin="industrial"] .sidebar button{border-color:#41454D}
+:root[data-skin="industrial"] .sidebar button:hover{color:#EFE9E4}
+:root[data-skin="industrial"] .sidebar #tree button.active{color:#EFE9E4}
+:root[data-skin="industrial"] .sidebar #roomWarnings:not(.has-issues){color:#FF8036}
+:root[data-skin="industrial"] .sidebar-bottom span{color:#FF8036}
+:root[data-skin="industrial"] .viewport-toolbar button{border-color:#41454D}
+:root[data-skin="industrial"] .model-warnings{background:#3A2E17;color:#F2B134}
+:root[data-skin="industrial"] #warning:not(:empty){background:#44231F;color:#FF8273}
+:root[data-skin="industrial"] .presentation.showroom{background:#101114}
+:root[data-skin="industrial"] .showroom .show-top{background:#101114;border-bottom:1px solid #41454D;color:#CFC6BE}
+:root[data-skin="industrial"] .showroom .show-logo img{background:#1D1F24}
+:root[data-skin="industrial"] .showroom .show-brand b{color:#EFE9E4}
+:root[data-skin="industrial"] .showroom .show-brand small{color:#8E847C}
+:root[data-skin="industrial"] .showroom button{background:#101114;border-color:#41454D;color:#CFC6BE}
+:root[data-skin="industrial"] .showroom button:hover,:root[data-skin="industrial"] .showroom button[aria-pressed="true"]{background:#101114;color:#EFE9E4}
+:root[data-skin="industrial"] .showroom button.primary{color:#EFE9E4}
+:root[data-skin="industrial"] .showroom .show-panel{background:#101114;border-inline-start:1px solid #41454D;color:#CFC6BE}
+:root[data-skin="industrial"] .showroom .show-project h1{color:#EFE9E4}
+:root[data-skin="industrial"] .showroom .show-project small{color:#FF8036}
+:root[data-skin="industrial"] .show-card{background:#101114;border:1px solid #41454D}
+:root[data-skin="industrial"] .show-card:hover,:root[data-skin="industrial"] .show-card.active{background:#101114}
+:root[data-skin="industrial"] .show-card b{color:#EFE9E4}
+:root[data-skin="industrial"] .show-card small{color:#8E847C}
+:root[data-skin="industrial"] .show-card .switch{color:#CFC6BE}
+:root[data-skin="industrial"] .show-card .switch input{background:#101114}
+:root[data-skin="industrial"] .show-card .switch input::after{background:#1D1F24}
+@media (max-width: 900px){:root[data-skin="industrial"] .showroom .show-panel{border-top:1px solid #41454D}}
+:root[data-skin="industrial"] .show-card .show-switches{border-top:1px solid #41454D}
+:root[data-skin="industrial"] .inspector details.group{border:1px solid var(--line,#33363D);background:#1D1F24}
+:root[data-skin="industrial"] .inspector details.group>summary{color:#EFE9E4;background:#1D1F24}
+:root[data-skin="industrial"] .inspector details.group>summary::after{color:#FF8036}
+:root[data-skin="industrial"] .inspector details.group[open]>summary{border-bottom:1px solid #33363D}
+:root[data-skin="industrial"] .context-card{border:1px dashed #B34A12;background:#1D1F24}
+:root[data-skin="industrial"] .light-bay b{color:#EFE9E4}
+:root[data-skin="industrial"] .light-chip{border:1px solid #33363D;background:#1D1F24}
+:root[data-skin="industrial"] .light-chip.on{background:#3A2E17;color:#F2B134}
+:root[data-skin="industrial"] .space-table th,:root[data-skin="industrial"] .space-table td{border-bottom:1px solid #33363D}
+:root[data-skin="industrial"] .space-table th{color:#B3A79E}
+:root[data-skin="industrial"] .accessory-row{border:1px solid #33363D;background:#1D1F24}
+:root[data-skin="industrial"] .accessory-row.bad{background:#44231F}
+:root[data-skin="industrial"] .sidebar .opening-list .accessory-row{color:#CFC6BE}
+:root[data-skin="industrial"] .kitchen-group small{color:#8E847C}
+:root[data-skin="industrial"] .side-check{color:#8E847C}
+:root[data-skin="industrial"] .opening-form label{color:#8E847C}
+:root[data-skin="industrial"] .room-stats div{background:#1D1F24}
+:root[data-skin="industrial"] .room-stats small{color:#B3A79E}
+:root[data-skin="industrial"] .room-stats b{color:#EFE9E4}
+:root[data-skin="industrial"] .material-card{border:1px solid #33363D;background:#1D1F24}
+:root[data-skin="industrial"] .material-card small{color:#B3A79E}
+:root[data-skin="industrial"] .material-swatch{border:1px solid #33363D}
+:root[data-skin="industrial"] #insideSizes[aria-pressed="true"]{background:#B34A12;color:#EFE9E4;border-color:#B34A12}
+:root[data-skin="industrial"] .view-checks{border:1px solid var(--line,#33363D)}
+:root[data-skin="industrial"] .drawing-image img{border:1px solid #33363D}
+:root[data-skin="industrial"] .assembly-panel{background:var(--panel,#1D1F24);border-inline-start:1px solid #33363D}
+:root[data-skin="industrial"] .scan-box{border:1px solid #33363D;background:#1D1F24}
+:root[data-skin="industrial"] #scanVideo{background:#101114}
+:root[data-skin="industrial"] .scan-result.ok{background:#25282E;border:1px solid #B34A12}
+:root[data-skin="industrial"] .scan-result.bad{color:#F2B134}
+:root[data-skin="industrial"] .scan-result .warn{color:#F2B134}
+:root[data-skin="industrial"] .asm-step h3{color:#EFE9E4}
+:root[data-skin="industrial"] .asm-step h4{color:#B3A79E}
+:root[data-skin="industrial"] .part-chip.active{background:#3A2E17}
+:root[data-skin="industrial"] #renderPanel{border-inline-start:1px solid #33363D}
+:root[data-skin="industrial"] #editRoom[aria-pressed="true"],:root[data-skin="industrial"] #openFronts[aria-pressed="true"]{color:#EFE9E4}
+:root[data-skin="industrial"] .release-badge{background:#3A2E17;color:#F2B134}
+:root[data-skin="industrial"] .release-badge[data-state="issued"]{background:#25282E;color:#FF8036;border-color:#B34A12}
+:root[data-skin="industrial"] .release-row{border:1px solid #33363D;background:#1D1F24}
+:root[data-skin="industrial"] .cnc-status{background:#1D1F24}
+:root[data-skin="industrial"] .cnc-status[data-bad="1"]{background:#44231F;color:#FF8273}
+/* ---- form controls, tables and buttons (browser defaults are light) ---- */
+:root[data-skin="industrial"] body{background:#141518;color:#EFE9E4}
+:root[data-skin="industrial"] input,:root[data-skin="industrial"] select,:root[data-skin="industrial"] textarea{background:#25282E;color:#EFE9E4;border-color:#41454D}
+:root[data-skin="industrial"] input:focus,:root[data-skin="industrial"] select:focus,:root[data-skin="industrial"] textarea:focus{border-color:#FF8036}
+:root[data-skin="industrial"] button{background:#25282E;color:#EFE9E4;border-color:#41454D}
+:root[data-skin="industrial"] button:hover:not(:disabled){background:rgba(255,128,54,.12);border-color:#FF8036}
+:root[data-skin="industrial"] button:disabled{opacity:.45}
+:root[data-skin="industrial"] button.primary{background:linear-gradient(180deg,#C85A1E,#B34A12);border-color:#FF8036;color:#fff}
+:root[data-skin="industrial"] button.danger{color:#FF8273;border-color:#6B2E28}
+:root[data-skin="industrial"] .top{background:#101114;border-bottom-color:#33363D}
+:root[data-skin="industrial"] .modes{background:#101114;border-bottom-color:#33363D}
+:root[data-skin="industrial"] .mode{background:transparent;border-color:transparent;color:#B3A79E}
+:root[data-skin="industrial"] .mode:hover:not(:disabled){background:rgba(255,128,54,.07);border-color:transparent;color:#EFE9E4}
+:root[data-skin="industrial"] details.group>summary{color:#EFE9E4;background:#25282E}
+:root[data-skin="industrial"] details.group{background:#1D1F24;border-color:#33363D}
+:root[data-skin="industrial"] .mode.active,:root[data-skin="industrial"] .mode[aria-pressed="true"]{color:#FF8036;box-shadow:inset 0 -2px 0 #FF8036;background:rgba(255,128,54,.08)}
+:root[data-skin="industrial"] th{background:#25282E;color:#B3A79E;border-color:#33363D}
+:root[data-skin="industrial"] td{border-color:#33363D}
+:root[data-skin="industrial"] tr.part-selected td{background:rgba(255,128,54,.14)}
+:root[data-skin="industrial"] .note,:root[data-skin="industrial"] .panel-head span{color:#B3A79E}
+:root[data-skin="industrial"] .panel-head b,:root[data-skin="industrial"] .form-section h3,:root[data-skin="industrial"] .cnc-card h3{color:#EFE9E4}
+:root[data-skin="industrial"] .cnc-status{background:#1C3326;color:#EFE9E4}
+:root[data-skin="industrial"] .cnc-status[data-bad="1"]{background:#44231F;color:#FFD2CC}
+:root[data-skin="industrial"] .cnc-preview,:root[data-skin="industrial"] #projectSheetPreview,:root[data-skin="industrial"] .sheet-view{background:#F7F5EF}
+:root[data-skin="industrial"] dialog{background:#1D1F24;color:#EFE9E4;border-color:#33363D}
+:root[data-skin="industrial"] ::selection{background:rgba(255,128,54,.35)}
+:root[data-skin="industrial"] *{scrollbar-color:#41454D transparent}
