@@ -29,6 +29,8 @@ import {DEFAULTS,MODERN_RULES,cabinet,layoutSheets,csv,applyMethod,METHODS,hardw
 import {manufacturingCsv,labelsHtml} from './manufacturing.mjs';
 import {cutListHtml} from './cutlist-doc.mjs';
 import {initCncUi} from './cnc-ui.mjs';
+import {buildPackage} from './package.mjs';
+import {version as STUDIO_VERSION} from './package.json';
 import {issueRelease,releaseState,revisionAfterEdit,releasedProject} from './releases.mjs';
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
@@ -474,7 +476,7 @@ function refreshReleases(){
  $('issueRelease').disabled=state.status==='issued'||state.status==='unchanged';
  $('issueRelease').textContent=tr2(`Approve & issue R${designRevision}`,`اعتماد وإصدار R${designRevision}`);
  const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- list.innerHTML=releases.length?releases.slice().reverse().map(r=>`<div class="release-row"><div><b>R${r.revision}</b> <small>${esc(new Date(r.issuedAt).toLocaleString(getLanguage()==='ar'?'ar-EG':'en-GB'))}</small>${r.note?`<div class="note">${esc(r.note)}</div>`:''}</div><div class="release-actions"><button data-release-pdf="${r.revision}">${tr2('Cut list PDF','قائمة التقطيع PDF')}</button><button data-release-csv="${r.revision}">${tr2('Manufacturing CSV','CSV التصنيع')}</button><button data-release-json="${r.revision}">${tr2('Project file','ملف المشروع')}</button><button data-release-restore="${r.revision}">${tr2('Restore as draft','رجّعها مسودة')}</button></div></div>`).join(''):`<p class="note">${tr2('No issued revisions yet.','لسه مفيش نسخ معتمدة.')}</p>`;
+ list.innerHTML=releases.length?releases.slice().reverse().map(r=>`<div class="release-row"><div><b>R${r.revision}</b> <small>${esc(new Date(r.issuedAt).toLocaleString(getLanguage()==='ar'?'ar-EG':'en-GB'))}</small>${r.note?`<div class="note">${esc(r.note)}</div>`:''}</div><div class="release-actions"><button data-release-pdf="${r.revision}">${tr2('Cut list PDF','قائمة التقطيع PDF')}</button><button data-release-csv="${r.revision}">${tr2('Manufacturing CSV','CSV التصنيع')}</button><button data-release-json="${r.revision}">${tr2('Project file','ملف المشروع')}</button><button data-release-package="${r.revision}" class="primary">${tr2('Package for Rokadex management','حزمة لبرنامج الإدارة')}</button><button data-release-restore="${r.revision}">${tr2('Restore as draft','رجّعها مسودة')}</button></div></div>`).join(''):`<p class="note">${tr2('No issued revisions yet.','لسه مفيش نسخ معتمدة.')}</p>`;
 }
 $('issueRelease').onclick=()=>{
  try{
@@ -487,7 +489,8 @@ $('issueRelease').onclick=()=>{
 $('releaseList').addEventListener('click',event=>{
  const b=event.target.closest('button');if(!b)return;
  try{
-  const n=Number(b.dataset.releasePdf??b.dataset.releaseCsv??b.dataset.releaseJson??b.dataset.releaseRestore),frozen=releasedProject(snapshot(),n);
+  const n=Number(b.dataset.releasePdf??b.dataset.releaseCsv??b.dataset.releaseJson??b.dataset.releasePackage??b.dataset.releaseRestore),frozen=releasedProject(snapshot(),n);
+  if(b.dataset.releasePackage){const pkg=buildPackage(parseProject(snapshot()),n,{studio:STUDIO_VERSION,lang:getLanguage(),company});download(`${projectId}-R${n}.rokadex-package.json`,JSON.stringify(pkg),'application/json');$('projectStatus').textContent=tr2(`R${n} package downloaded · import it into the project in Rokadex management`,`اتنزّلت حزمة R${n} · استوردها جوه المشروع في برنامج الإدارة`);return}
   if(b.dataset.releasePdf)cutListWindow(frozen);
   else if(b.dataset.releaseCsv)download(`${projectId}-R${n}-manufacturing-ISSUED.csv`,manufacturingCsv(frozen),'text/csv;charset=utf-8');
   else if(b.dataset.releaseJson)download(`${projectId}-R${n}-issued.rokadex.json`,serializeProject(frozen),'application/json');
