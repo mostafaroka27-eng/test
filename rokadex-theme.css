@@ -223,12 +223,28 @@ tr.part-selected td { background: var(--teal-bg); }
 .release-badge[data-state="issued"]{background:#e3f4ef;color:#0b6b52;border-color:#8fd0bb}
 .release-list{display:grid;gap:6px;margin-top:8px}.release-row{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;border:1px solid #E2E8EE;border-radius:8px;padding:6px 8px;background:#fff}
 .release-actions{display:flex;flex-wrap:wrap;gap:4px}.release-actions button{font-size:11px;padding:3px 8px}
-/* CNC / beam saw exports */
-.cnc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px 10px;margin:6px 0}
-.cnc-grid label{display:flex;flex-direction:column;gap:2px;font-size:12px}
-.cnc-grid label.wide{grid-column:1/-1}
-.cnc-grid label.check{flex-direction:row;align-items:center;gap:6px}
-.cnc-grid textarea{font-family:ui-monospace,monospace;font-size:12px}
-#cncStatus[data-bad="1"]{color:#b42318}
-.cnc-preview{overflow:auto;max-height:520px;background:#fff;border-radius:8px;margin:8px 0}
-.cnc-preview svg{width:100%;height:auto;max-height:510px}
+/* CNC & saw tab: same cards, groups and fields as the Properties inspector */
+.cnc-layout{display:grid;grid-template-columns:minmax(280px,360px) minmax(0,1fr);gap:18px;align-items:start}
+.cnc-panel details.group{border:1px solid var(--line);border-radius:10px;margin:0 0 12px;background:var(--panel);overflow:hidden}
+.cnc-panel details.group>summary{cursor:pointer;list-style:none;padding:11px 14px;font-weight:600;color:var(--navy);background:var(--panel-2);display:flex;align-items:center;gap:8px;font-size:13px}
+.cnc-panel details.group>summary::-webkit-details-marker{display:none}
+.cnc-panel details.group>summary::after{content:'▾';margin-inline-start:auto;color:var(--teal);transition:transform .15s}
+.cnc-panel details.group:not([open])>summary::after{transform:rotate(-90deg)}
+.cnc-panel details.group[open]>summary{border-bottom:1px solid var(--line)}
+.cnc-panel details.group>.fields{padding:12px 14px 14px}
+.cnc-panel .fields label{font-size:12px}
+.cnc-panel .fields input,.cnc-panel .fields select,.cnc-panel .fields textarea{display:block;width:100%;margin-top:6px}
+.cnc-panel .cnc-code{grid-template-columns:1fr}
+.cnc-panel textarea{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;border:1px solid var(--line-2);border-radius:6px;padding:6px 8px;color:var(--fg);background:var(--panel);resize:vertical;box-sizing:border-box}
+.cnc-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:0 0 14px}
+.cnc-card h3{margin:0 0 4px;font-size:15px;font-weight:600;color:var(--navy)}
+.cnc-card .field-group{margin-block:10px}
+.cnc-sheet-pick{display:flex!important;align-items:center;gap:8px;flex:0 1 auto!important;font-size:12px}
+.cnc-sheet-pick select{margin-top:0!important;min-width:220px}
+.cnc-status{font-size:12px;line-height:1.7;padding:8px 12px;border-radius:8px;border-inline-start:4px solid var(--ok);background:#EEF8F3;color:var(--fg)}
+.cnc-status:empty{display:none}
+.cnc-status[data-bad="1"]{border-color:var(--err);background:#FCEEEE;color:#9B2C2A}
+.cnc-preview{overflow:auto;max-height:560px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;margin-top:10px}
+.cnc-preview:empty{display:none}
+.cnc-preview svg{display:block;width:100%;height:auto;max-height:550px}
+@media (max-width:1000px){.cnc-layout{grid-template-columns:1fr}}

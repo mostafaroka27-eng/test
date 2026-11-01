@@ -1,6 +1,6 @@
 # Alpha 1.11.0 CNC router G-code and beam saw exports — 2026-11-01
 
-All in the Engineering review tab, under the project sheet layout. **Unverified on any machine — nothing here is "CNC ready".**
+All in the new **CNC & saw** tab (same cards, collapsible groups and fields as the Properties inspector; machine / tool & feeds / holding & grooves / start-end code on the left, G-code preview and saw outputs on the right; one column on tablets). **Unverified on any machine — nothing here is "CNC ready".**
 
 - **CNC router G-code** (`cnc.mjs`): one file per sheet from a router layout that keeps tool Ø + gap between parts. Outside profile of each part with the tool radius added (no G41/G42), equal depth passes down to board thickness + overcut into the spoilboard, smallest parts first, optional 2 or 4 holding tabs, back grooves (backConstruction "groove") machined first with the grooved face up. Linear G0/G1 only, absolute mm. Machine settings: controller (Generic ISO / Mach3-4 / GRBL), tool Ø, feed, plunge, spindle, step down, overcut, Z zero (board top or table), safe Z, tabs, direction (climb/conventional), sheet turned 90°, editable start/end code (ASCII only). Kept in this browser only.
 - **Built-in check**: the generated code is read back and refused for download if any move leaves the sheet, a rapid move goes below the board top, or a cut goes deeper than board + overcut. Shows cut length and an estimated time (no acceleration).

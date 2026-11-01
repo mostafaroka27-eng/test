@@ -8,7 +8,7 @@ const SELECTS=['dialect','zZero','tabs','direction','orientation'];
 
 /** Router (G-code) and beam-saw export panel. Machine settings are kept in this browser only (not in the project). */
 export function initCncUi({getProject,download,printHtml,tr2,lang}){
- const $=id=>document.getElementById(id);if(!$('cncSection'))return {refresh(){}};
+ const $=id=>document.getElementById(id);if(!$('cncPanel'))return {refresh(){}};
  const status=$('cncStatus'),preview=$('cncPreview'),pick=$('cncSheet');
  let plan=null;
  const load=()=>{try{return {...CNC_DEFAULTS,...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch{return {...CNC_DEFAULTS}}};
