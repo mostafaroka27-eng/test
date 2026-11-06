@@ -66,6 +66,7 @@ test('standalone Studio (no Rokadex config) stays local: no cloud button, no net
  const calls=[];page.on('request',r=>{if(/supabase/.test(r.url()))calls.push(r.url())});
  await page.goto('/');await page.waitForTimeout(800);
  await expect(page.locator('#cloudBtn')).toBeHidden();
+ await expect(page.locator('#backToRokadex')).toBeHidden();
  await expect(page.locator('#workspaceBadge')).toHaveText('LOCAL WORKSPACE');
  await expect(page.locator('[data-release-send]')).toHaveCount(0);
  expect(calls).toEqual([]);
@@ -73,7 +74,9 @@ test('standalone Studio (no Rokadex config) stays local: no cloud button, no net
 
 test('signed out inside Rokadex: the panel says so and links to the sign-in',async({page})=>{
  await inRokadex(page,{},{signedIn:false});
- await page.goto('/');await page.click('#cloudBtn');
+ await page.goto('/');
+ await expect(page.locator('#backToRokadex')).toBeVisible();await expect(page.locator('#backToRokadex')).toHaveAttribute('href','../');
+ await page.click('#cloudBtn');
  await expect(page.locator('#cloudBody')).toContainText('not signed in to Rokadex');
  await expect(page.locator('#cloudBody a.primary-link')).toHaveAttribute('href','../');
 });

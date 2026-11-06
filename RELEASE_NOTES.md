@@ -1,3 +1,9 @@
+# Alpha 1.13.1 Back to Rokadex — 2026-11-06
+
+- Inside Rokadex, the header has a "← Rokadex" link back to the management app (the management menu's "Design studio" now opens Studio directly). Standalone Studio does not show it.
+
+---
+
 # Alpha 1.13.0 Inside Rokadex: one login, company cloud, send to project — 2026-11-06
 
 Works only when Studio is served by the Rokadex management site at `app.rokadex.com/studio/` (the management build copies Studio there and writes `rokadex-config.json` with the public Supabase URL and publishable key). Opened anywhere else, Studio stays fully local, exactly as before: no cloud button, no network calls.

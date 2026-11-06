@@ -265,3 +265,6 @@ tr.part-selected td { background: var(--teal-bg); }
 .cloud-row-actions{display:flex;gap:4px;flex-shrink:0}
 .primary-link{font-weight:600}
 .draft[data-cloud="saved"]{color:#2e8b57}.draft[data-cloud="dirty"]{color:#c99a3a}
+.back-link{display:inline-flex;align-items:center;padding:6px 10px;border:1px solid var(--line);border-radius:6px;color:inherit;text-decoration:none;font-size:13px;white-space:nowrap}
+.back-link:hover{border-color:#b8862f}
+.back-link[hidden]{display:none}

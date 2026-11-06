@@ -24,6 +24,7 @@ export async function initCloudUi({getProject,loadProject,status,tr2,lang}){
  let link=readLink(),rows=[],projects=[],busy=false,msg='',err='';
  const appUrl=config.appUrl||'../';
  btn.hidden=false;
+ const back=$('backToRokadex');if(back){back.href=config.appUrl||'../';back.hidden=false;back.title=tr2('Back to Rokadex management','رجوع لبرنامج الإدارة')}
 
  const currentText=()=>{try{return serializeProject(getProject())}catch{return ''}};
  const linked=()=>{const p=getProject();return link&&cloud.state.ws&&link.ws===cloud.state.ws.id&&link.studioId===p.projectId?link:null};
