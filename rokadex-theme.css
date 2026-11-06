@@ -248,3 +248,20 @@ tr.part-selected td { background: var(--teal-bg); }
 .cnc-preview:empty{display:none}
 .cnc-preview svg{display:block;width:100%;height:auto;max-height:550px}
 @media (max-width:1000px){.cnc-layout{grid-template-columns:1fr}}
+/* Company cloud dialog */
+.cloud-dialog form>.note{padding:0 16px 12px;margin:0}
+.cloud-head-actions{display:flex;gap:6px}
+#cloudBody{max-height:calc(100vh - 200px);overflow:auto}
+.cloud-who{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;font-size:12px}
+.cloud-who label{flex-direction:row;align-items:center}
+.cloud-warn{border:1px solid #c99a3a;background:rgba(201,154,58,.12);border-radius:6px;padding:8px 10px;font-size:12px}
+.cloud-error{margin:0 16px 8px;border:1px solid #c0392b;background:rgba(192,57,43,.1);border-radius:6px;padding:8px 10px;font-size:12px;white-space:pre-line}
+.cloud-ok{margin:0 16px 8px;border:1px solid #2e8b57;background:rgba(46,139,87,.1);border-radius:6px;padding:8px 10px;font-size:12px}
+.cloud-actions{display:flex;gap:6px;margin-top:8px}
+.cloud-list{display:flex;flex-direction:column;gap:6px}
+.cloud-row{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px solid var(--line);border-radius:6px;padding:6px 8px}
+.cloud-row.current{border-color:#b8862f}
+.cloud-row small{display:block;opacity:.75;font-size:11px}
+.cloud-row-actions{display:flex;gap:4px;flex-shrink:0}
+.primary-link{font-weight:600}
+.draft[data-cloud="saved"]{color:#2e8b57}.draft[data-cloud="dirty"]{color:#c99a3a}

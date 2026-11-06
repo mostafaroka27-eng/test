@@ -1,6 +1,8 @@
 // UI translations only. Project names, materials, part IDs and export data stay intact.
 const labels = {
  '⚙ Settings':'⚙ الإعدادات',
+ '☁ Company cloud':'☁ سحابة الشركة', 'Company cloud':'سحابة الشركة', '↻ Refresh':'↻ تحديث',
+ "Saved in your company's Rokadex storage with the same sign-in as the management app. Counts toward the company storage quota.":'بيتحفظ في مساحة تخزين شركتك على Rokadex بنفس دخول برنامج الإدارة، وبيتحسب من مساحة الشركة.',
  'Settings':'الإعدادات',
  'This project':'هذا المشروع',
  'Project name':'اسم المشروع',
@@ -314,7 +316,7 @@ const labels = {
  "Approve & issue":"اعتماد وإصدار",
  "Issue note":"ملاحظة الإصدار",
  "e.g. Approved by client":"مثلاً: اعتمدها العميل",
- "Issuing freezes the current design as a numbered revision (R1, R2 …) inside the project file, with its cut list and manufacturing CSV. An issued revision cannot be edited; the next change starts the next number as a draft. Stored in this browser and in the exported project file only — not in the cloud.":"الإصدار بيقفل التصميم الحالي كنسخة مرقّمة (R1، R2 …) جوه ملف المشروع، ومعاها قائمة التقطيع وCSV التصنيع. النسخة المعتمدة ما تتعدلش؛ وأول تعديل بعدها يبدأ الرقم اللي بعده كمسودة. محفوظة في المتصفح ده وفي ملف المشروع اللي بتصدّره بس — مش على السحابة.",
+ "Issuing freezes the current design as a numbered revision (R1, R2 …) inside the project file, with its cut list and manufacturing CSV. An issued revision cannot be edited; the next change starts the next number as a draft. Stored in the project file: in this browser, in the exported file, and in the company cloud only when you save it there (☁ Company cloud, inside Rokadex).":"الإصدار بيقفل التصميم الحالي كنسخة مرقّمة (R1، R2 …) جوه ملف المشروع، ومعاها قائمة التقطيع وCSV التصنيع. النسخة المعتمدة ما تتعدلش؛ وأول تعديل بعدها يبدأ الرقم اللي بعده كمسودة. محفوظة في ملف المشروع: في المتصفح ده، وفي الملف اللي بتصدّره، وعلى سحابة الشركة بس لما تحفظه هناك (☁ سحابة الشركة، جوه Rokadex).",
  // 1.6
  "Print cut list · PDF":"اطبع قائمة التقطيع · PDF",
  "Grouped cut list with finished and cut sizes, edges and grain · print or save as PDF":"قائمة تقطيع مجمّعة بالمقاس النهائي ومقاس القص والشريط والعرق · اطبعها أو احفظها PDF",

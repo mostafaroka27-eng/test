@@ -1,3 +1,19 @@
+# Alpha 1.13.0 Inside Rokadex: one login, company cloud, send to project — 2026-11-06
+
+Works only when Studio is served by the Rokadex management site at `app.rokadex.com/studio/` (the management build copies Studio there and writes `rokadex-config.json` with the public Supabase URL and publishable key). Opened anywhere else, Studio stays fully local, exactly as before: no cloud button, no network calls.
+
+- **Same sign-in as Rokadex management** (same site, same browser session). The company is the one open in the management app.
+- **☁ Company cloud** (header): save the project to the company's Rokadex storage (counts in the storage quota, through the 009 reservation), list the company's Studio projects, open or delete them, and link the Studio project to a project in management. The header badge shows `COMPANY CLOUD · v<n>` and "unsaved changes" after an edit.
+- **No silent overwrite.** Every cloud save carries the version you opened. If someone else saved in between, nothing is overwritten: you choose to open their version, or save yours as a separate copy. Needs database update 016 (`studio_projects`).
+- **Who may do what** (enforced by the database): members read; owner, admin and manager save and delete; only with the Design add-on; an ended subscription can open but not save. The panel says which case applies.
+- **Send to project in Rokadex** (on each issued revision): opens the management import page on the same site with the package already checked and the linked project chosen. The file download ("Package for Rokadex management") is still there.
+- `?cloud=<project id>` opens a cloud project directly (used by "Open in Studio" in management).
+- supabase-js 2.45.4 (MIT) is loaded only when Studio runs inside Rokadex.
+
+Local validation: 243 Node checks (7 new for the cloud logic); 33 Chromium workflows, 5 new ones against a fake Supabase backend (the container cannot reach Supabase): standalone stays local, signed out, save / edit / version 2 / open by link / stale save refused / save as copy, worker / add-on off / ended subscription, send to project. Not yet tried against the real Supabase.
+
+---
+
 # Alpha 1.12.0 Rokadex management look — 2026-11-01
 
 - **Industrial look by default**, the same colours as the Rokadex management app (direction B, read from its themes.js, build 6d15bf29f1): charcoal surfaces #141518 / #1D1F24 / #25282E, lines #33363D, text #EFE9E4, amber accent #B34A12 with glow #FF8036. Applied to every tab, the library, properties, tables, form controls, dialogs and the 3D workshop stage (charcoal floor, neutral grid, amber selection). Drawings, PDFs, labels, sheet previews and the client presentation stay on white paper.

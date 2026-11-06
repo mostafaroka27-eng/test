@@ -10,7 +10,7 @@ test('deployable output has a root entry, local dependencies and deployment head
  try{
   await build({logLevel:'silent',build:{outDir:output}});
   const html=await readFile(join(output,'index.html'),'utf8');
-  assert.match(html,/<script[^>]+type="module"[^>]+src="\/assets\//);
+  assert.match(html,/<script[^>]+type="module"[^>]+src="(\.\/|\/)assets\//);
   assert.doesNotMatch(html,/esm\.sh/);
   const names=await readdir(join(output,'assets'));
   assert.ok(names.some(name=>name.endsWith('.css')));

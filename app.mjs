@@ -30,6 +30,7 @@ import {manufacturingCsv,labelsHtml} from './manufacturing.mjs';
 import {cutListHtml} from './cutlist-doc.mjs';
 import {initCncUi} from './cnc-ui.mjs';
 import {buildPackage} from './package.mjs';
+import {initCloudUi} from './cloud-ui.mjs';
 import {version as STUDIO_VERSION} from './package.json';
 import {issueRelease,releaseState,revisionAfterEdit,releasedProject} from './releases.mjs';
 import * as THREE from 'three';
@@ -37,6 +38,7 @@ import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 // New units use the versioned cab-2.0 rules; opened files keep whatever rules they were saved with.
 const newConfig=()=>({...DEFAULTS,...MODERN_RULES});
 const newProjectId=()=>'PRJ-'+(globalThis.crypto?.randomUUID?.().slice(0,8)??Date.now().toString(16)).toUpperCase();
+let cloudUi=null;
 let projectId=newProjectId(),designRevision=1,migratedFrom=null,projectName='',clientName='',company=loadCompany(globalThis.localStorage),materials=[],drawingLayout=normalLayout(),views=[],items=[],releases=[],lighting=loadLighting(globalThis.localStorage),showSizes=false;
 let workspace=null,costing=structuredClone(DEFAULT_COSTING);
 const $=id=>document.getElementById(id);let units=[{id:'CAB-001',name:'Cabinet Unit',type:'cabinet',x:0,z:0,finish:'oak',config:newConfig()}],selected='CAB-001',selectedPart=null,room={...DEFAULT_ROOM},mode='design',wire=false,exploded=false;
@@ -356,7 +358,7 @@ function tr2(en,ar){return document.documentElement.lang==='ar'?ar:en}
 function screenshot(){if(!renderer)return;renderer.render(scene,camera);renderer.domElement.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='rokadex-preview.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)})}$('screenshot').onclick=screenshot;
 function openPresentation(){if(!renderer)return;$('presentation').classList.remove('hidden');$('presentationCanvas').appendChild(renderer.domElement);resize();showroom.enter();applyLanguage(getLanguage())}
 $('present').onclick=openPresentation;$('openShowroom').onclick=openPresentation;
-$('closePresentation').onclick=()=>{if(!renderer)return;$('presentation').classList.add('hidden');$('viewport').appendChild(renderer.domElement);showroom.leave();resize()};$('lang').onclick=()=>{applyLanguage(getLanguage()==='ar'?'en':'ar');extras?.refresh();refreshReleases();roomTools?.refresh();cncUi?.refresh();applyLanguage(getLanguage());try{localStorage.setItem('rokadex.language',getLanguage())}catch{}};
+$('closePresentation').onclick=()=>{if(!renderer)return;$('presentation').classList.add('hidden');$('viewport').appendChild(renderer.domElement);showroom.leave();resize()};$('lang').onclick=()=>{applyLanguage(getLanguage()==='ar'?'en':'ar');extras?.refresh();refreshReleases();roomTools?.refresh();cncUi?.refresh();cloudUi?.refresh();applyLanguage(getLanguage());try{localStorage.setItem('rokadex.language',getLanguage())}catch{}};
 function resize(){if(!renderer)return;const el=renderer.domElement.parentElement;const w=el.clientWidth,h=el.clientHeight;if(w>0&&h>0){camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false);needsRender=true}}window.addEventListener('resize',resize);new ResizeObserver(resize).observe($('viewport'));new ResizeObserver(resize).observe($('presentationCanvas'));// Render on demand: only after a scene change, camera motion, a flight or an opening animation.
 function tick(now){if(!renderer)return;requestAnimationFrame(tick);const flying=showroom.flying;showroom.update(now??performance.now());animateOpen();const moved=controls.update();if((moved||flying||needsRender)&&!document.hidden&&(['design','render','assembly'].includes(mode)||!$('presentation').classList.contains('hidden'))){renderer.render(scene,camera);needsRender=false}}for(const k of ['width','depth','height']){const field=$('room'+k[0].toUpperCase()+k.slice(1));field.addEventListener('change',()=>{const next={...room,[k]:Number(field.value)};try{validateRoom(next);room=next;refreshRoomControls()}catch(e){$('warning').textContent=e.message;field.value=room[k]}})}
 $('snapWall').onclick=()=>{try{const pos=snapUnitToWall(room,current(),$('wallSide').value);current().x=pos.x;current().z=pos.z;choose(selected)}catch(e){$('warning').textContent=e.message}};
@@ -441,7 +443,7 @@ function applyProject(project){
  units=project.units;room=project.room;costing=project.costing??structuredClone(DEFAULT_COSTING);selectedPart=null;
  projectId=project.projectId??newProjectId();designRevision=project.designRevision??1;migratedFrom=project.migratedFrom??null;projectName=project.projectName??'';clientName=project.clientName??'';materials=project.materials??[];drawingLayout=normalLayout(project.drawingLayout??{});views=project.views??[];items=project.items??[];releases=project.releases??[];roomTools?.refresh();renderExport?.refresh();refreshIdentity();drawingUi?.refresh();
  refreshRoomControls();choose(units.some(unit=>unit.id===selected)?selected:units[0].id);
- showReview();showProjectSheets();workspace?.refresh();applyLanguage(getLanguage());
+ showReview();showProjectSheets();workspace?.refresh();cloudUi?.refresh();applyLanguage(getLanguage());
 }
 refreshIdentity();
 const history=createHistory(snapshot(),{limit:30});
@@ -456,7 +458,7 @@ function checkpoint(){
   if(releases.length){const next=revisionAfterEdit(parseProject(snapshot()));if(next!==designRevision){designRevision=next;refreshIdentity()}}
   if(history.push(snapshot())){persist();showReview();showProjectSheets();workspace?.refresh()}}
  catch(error){applyProject(history.current());$('projectStatus').textContent='Change rejected: '+error.message}
- refreshHistory();refreshReleases();
+ refreshHistory();refreshReleases();cloudUi?.refresh();
 }
 function travel(direction){const project=history[direction]();if(project){
  // Issued revisions are append-only: undo/redo never removes an issue; the design returns as a draft of the next number.
@@ -476,7 +478,7 @@ function refreshReleases(){
  $('issueRelease').disabled=state.status==='issued'||state.status==='unchanged';
  $('issueRelease').textContent=tr2(`Approve & issue R${designRevision}`,`اعتماد وإصدار R${designRevision}`);
  const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- list.innerHTML=releases.length?releases.slice().reverse().map(r=>`<div class="release-row"><div><b>R${r.revision}</b> <small>${esc(new Date(r.issuedAt).toLocaleString(getLanguage()==='ar'?'ar-EG':'en-GB'))}</small>${r.note?`<div class="note">${esc(r.note)}</div>`:''}</div><div class="release-actions"><button data-release-pdf="${r.revision}">${tr2('Cut list PDF','قائمة التقطيع PDF')}</button><button data-release-csv="${r.revision}">${tr2('Manufacturing CSV','CSV التصنيع')}</button><button data-release-json="${r.revision}">${tr2('Project file','ملف المشروع')}</button><button data-release-package="${r.revision}" class="primary">${tr2('Package for Rokadex management','حزمة لبرنامج الإدارة')}</button><button data-release-restore="${r.revision}">${tr2('Restore as draft','رجّعها مسودة')}</button></div></div>`).join(''):`<p class="note">${tr2('No issued revisions yet.','لسه مفيش نسخ معتمدة.')}</p>`;
+ list.innerHTML=releases.length?releases.slice().reverse().map(r=>`<div class="release-row"><div><b>R${r.revision}</b> <small>${esc(new Date(r.issuedAt).toLocaleString(getLanguage()==='ar'?'ar-EG':'en-GB'))}</small>${r.note?`<div class="note">${esc(r.note)}</div>`:''}</div><div class="release-actions"><button data-release-pdf="${r.revision}">${tr2('Cut list PDF','قائمة التقطيع PDF')}</button><button data-release-csv="${r.revision}">${tr2('Manufacturing CSV','CSV التصنيع')}</button><button data-release-json="${r.revision}">${tr2('Project file','ملف المشروع')}</button><button data-release-package="${r.revision}" class="primary">${tr2('Package for Rokadex management','حزمة لبرنامج الإدارة')}</button>${cloudUi?.canSend()?`<button data-release-send="${r.revision}" class="primary">${tr2('Send to project in Rokadex','ابعت للمشروع في Rokadex')}</button>`:''}<button data-release-restore="${r.revision}">${tr2('Restore as draft','رجّعها مسودة')}</button></div></div>`).join(''):`<p class="note">${tr2('No issued revisions yet.','لسه مفيش نسخ معتمدة.')}</p>`;
 }
 $('issueRelease').onclick=()=>{
  try{
@@ -489,8 +491,9 @@ $('issueRelease').onclick=()=>{
 $('releaseList').addEventListener('click',event=>{
  const b=event.target.closest('button');if(!b)return;
  try{
-  const n=Number(b.dataset.releasePdf??b.dataset.releaseCsv??b.dataset.releaseJson??b.dataset.releasePackage??b.dataset.releaseRestore),frozen=releasedProject(snapshot(),n);
+  const n=Number(b.dataset.releasePdf??b.dataset.releaseCsv??b.dataset.releaseJson??b.dataset.releasePackage??b.dataset.releaseSend??b.dataset.releaseRestore),frozen=releasedProject(snapshot(),n);
   if(b.dataset.releasePackage){const pkg=buildPackage(parseProject(snapshot()),n,{studio:STUDIO_VERSION,lang:getLanguage(),company});download(`${projectId}-R${n}.rokadex-package.json`,JSON.stringify(pkg),'application/json');$('projectStatus').textContent=tr2(`R${n} package downloaded · import it into the project in Rokadex management`,`اتنزّلت حزمة R${n} · استوردها جوه المشروع في برنامج الإدارة`);return}
+  if(b.dataset.releaseSend){const pkg=buildPackage(parseProject(snapshot()),n,{studio:STUDIO_VERSION,lang:getLanguage(),company});cloudUi.send(pkg);$('projectStatus').textContent=tr2(`R${n} sent · Rokadex management opened on the import page`,`اتبعتت R${n} · برنامج الإدارة اتفتح على صفحة الاستيراد`);return}
   if(b.dataset.releasePdf)cutListWindow(frozen);
   else if(b.dataset.releaseCsv)download(`${projectId}-R${n}-manufacturing-ISSUED.csv`,manufacturingCsv(frozen),'text/csv;charset=utf-8');
   else if(b.dataset.releaseJson)download(`${projectId}-R${n}-issued.rokadex.json`,serializeProject(frozen),'application/json');
@@ -584,3 +587,6 @@ document.addEventListener('keydown',event=>{
   setWorkspaceFocus(false);focusWorkspace.focus();
  }
 });
+
+// ---------- Company cloud (only when served by the Rokadex management site) ----------
+initCloudUi({getProject:()=>parseProject(snapshot()),loadProject:p=>{applyProject(p);checkpoint()},status:m=>{$('projectStatus').textContent=m},tr2,lang:getLanguage}).then(ui=>{cloudUi=ui;if(ui){refreshReleases();applyLanguage(getLanguage())}}).catch(e=>{console.warn('Company cloud unavailable',e)});
