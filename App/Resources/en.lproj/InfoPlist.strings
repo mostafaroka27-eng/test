@@ -1,0 +1,2 @@
+"NSCameraUsageDescription" = "The camera and LiDAR scanner are used to measure rooms and record the walkthrough video. Everything stays on this iPhone.";
+"CFBundleDisplayName" = "Room Scan";
