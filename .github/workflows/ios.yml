@@ -1,0 +1,45 @@
+# Builds and tests the app on GitHub's macOS machines, so no local Mac is needed.
+# Produces an unsigned .ipa that can be signed and installed from Windows with Sideloadly.
+name: iOS build & test
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  core-tests:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: InspectionCore unit tests
+        run: cd Packages/InspectionCore && swift test
+
+  app:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Simulator build + tests
+        run: |
+          set -o pipefail
+          DEVICE=$(xcrun simctl list devices available | grep -m1 -oE 'iPhone [0-9]+( Pro)?' )
+          echo "Using simulator: $DEVICE"
+          xcodebuild test -project RoomScanInspector.xcodeproj -scheme RoomScanInspector \
+            -destination "platform=iOS Simulator,name=$DEVICE,OS=latest" \
+            CODE_SIGNING_ALLOWED=NO | tee xcodebuild-test.log | tail -n 150
+      - name: Device build (unsigned)
+        run: |
+          set -o pipefail
+          xcodebuild build -project RoomScanInspector.xcodeproj -scheme RoomScanInspector \
+            -configuration Release -sdk iphoneos -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" | tail -n 80
+          mkdir -p Payload
+          cp -R build/Build/Products/Release-iphoneos/RoomScanInspector.app Payload/
+          zip -qr RoomScanInspector-unsigned.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RoomScanInspector-unsigned-ipa
+          path: RoomScanInspector-unsigned.ipa
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xcodebuild-logs
+          path: xcodebuild-test.log
