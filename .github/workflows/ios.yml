@@ -33,7 +33,17 @@ jobs:
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" | tail -n 80
           mkdir -p Payload
           cp -R build/Build/Products/Release-iphoneos/RoomScanInspector.app Payload/
-          zip -qr RoomScanInspector-unsigned.ipa Payload
+          APP=Payload/RoomScanInspector.app
+          # Ad-hoc sign every nested binary, then the app. Sideloadly replaces this
+          # signature with the user's Apple ID; a binary with no signature at all
+          # makes the install fail with 0xe800801c "No code signature found".
+          find "$APP" -depth \( -name "*.framework" -o -name "*.dylib" -o -name "*.appex" \) -print0 \
+            | xargs -0 -I{} codesign --force --sign - --timestamp=none "{}"
+          codesign --force --sign - --timestamp=none --generate-entitlement-der "$APP"
+          codesign --verify --deep --strict --verbose=2 "$APP"
+          codesign -dv "$APP" 2>&1 | head -n 20
+          find "$APP" -maxdepth 2 | head -n 60
+          (cd . && zip -qry RoomScanInspector-unsigned.ipa Payload)
       - uses: actions/upload-artifact@v4
         with:
           name: RoomScanInspector-unsigned-ipa
