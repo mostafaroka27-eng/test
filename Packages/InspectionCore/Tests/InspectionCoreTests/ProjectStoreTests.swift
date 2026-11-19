@@ -16,6 +16,9 @@ final class ProjectStoreTests: XCTestCase {
         XCTAssertThrowsError(try store.create(name: "   "))
         let b = try store.create(name: "شقة ١٤")
         XCTAssertEqual(store.list().projects.count, 2)
+        // Dates are stored to the whole second (shared format with Android),
+        // so step past the second b was created in before checking the order.
+        Thread.sleep(forTimeInterval: 1.1)
         let renamed = try store.rename(a.id, to: "Villa 12 – Majlis rev")
         XCTAssertEqual(renamed.name, "Villa 12 – Majlis rev")
         XCTAssertEqual(store.list().projects.first?.id, a.id, "most recently updated first")

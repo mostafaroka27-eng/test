@@ -20,6 +20,11 @@ public struct GuidanceMessage: Equatable, Sendable {
     /// Localization key in Localizable.strings.
     public var key: String
     public var severity: Severity
+
+    public init(key: String, severity: Severity) {
+        self.key = key
+        self.severity = severity
+    }
 }
 
 /// Turns live RoomPlan/ARKit signals into the banner shown during capture.
