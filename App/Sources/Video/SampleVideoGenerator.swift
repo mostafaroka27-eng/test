@@ -60,7 +60,7 @@ enum SampleVideoGenerator {
         // Moving bar: makes frame-accurate seeking visible.
         let x = CGFloat(time / SampleProjectFactory.videoDuration) * CGFloat(width)
         ctx.setFillColor(UIColor.white.cgColor)
-        ctx.fill(CGRect(x: x - 2, y: 0, width: 4, height: height))
+        ctx.fill(CGRect(x: x - 2, y: 0, width: 4, height: CGFloat(height)))
 
         // UIKit text drawing uses a flipped coordinate system.
         ctx.translateBy(x: 0, y: CGFloat(height)); ctx.scaleBy(x: 1, y: -1)
