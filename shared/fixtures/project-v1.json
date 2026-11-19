@@ -1,0 +1,162 @@
+{
+  "alignment" : {
+    "issues" : [
+      {
+        "code" : "longTrackingLoss",
+        "detail" : "Tracking was limited for 12 s.",
+        "roomID" : "1F0C6A52-3B4E-4C1D-9C55-2B7A4E0F9A01"
+      }
+    ],
+    "overall" : "connectedWithWarnings",
+    "structureMerged" : true
+  },
+  "appVersion" : "1.0 (1)",
+  "bookmarks" : [
+    {
+      "createdAt" : "2026-11-18T09:15:30Z",
+      "id" : "6C1E7A0B-8F2D-4E3A-A1B2-C3D4E5F60718",
+      "label" : "Bookmark 1",
+      "mediaTime" : 17.5,
+      "origin" : "duringCapture",
+      "roomScanIndex" : 1,
+      "target" : {
+        "id" : "9A8B7C6D-5E4F-4A3B-8C2D-1E0F9A8B7C6D",
+        "kind" : "opening"
+      }
+    },
+    {
+      "createdAt" : "2026-11-18T09:16:02Z",
+      "id" : "7D2F8B1C-9A3E-4F4B-B2C3-D4E5F6071829",
+      "label" : "Bookmark 2",
+      "mediaTime" : 42,
+      "origin" : "addedInReview"
+    }
+  ],
+  "captureDeviceModel" : "iPhone15,3",
+  "createdAt" : "2026-11-18T09:14:00Z",
+  "id" : "0A1B2C3D-4E5F-4061-8728-394A5B6C7D8E",
+  "isSample" : false,
+  "name" : "فيلا العامرات – الدور الأرضي",
+  "nextOpeningNumber" : {
+    "door" : 2
+  },
+  "notes" : "",
+  "openings" : [
+    {
+      "dimensions" : {
+        "scan" : {
+          "confidence" : "high",
+          "heightM" : 2.095,
+          "widthM" : 0.8934
+        },
+        "verified" : {
+          "enteredAt" : "2026-11-18T10:00:00Z",
+          "heightMM" : 2100,
+          "method" : "laser",
+          "widthMM" : 905
+        }
+      },
+      "id" : "9A8B7C6D-5E4F-4A3B-8C2D-1E0F9A8B7C6D",
+      "isOpenDoor" : false,
+      "kind" : "door",
+      "name" : "Door 1",
+      "notes" : "",
+      "number" : 1,
+      "roomID" : "1F0C6A52-3B4E-4C1D-9C55-2B7A4E0F9A01",
+      "sillHeightM" : 0,
+      "start" : {
+        "x" : 4.2,
+        "y" : 1
+      },
+      "end" : {
+        "x" : 4.2,
+        "y" : 1.8934
+      },
+      "wallID" : "2E1D0C9B-8A7F-4E6D-9C5B-4A3F2E1D0C9B"
+    }
+  ],
+  "outputs" : {
+    "model3D" : {
+      "kind" : "model3D",
+      "relativePath" : "model.usdz",
+      "state" : "ready",
+      "updatedAt" : "2026-11-18T09:30:00Z"
+    },
+    "pdfPlan" : {
+      "kind" : "pdfPlan",
+      "message" : "Disk full",
+      "relativePath" : "exports/plan.pdf",
+      "state" : "failed",
+      "updatedAt" : "2026-11-18T09:31:00Z"
+    },
+    "video" : {
+      "kind" : "video",
+      "relativePath" : "video.mp4",
+      "state" : "ready",
+      "updatedAt" : "2026-11-18T09:30:00Z"
+    }
+  },
+  "rooms" : [
+    {
+      "alignment" : "aligned",
+      "captureEndMediaTime" : 61.25,
+      "captureStartMediaTime" : 0,
+      "floorPolygon" : [
+        { "x" : 0, "y" : 0 },
+        { "x" : 4.2, "y" : 0 },
+        { "x" : 4.2, "y" : 3.6 },
+        { "x" : 0, "y" : 3.6 }
+      ],
+      "id" : "1F0C6A52-3B4E-4C1D-9C55-2B7A4E0F9A01",
+      "maxWallHeightM" : 2.71,
+      "minWallHeightM" : 2.69,
+      "modelPath" : "rooms/room-1.usdz",
+      "name" : "Room 1",
+      "notes" : "",
+      "rawCapturePath" : "rooms/room-1.json",
+      "roomPlanIdentifier" : "3C4D5E6F-7A8B-4C9D-AE0F-1A2B3C4D5E6F",
+      "scanIndex" : 1,
+      "sectionLabel" : "bedroom"
+    }
+  ],
+  "schemaVersion" : 1,
+  "updatedAt" : "2026-11-18T09:31:00Z",
+  "video" : {
+    "codec" : "h264",
+    "durationSeconds" : 125.4,
+    "framesDropped" : 3,
+    "framesWritten" : 3759,
+    "interruptions" : [
+      {
+        "mediaTime" : 80.2,
+        "pausedSeconds" : 4.5,
+        "reason" : "sessionInterrupted"
+      }
+    ],
+    "isSynthetic" : false,
+    "nominalFrameRate" : 30,
+    "pixelHeight" : 1440,
+    "pixelWidth" : 1920,
+    "relativePath" : "video.mp4",
+    "rotationDegrees" : 90,
+    "startedAt" : "2026-11-18T09:14:05Z"
+  },
+  "walls" : [
+    {
+      "dimensions" : {
+        "scan" : {
+          "completedEdges" : [ "bottom", "left", "right" ],
+          "confidence" : "medium",
+          "heightM" : 2.71,
+          "widthM" : 4.2
+        }
+      },
+      "end" : { "x" : 4.2, "y" : 3.6 },
+      "id" : "2E1D0C9B-8A7F-4E6D-9C5B-4A3F2E1D0C9B",
+      "name" : "Room 1 · Wall 2",
+      "notes" : "",
+      "roomID" : "1F0C6A52-3B4E-4C1D-9C55-2B7A4E0F9A01",
+      "start" : { "x" : 4.2, "y" : 0 }
+    }
+  ]
+}

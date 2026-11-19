@@ -1,4 +1,4 @@
-# Room Scan Inspector (iPhone, LiDAR)
+# Room Scan Inspector (iPhone, iPad, Android)
 
 A standalone native iPhone app for joinery and fit-out site surveys. In one walkthrough the
 inspector scans one or more rooms with the iPhone's LiDAR and camera and saves a single
@@ -18,6 +18,14 @@ hardware. Project folders are excluded from iCloud backup, and files leave the p
 the inspector uses **Share**.
 
 > Setup and device testing instructions in Egyptian Arabic: **[docs/SETUP_AR.md](docs/SETUP_AR.md)**
+
+**Platforms**
+
+- **iPhone** with LiDAR: full RoomPlan scanning (this README).
+- **iPad** with LiDAR (iPad Pro 2020 and later): the same app. It runs full-screen and in portrait.
+  iPads without LiDAR can open, review and export projects but cannot scan.
+- **Android phones and tablets**: a separate native app in [`android/`](android/README.md). It
+  uses ARCore tap measuring and the same project format, and builds to an APK in GitHub Actions.
 
 ---
 

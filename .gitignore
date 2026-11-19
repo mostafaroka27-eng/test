@@ -5,3 +5,9 @@ DerivedData/
 .swiftpm/
 *.xcuserstate
 xcuserdata/
+# Android
+.gradle/
+local.properties
+*.iml
+.idea/
+android/**/build/

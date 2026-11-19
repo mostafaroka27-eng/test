@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_back">رجوع</string>
+    <string name="action_cancel">إلغاء</string>
+    <string name="action_close">إغلاق</string>
+    <string name="action_delete">حذف</string>
+    <string name="action_edit">تعديل</string>
+    <string name="action_keep_scanning">متابعة المسح</string>
+    <string name="action_ok">تم</string>
+    <string name="action_retry">حاول مرة أخرى</string>
+    <string name="action_save">حفظ</string>
+    <string name="action_undo">تراجع عن آخر نقطة</string>
+    <string name="alignment_connected">الغرف متصلة في نظام إحداثيات واحد</string>
+    <string name="alignment_not_connected">بعض الغرف لم يمكن محاذاتها بشكل موثوق</string>
+    <string name="alignment_warnings">الغرف متصلة – راجع التحذيرات</string>
+    <string name="app_name">معاين الغرف</string>
+    <string name="bookmark_default_label">علامة %1$d</string>
+    <string name="capture_add_point">أضف نقطة عند العلامة</string>
+    <string name="capture_allow_camera">السماح بالكاميرا</string>
+    <string name="capture_ar_failed">تعذر تشغيل الواقع المعزز. أغلق تطبيقات الكاميرا الأخرى وحاول مرة أخرى.</string>
+    <string name="capture_ar_unsupported">هذا الجهاز لا يدعم ARCore، لذلك لا يستطيع القياس. ما زال بإمكانك فتح المشاريع ومراجعتها وتعديلها وتصديرها.</string>
+    <string name="capture_between_rooms_hint">الفيديو لا يزال يسجل. امشِ عبر الباب إلى الغرفة أو الممر التالي، ثم اضغط مسح الغرفة التالية.</string>
+    <string name="capture_bookmark">علامة</string>
+    <string name="capture_bookmark_no_video">الفيديو لم يبدأ بعد؛ لم تُحفظ العلامة.</string>
+    <string name="capture_bookmark_saved">تم حفظ العلامة</string>
+    <string name="capture_camera_permission">الكاميرا مطلوبة للقياس ولتسجيل فيديو الجولة. لا شيء يخرج من هذا الجهاز.</string>
+    <string name="capture_close_room">إغلاق حدود الغرفة</string>
+    <string name="capture_discard_confirm">تجاهل</string>
+    <string name="capture_discard_message">سيتم حذف الغرف والقياسات والعلامات والفيديو من هذه الجولة.</string>
+    <string name="capture_discard_title">تجاهل هذه الجولة؟</string>
+    <string name="capture_finish_room">إنهاء الغرفة</string>
+    <string name="capture_finish_survey">إنهاء المعاينة</string>
+    <string name="capture_finishing">جارٍ حفظ المعاينة…</string>
+    <string name="capture_height_saved">تم حفظ ارتفاع الجدار</string>
+    <string name="capture_hint_ready">وجّه الكاميرا نحو الأرض وتحرك ببطء حتى تصبح العلامة بيضاء، ثم اضغط ابدأ.</string>
+    <string name="capture_need_closed_room">أغلق حدود الغرفة أولاً.</string>
+    <string name="capture_need_three_corners">الغرفة تحتاج 3 أركان على الأقل.</string>
+    <string name="capture_next_room">مسح الغرفة التالية</string>
+    <string name="capture_no_surface">لم يتم العثور على سطح هنا. اقترب أو وجّه الكاميرا لمكان فيه تفاصيل.</string>
+    <string name="capture_not_recording">لا يوجد تسجيل</string>
+    <string name="capture_opening_saved">تم الحفظ. قِس التالي أو أنهِ الغرفة.</string>
+    <string name="capture_outline_discarded">حدود الغرفة غير المكتملة لم تُحفظ.</string>
+    <string name="capture_rooms_done">تم التقاط %1$d غرفة</string>
+    <string name="capture_save_without_height">حفظ بدون ارتفاع</string>
+    <string name="capture_scanning_room">الغرفة %1$d</string>
+    <string name="capture_start">ابدأ</string>
+    <string name="capture_storage_full">لا توجد مساحة كافية لتسجيل الفيديو. وفّر مساحة.</string>
+    <string name="capture_storage_low">المساحة قليلة: باقي دقائق قليلة من الفيديو.</string>
+    <string name="capture_title">المعاينة</string>
+    <string name="capture_video_failed">فشل تسجيل الفيديو: %1$s. القياس مستمر.</string>
+    <string name="capture_video_stopped_background">توقف الفيديو لأن التطبيق خرج من الشاشة. الجزء المسجل محفوظ.</string>
+    <string name="confidence_high">عالية</string>
+    <string name="confidence_low">منخفضة</string>
+    <string name="confidence_medium">متوسطة</string>
+    <string name="confidence_unknown">غير معروفة</string>
+    <string name="detail_area">مساحة الأرضية</string>
+    <string name="detail_confidence">ثقة المسح</string>
+    <string name="detail_link_bookmark">ربط علامة</string>
+    <string name="detail_max_wall_height">أقصى ارتفاع جدار (مسح)</string>
+    <string name="detail_no_bookmark">لا توجد علامة مربوطة بعد.</string>
+    <string name="detail_room">الغرفة</string>
+    <string name="detail_scan_status">حالة المسح</string>
+    <string name="detail_sill_height">ارتفاع الجلسة (مسح)</string>
+    <string name="detail_verified_ceiling">ارتفاع السقف (مُتحقق، مم)</string>
+    <string name="detail_video_from">الفيديو يبدأ من العلامة %1$s</string>
+    <string name="detail_wall_length_height">طول الجدار × الارتفاع</string>
+    <string name="dim_delta">الفرق</string>
+    <string name="dim_height_mm">الارتفاع مم</string>
+    <string name="dim_manufacturing">للتصنيع</string>
+    <string name="dim_scan">مسح</string>
+    <string name="dim_scan_tap">مسح (لمس)</string>
+    <string name="dim_verified">مُتحقق في الموقع</string>
+    <string name="dim_width_mm">العرض مم</string>
+    <string name="edit_invalid_mm">اكتب المليمترات كرقم صحيح بين 1 و100000.</string>
+    <string name="edit_manufacturing_height">ارتفاع التصنيع</string>
+    <string name="edit_manufacturing_hint">مقاس التصنيع: ما ستصنعه أو تطلبه. يُحفظ منفصلاً.</string>
+    <string name="edit_manufacturing_width">عرض التصنيع</string>
+    <string name="edit_verified_height">الارتفاع المُتحقق</string>
+    <string name="edit_verified_hint">مُتحقق في الموقع بالمتر أو الليزر. قيمة المسح تبقى كما هي.</string>
+    <string name="edit_verified_width">العرض المُتحقق</string>
+    <string name="export_csv">قياسات CSV</string>
+    <string name="export_json">تقرير JSON (إصدار 1)</string>
+    <string name="export_mp4">فيديو MP4</string>
+    <string name="export_no_usdz">النموذج ثلاثي الأبعاد (USDZ) يصدر من تطبيق الآيفون فقط. الأندرويد يصدّر المخطط والجدول والتقرير والفيديو.</string>
+    <string name="export_no_video">هذا المشروع ليس فيه فيديو.</string>
+    <string name="export_not_generated">يُنشأ عند المشاركة</string>
+    <string name="export_pdf">مخطط PDF</string>
+    <string name="export_privacy">الملفات تبقى على هذا الجهاز حتى تشاركها.</string>
+    <string name="export_ready">جاهز</string>
+    <string name="export_retry_needed">يحتاج إعادة</string>
+    <string name="export_share_all">مشاركة الكل</string>
+    <string name="export_share_one">مشاركة</string>
+    <string name="export_title">تصدير ومشاركة</string>
+    <string name="export_unavailable">غير متاح</string>
+    <string name="field_method">الطريقة (متر، ليزر…)</string>
+    <string name="field_name">الاسم</string>
+    <string name="field_notes">ملاحظات</string>
+    <string name="hint_corners">وجّه العلامة على ركن الأرضية واضغط +. لِف على الغرفة ركن ركن.</string>
+    <string name="hint_corners_close">أضف باقي الأركان، ثم اضغط إغلاق حدود الغرفة.</string>
+    <string name="hint_height_floor">ارتفاع الجدار: وجّه العلامة على أسفل الجدار (خط الأرضية) واضغط +.</string>
+    <string name="hint_height_top">الآن وجّه العلامة على أعلى نفس الجدار واضغط +.</string>
+    <string name="hint_opening_a">وجّه العلامة على أسفل أحد جانبي الفتحة واضغط +.</string>
+    <string name="hint_opening_b">الآن أسفل الجانب الآخر، واضغط +.</string>
+    <string name="hint_opening_top">الآن الحافة العليا للفتحة واضغط +، أو حفظ بدون ارتفاع.</string>
+    <string name="kind_door">باب</string>
+    <string name="kind_opening">فتحة</string>
+    <string name="kind_window">شباك</string>
+    <string name="measure_openings">الأبواب والشبابيك والفتحات (%1$d)</string>
+    <string name="measure_provenance_note">الفتحات بالمم. قيم المسح تقديرات (RoomPlan على الآيفون، والقياس باللمس على الأندرويد). ✓ = مُتحقق في الموقع، ⚙ = مقاس التصنيع.</string>
+    <string name="measure_room_unit">وحدة الغرف</string>
+    <string name="measure_rooms">الغرف (%1$d)</string>
+    <string name="measure_wall_h_short">أقصى ارتفاع جدار</string>
+    <string name="measure_walls">الجدران (%1$d)</string>
+    <string name="pdf_legend">الأرقام بالمليمتر. عادي = تقدير المسح؛ ✓ أخضر = مُتحقق في الموقع. الجدار المتقطع = مرصود جزئياً. قيم المسح لا تغيّر المقاسات المُتحققة أو مقاسات التصنيع. المسح لا يرصد السقف.</string>
+    <string name="pdf_subtitle">مخطط الأرضية بالمقاسات</string>
+    <string name="pdf_table_title">القياسات</string>
+    <string name="plan_empty">لا توجد هندسة للمخطط بعد</string>
+    <string name="plan_legend">مم · عادي = مسح · ✓ = مُتحقق · متقطع = مرصود جزئياً · ● = له فيديو</string>
+    <string name="projects_add_sample">إضافة معاينة تجريبية</string>
+    <string name="projects_create">إنشاء</string>
+    <string name="projects_creating_sample">جارٍ إنشاء المثال…</string>
+    <string name="projects_delete_message">سيتم حذف المخطط والقياسات والفيديو المحفوظة على هذا الجهاز نهائياً.</string>
+    <string name="projects_delete_title">حذف هذا المشروع؟</string>
+    <string name="projects_empty">لا توجد مشاريع بعد</string>
+    <string name="projects_empty_hint">اضغط مشروع جديد لقياس الغرف، أو أضف المعاينة التجريبية لتجربة التطبيق.</string>
+    <string name="projects_load_failed">تعذر فتح هذا المشروع.</string>
+    <string name="projects_name_placeholder">اسم المشروع</string>
+    <string name="projects_new">مشروع جديد</string>
+    <string name="projects_rename">إعادة تسمية</string>
+    <string name="projects_retry_needed">تصدير يحتاج إعادة</string>
+    <string name="projects_row_summary">%1$d غرف · %2$d فتحات</string>
+    <string name="projects_title">المشاريع</string>
+    <string name="projects_unreadable">تعذرت قراءة %1$d من مجلدات المشاريع. لم يتم حذفها.</string>
+    <string name="review_missing_files">ملفات مفقودة: %1$s</string>
+    <string name="review_no_scan">لا توجد غرف مقاسة في هذا المشروع بعد. اضغط الكاميرا للبدء.</string>
+    <string name="review_scan_more">قياس غرف أخرى</string>
+    <string name="room_alignment">المحاذاة</string>
+    <string name="room_default_name">الغرفة %1$d</string>
+    <string name="sample_badge">تجريبي – بيانات مصطنعة وليست مسحاً حقيقياً</string>
+    <string name="sample_short">تجريبي</string>
+    <string name="scan_detected">مقاس</string>
+    <string name="scan_incomplete">غير مكتمل</string>
+    <string name="scan_low_confidence">ثقة منخفضة</string>
+    <string name="scan_not_detected">لم يُقس</string>
+    <string name="scan_not_measured">لم يُقس</string>
+    <string name="scan_partial">مرصود جزئياً</string>
+    <string name="settings_accuracy_note">موبايلات الأندرويد تقيس بلمس النقاط؛ الدقة تعتمد على الجهاز ولم يتم التحقق منها بعد. تأكد من المقاسات المهمة بالمتر واكتبها كمُتحقق.</string>
+    <string name="settings_language">اللغة</string>
+    <string name="settings_language_ar">العربية</string>
+    <string name="settings_language_en">English</string>
+    <string name="settings_language_system">مثل لغة الجهاز</string>
+    <string name="settings_title">الإعدادات</string>
+    <string name="tab_measurements">القياسات</string>
+    <string name="tab_plan">المخطط</string>
+    <string name="tab_video">الفيديو</string>
+    <string name="tool_wall_height">ارتفاع الجدار</string>
+    <string name="tracking_camera">الكاميرا غير متاحة</string>
+    <string name="tracking_features">التتبع ضعيف: وجّه الكاميرا لمكان فيه تفاصيل أكثر</string>
+    <string name="tracking_initializing">حرّك الموبايل ببطء لبدء التتبع</string>
+    <string name="tracking_light">التتبع ضعيف: الإضاءة قليلة</string>
+    <string name="tracking_motion">التتبع ضعيف: تحرك أبطأ</string>
+    <string name="unit_m">متر</string>
+    <string name="unit_mm">مليمتر</string>
+    <string name="video_add_bookmark_here">إضافة علامة عند هذه اللحظة</string>
+    <string name="video_link_to">اربط العلامة بـ</string>
+    <string name="video_meta">%1$s · %2$d×%3$d · %4$d إطار مُسقط</string>
+    <string name="video_no_bookmarks">لا توجد علامات</string>
+    <string name="video_none">لا يوجد فيديو</string>
+    <string name="video_stopped_early">توقف مبكراً: %1$s</string>
+    <string name="video_unlink">إزالة الربط</string>
+    <string name="video_unlinked">غير مربوطة</string>
+    <string-array name="pdf_item_columns">
+        <item>البند</item>
+        <item>الغرفة</item>
+        <item>عرض مسح</item>
+        <item>ارتفاع مسح</item>
+        <item>عرض مُتحقق</item>
+        <item>ارتفاع مُتحقق</item>
+        <item>فرق العرض</item>
+        <item>عرض تصنيع</item>
+        <item>ارتفاع تصنيع</item>
+        <item>الحالة</item>
+        <item>الفيديو</item>
+    </string-array>
+    <string-array name="pdf_room_columns">
+        <item>الغرفة</item>
+        <item>المساحة م²</item>
+        <item>أقصى ارتفاع جدار (مسح)</item>
+        <item>السقف (مُتحقق، مم)</item>
+        <item>المحاذاة</item>
+        <item>الفيديو</item>
+        <item>ملاحظات</item>
+    </string-array>
+</resources>

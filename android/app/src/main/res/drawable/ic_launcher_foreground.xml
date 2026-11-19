@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <!-- Floor plan: two rooms and a door gap. -->
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="4" android:fillColor="#00000000"
+        android:pathData="M30,34 L58,34 L58,46 M58,58 L58,74 L30,74 Z M58,34 L78,34 L78,74 L58,74" />
+    <path android:fillColor="#FF9500" android:pathData="M64,50 m-5,0 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0" />
+</vector>

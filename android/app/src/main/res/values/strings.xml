@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_back">Back</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_close">Close</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_keep_scanning">Keep scanning</string>
+    <string name="action_ok">OK</string>
+    <string name="action_retry">Try again</string>
+    <string name="action_save">Save</string>
+    <string name="action_undo">Undo last point</string>
+    <string name="alignment_connected">Rooms are connected in one coordinate system</string>
+    <string name="alignment_not_connected">Some rooms could not be aligned reliably</string>
+    <string name="alignment_warnings">Rooms are connected – check the warnings</string>
+    <string name="app_name">Room Scan Inspector</string>
+    <string name="bookmark_default_label">Bookmark %1$d</string>
+    <string name="capture_add_point">Add point at the crosshair</string>
+    <string name="capture_allow_camera">Allow camera</string>
+    <string name="capture_ar_failed">AR could not start. Close other camera apps and try again.</string>
+    <string name="capture_ar_unsupported">This device does not support ARCore, so it cannot measure. You can still open, review, edit and export projects.</string>
+    <string name="capture_between_rooms_hint">The video is still recording. Walk through the door to the next room or corridor, then tap Scan next room.</string>
+    <string name="capture_bookmark">Bookmark</string>
+    <string name="capture_bookmark_no_video">The video has not started yet; the bookmark was not saved.</string>
+    <string name="capture_bookmark_saved">Bookmark saved</string>
+    <string name="capture_camera_permission">The camera is needed to measure and to record the walkthrough video. Nothing leaves this device.</string>
+    <string name="capture_close_room">Close room outline</string>
+    <string name="capture_discard_confirm">Discard</string>
+    <string name="capture_discard_message">The rooms, measurements, bookmarks and video from this walkthrough will be deleted.</string>
+    <string name="capture_discard_title">Discard this walkthrough?</string>
+    <string name="capture_finish_room">Finish room</string>
+    <string name="capture_finish_survey">Finish survey</string>
+    <string name="capture_finishing">Saving the survey…</string>
+    <string name="capture_height_saved">Wall height saved</string>
+    <string name="capture_hint_ready">Point the camera at the floor and move slowly until the crosshair turns white, then tap Start.</string>
+    <string name="capture_need_closed_room">Close the room outline first.</string>
+    <string name="capture_need_three_corners">A room needs at least 3 corners.</string>
+    <string name="capture_next_room">Scan next room</string>
+    <string name="capture_no_surface">No surface found here. Move closer or aim at a textured area.</string>
+    <string name="capture_not_recording">Not recording</string>
+    <string name="capture_opening_saved">Saved. Measure the next one or finish the room.</string>
+    <string name="capture_outline_discarded">The unfinished room outline was not saved.</string>
+    <string name="capture_rooms_done">%1$d room(s) captured</string>
+    <string name="capture_save_without_height">Save without height</string>
+    <string name="capture_scanning_room">Room %1$d</string>
+    <string name="capture_start">Start</string>
+    <string name="capture_storage_full">Not enough space to record video. Free some space.</string>
+    <string name="capture_storage_low">Storage is low: only a few minutes of video left.</string>
+    <string name="capture_title">Survey</string>
+    <string name="capture_video_failed">Video recording failed: %1$s. Measuring continues.</string>
+    <string name="capture_video_stopped_background">The video stopped because the app left the screen. The recorded part is saved.</string>
+    <string name="confidence_high">High</string>
+    <string name="confidence_low">Low</string>
+    <string name="confidence_medium">Medium</string>
+    <string name="confidence_unknown">Unknown</string>
+    <string name="detail_area">Floor area</string>
+    <string name="detail_confidence">Scan confidence</string>
+    <string name="detail_link_bookmark">Link bookmark</string>
+    <string name="detail_max_wall_height">Max wall height (scan)</string>
+    <string name="detail_no_bookmark">No bookmark linked yet.</string>
+    <string name="detail_room">Room</string>
+    <string name="detail_scan_status">Scan status</string>
+    <string name="detail_sill_height">Sill height (scan)</string>
+    <string name="detail_verified_ceiling">Ceiling height (verified, mm)</string>
+    <string name="detail_video_from">Video starts at the bookmark %1$s</string>
+    <string name="detail_wall_length_height">Wall length × height</string>
+    <string name="dim_delta">Difference</string>
+    <string name="dim_height_mm">Height mm</string>
+    <string name="dim_manufacturing">For manufacturing</string>
+    <string name="dim_scan">Scan</string>
+    <string name="dim_scan_tap">Scan (tap)</string>
+    <string name="dim_verified">Verified on site</string>
+    <string name="dim_width_mm">Width mm</string>
+    <string name="edit_invalid_mm">Enter whole millimetres between 1 and 100000.</string>
+    <string name="edit_manufacturing_height">Manufacturing height</string>
+    <string name="edit_manufacturing_hint">Manufacturing size: what you will make or order. Stored separately.</string>
+    <string name="edit_manufacturing_width">Manufacturing width</string>
+    <string name="edit_verified_height">Verified height</string>
+    <string name="edit_verified_hint">Verified on site with a tape or laser. The scan value stays as it is.</string>
+    <string name="edit_verified_width">Verified width</string>
+    <string name="export_csv">Measurements CSV</string>
+    <string name="export_json">JSON report (version 1)</string>
+    <string name="export_mp4">MP4 video</string>
+    <string name="export_no_usdz">The 3D model (USDZ) is made by the iPhone app only. Android exports the plan, table, report and video.</string>
+    <string name="export_no_video">This project has no video.</string>
+    <string name="export_not_generated">Created when shared</string>
+    <string name="export_pdf">PDF plan</string>
+    <string name="export_privacy">Files stay on this device until you share them.</string>
+    <string name="export_ready">Ready</string>
+    <string name="export_retry_needed">Needs retry</string>
+    <string name="export_share_all">Share all</string>
+    <string name="export_share_one">Share</string>
+    <string name="export_title">Export and share</string>
+    <string name="export_unavailable">Not available</string>
+    <string name="field_method">Method (tape, laser…)</string>
+    <string name="field_name">Name</string>
+    <string name="field_notes">Notes</string>
+    <string name="hint_corners">Aim the crosshair at a floor corner and tap +. Go around the room corner by corner.</string>
+    <string name="hint_corners_close">Add the remaining corners, then tap Close room outline.</string>
+    <string name="hint_height_floor">Wall height: aim at the bottom of a wall (floor line) and tap +.</string>
+    <string name="hint_height_top">Now aim at the top of the same wall and tap +.</string>
+    <string name="hint_opening_a">Aim at the bottom of one side of the opening and tap +.</string>
+    <string name="hint_opening_b">Now the bottom of the other side, and tap +.</string>
+    <string name="hint_opening_top">Now the top edge of the opening and tap +, or Save without height.</string>
+    <string name="kind_door">Door</string>
+    <string name="kind_opening">Opening</string>
+    <string name="kind_window">Window</string>
+    <string name="measure_openings">Doors, windows and openings (%1$d)</string>
+    <string name="measure_provenance_note">Openings in mm. Scan values are estimates (RoomPlan on iPhone, tap measurement on Android). ✓ = verified on site, ⚙ = manufacturing size.</string>
+    <string name="measure_room_unit">Room unit</string>
+    <string name="measure_rooms">Rooms (%1$d)</string>
+    <string name="measure_wall_h_short">max wall h.</string>
+    <string name="measure_walls">Walls (%1$d)</string>
+    <string name="pdf_legend">Numbers are millimetres. Plain = scan estimate; ✓ green = verified on site. Dashed wall = partly observed. Scan values never overwrite verified or manufacturing sizes. The scan does not capture ceilings.</string>
+    <string name="pdf_subtitle">Floor plan with dimensions</string>
+    <string name="pdf_table_title">Measurements</string>
+    <string name="plan_empty">No plan geometry yet</string>
+    <string name="plan_legend">mm · plain = scan · ✓ = verified · dashed = partly observed · ● = has video</string>
+    <string name="projects_add_sample">Add sample survey</string>
+    <string name="projects_create">Create</string>
+    <string name="projects_creating_sample">Creating sample…</string>
+    <string name="projects_delete_message">The plan, measurements and video saved on this device will be deleted permanently.</string>
+    <string name="projects_delete_title">Delete this project?</string>
+    <string name="projects_empty">No projects yet</string>
+    <string name="projects_empty_hint">Tap New project to measure rooms, or add the sample survey to try the app.</string>
+    <string name="projects_load_failed">This project could not be opened.</string>
+    <string name="projects_name_placeholder">Project name</string>
+    <string name="projects_new">New project</string>
+    <string name="projects_rename">Rename</string>
+    <string name="projects_retry_needed">Export needs retry</string>
+    <string name="projects_row_summary">%1$d rooms · %2$d openings</string>
+    <string name="projects_title">Projects</string>
+    <string name="projects_unreadable">%1$d project folder(s) could not be read. They were not deleted.</string>
+    <string name="review_missing_files">Missing files: %1$s</string>
+    <string name="review_no_scan">No rooms measured in this project yet. Tap the camera to start.</string>
+    <string name="review_scan_more">Measure more rooms</string>
+    <string name="room_alignment">Alignment</string>
+    <string name="room_default_name">Room %1$d</string>
+    <string name="sample_badge">SAMPLE – synthetic data, not a real scan</string>
+    <string name="sample_short">Sample</string>
+    <string name="scan_detected">Measured</string>
+    <string name="scan_incomplete">Incomplete</string>
+    <string name="scan_low_confidence">Low confidence</string>
+    <string name="scan_not_detected">Not measured</string>
+    <string name="scan_not_measured">Not measured</string>
+    <string name="scan_partial">Partly observed</string>
+    <string name="settings_accuracy_note">Android phones measure by tapping points; accuracy depends on the device and has not been verified yet. Check important sizes with a tape and enter them as Verified.</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_ar" translatable="false">العربية</string>
+    <string name="settings_language_en" translatable="false">English</string>
+    <string name="settings_language_system">Same as the device</string>
+    <string name="settings_title">Settings</string>
+    <string name="tab_measurements">Measurements</string>
+    <string name="tab_plan">Plan</string>
+    <string name="tab_video">Video</string>
+    <string name="tool_wall_height">Wall height</string>
+    <string name="tracking_camera">Camera unavailable</string>
+    <string name="tracking_features">Tracking is weak: aim at an area with more detail</string>
+    <string name="tracking_initializing">Move the phone slowly to start tracking</string>
+    <string name="tracking_light">Tracking is weak: too dark</string>
+    <string name="tracking_motion">Tracking is weak: move more slowly</string>
+    <string name="unit_m">Metres</string>
+    <string name="unit_mm">Millimetres</string>
+    <string name="video_add_bookmark_here">Add bookmark at this moment</string>
+    <string name="video_link_to">Link bookmark to</string>
+    <string name="video_meta">%1$s · %2$d×%3$d · %4$d dropped frames</string>
+    <string name="video_no_bookmarks">No bookmarks</string>
+    <string name="video_none">No video</string>
+    <string name="video_stopped_early">stopped early: %1$s</string>
+    <string name="video_unlink">Remove link</string>
+    <string name="video_unlinked">Not linked</string>
+    <string-array name="pdf_item_columns">
+        <item>Item</item>
+        <item>Room</item>
+        <item>Scan W</item>
+        <item>Scan H</item>
+        <item>Verified W</item>
+        <item>Verified H</item>
+        <item>Δ W</item>
+        <item>Mfg W</item>
+        <item>Mfg H</item>
+        <item>Status</item>
+        <item>Video</item>
+    </string-array>
+    <string-array name="pdf_room_columns">
+        <item>Room</item>
+        <item>Area m²</item>
+        <item>Max wall height (scan)</item>
+        <item>Ceiling (verified, mm)</item>
+        <item>Alignment</item>
+        <item>Video</item>
+        <item>Notes</item>
+    </string-array>
+</resources>
